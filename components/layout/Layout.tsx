@@ -1,7 +1,6 @@
 import React, { useState } from 'react'
 import Header from './Header'
 import Sidebar from './Sidebar'
-import Footer from './Footer'
 
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true)
@@ -11,15 +10,14 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Header toggleSidebar={toggleSidebar} />
-      <div className="flex flex-grow">
-        <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
-        <main className={`flex-grow p-4 ${isSidebarOpen ? 'md:ml-64' : 'md:ml-16'}`}>
+    <div className="flex h-screen overflow-hidden">
+      <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />
+      <div className="flex flex-col flex-1 overflow-hidden">
+        <Header toggleSidebar={toggleSidebar} />
+        <main className="flex-1 overflow-auto p-6 bg-white">
           {children}
         </main>
       </div>
-      <Footer />
     </div>
   )
 }

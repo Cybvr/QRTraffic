@@ -17,7 +17,7 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
   const [qrMenuOpen, setQrMenuOpen] = useState(false);
 
   return (
-    <div className={`hidden lg:flex flex-col h-full transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'} bg-gray-100 shadow-lg`}>
+    <div className={`hidden lg:flex flex-col h-full transition-all duration-300 ${isOpen ? 'w-64' : 'w-16'} bg-[#ebe8e9] shadow-lg`}>
       <div className={`flex items-center justify-${isOpen ? 'between' : 'center'} h-16 border-b px-4`}>
         {isOpen && (
           <Image src="/images/logo.png" alt="QRTraffic Logo" width={128} height={128} />

@@ -1,10 +1,13 @@
 // app/qr-codes/my-codes/page.tsx
 'use client'
+
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import QRCode from 'qrcode.react'
-// import { auth } from '@/services/firebase'
-// import { supabase } from '@/services/supabase'
+import { Plus, ExternalLink } from 'lucide-react'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/components/ui/skeleton"
 
 interface QRCodeData {
   id: string
@@ -35,31 +38,60 @@ export default function MyCodes() {
     fetchQRCodes()
   }, [])
 
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">My QR Codes</h1>
-      <Link href="/qr-codes/new" className="bg-blue-500 text-white px-4 py-2 rounded mb-6 inline-block">
-        Create New QR Code
-      </Link>
-      {qrCodes.length === 0 ? (
-        <p>You haven&apos;t created any QR codes yet.</p>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-3xl font-bold">My QR Codes</h1>
+        <Button asChild>
+          <Link href="/qr-codes/new">
+            <Plus className="mr-2 h-4 w-4" /> Create New QR Code
+          </Link>
+        </Button>
+      </div>
+
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {[...Array(3)].map((_, index) => (
+            <Card key={index}>
+              <CardHeader>
+                <Skeleton className="h-6 w-3/4" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-[150px] w-[150px] mx-auto" />
+              </CardContent>
+              <CardFooter>
+                <Skeleton className="h-4 w-1/2" />
+              </CardFooter>
+            </Card>
+          ))}
+        </div>
+      ) : qrCodes.length === 0 ? (
+        <Card>
+          <CardContent className="pt-6">
+            <p>You haven&apos;t created any QR codes yet.</p>
+          </CardContent>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {qrCodes.map((qrCode) => (
-            <div key={qrCode.id} className="bg-white p-6 rounded-lg shadow">
-              <h2 className="text-xl font-semibold mb-2">{qrCode.title}</h2>
-              <div className="mb-4">
+            <Card key={qrCode.id}>
+              <CardHeader>
+                <CardTitle>{qrCode.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="flex justify-center">
                 <QRCode value={qrCode.url} size={150} />
-              </div>
-              <p className="text-sm text-gray-600 mb-2">Created: {new Date(qrCode.created_at).toLocaleDateString()}</p>
-              <Link href={`/qr-codes/${qrCode.id}`} className="text-blue-500 hover:underline">
-                View Details
-              </Link>
-            </div>
+              </CardContent>
+              <CardFooter className="flex justify-between">
+                <p className="text-sm text-muted-foreground">
+                  Created: {new Date(qrCode.created_at).toLocaleDateString()}
+                </p>
+                <Button variant="outline" asChild>
+                  <Link href={`/qr-codes/${qrCode.id}`}>
+                    <ExternalLink className="mr-2 h-4 w-4" /> View Details
+                  </Link>
+                </Button>
+              </CardFooter>
+            </Card>
           ))}
         </div>
       )}
