@@ -1,82 +1,81 @@
-// app/settings/layout.tsx
 'use client'
-
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import { ChevronDownIcon, ChevronUpIcon } from '@heroicons/react/24/outline'
 import { Button } from "@/components/ui/button"
 import {
-  Sheet,
-  SheetContent,
-  SheetTrigger,
-} from "@/components/ui/sheet"
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu"
 
 const settingsLinks = [
   { href: '/settings/account', label: 'Account' },
   { href: '/settings/company', label: 'Company' },
-  { href: '/settings/domains', label: 'Domains' },
   { href: '/settings/plan-billing', label: 'Plan & Billing' },
   { href: '/settings/members', label: 'Members' },
   { href: '/settings/refer', label: 'Refer a friend' },
 ]
 
-export default function SettingsLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
-  const [open, setOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
     <div className="space-y-6">
       <div className="border-b">
-        <div className="flex h-16 items-center px-4">
-          <div className="hidden md:flex items-center space-x-4 lg:space-x-6">
+        <div className="flex h-16 items-center px-4 sm:px-2">
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-2">
             {settingsLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
                 className={`text-sm font-medium transition-colors hover:text-primary ${
-                  pathname === link.href
-                    ? 'text-primary'
-                    : 'text-muted-foreground'
+                  pathname === link.href ? 'text-primary' : 'text-muted-foreground'
                 }`}
               >
                 {link.label}
               </Link>
             ))}
           </div>
-          <Sheet open={open} onOpenChange={setOpen}>
-            <SheetTrigger asChild>
-              <Button variant="outline" size="icon" className="md:hidden">
-                <ChevronDownIcon className="h-4 w-4" />
-                <span className="sr-only">Toggle Settings Menu</span>
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left">
-              <nav className="flex flex-col space-y-4">
+          <div className="relative md:hidden w-full">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full justify-between"
+                  onClick={() => setIsOpen(!isOpen)}
+                >
+                  <span>Settings</span>
+                  {isOpen ? (
+                    <ChevronUpIcon className="ml-2 h-4 w-4" />
+                  ) : (
+                    <ChevronDownIcon className="ml-2 h-4 w-4" />
+                  )}
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="z-10 w-full left-0">
                 {settingsLinks.map((link) => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    className={`text-sm font-medium transition-colors hover:text-primary ${
-                      pathname === link.href
-                        ? 'text-primary'
-                        : 'text-muted-foreground'
-                    }`}
-                    onClick={() => setOpen(false)}
-                  >
-                    {link.label}
-                  </Link>
+                  <DropdownMenuItem key={link.href} asChild>
+                    <Link
+                      href={link.href}
+                      className={`block w-full px-4 py-2 text-sm ${
+                        pathname === link.href ? 'bg-gray-100 text-gray-900' : 'text-gray-700'
+                      } hover:bg-gray-100 hover:text-gray-900`}
+                    >
+                      {link.label}
+                    </Link>
+                  </DropdownMenuItem>
                 ))}
-              </nav>
-            </SheetContent>
-          </Sheet>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
         </div>
       </div>
-      <div className="container mx-auto py-10">
+      <div className="container mx-auto py-5 px-4 sm:py-6 sm:px-2">
         {children}
       </div>
     </div>
