@@ -20,10 +20,8 @@ import {
 } from "@/components/ui/dropdown-menu"
 
 const dropdownItems = [
-  { label: 'View Profile', href: '/settings/account', icon: UserIcon },
+  { label: 'Account', href: '/settings/account', icon: UserIcon },
   { label: 'Settings', href: '/settings', icon: Cog6ToothIcon },
-  { label: 'Company Profile', href: '/settings/company', icon: BuildingOfficeIcon },
-  { label: 'Members', href: '/settings/members', icon: UsersIcon },
   { label: 'Refer a Friend', href: '/settings/refer', icon: UserPlusIcon },
   { label: 'Support', href: '/support', icon: QuestionMarkCircleIcon },
   { label: 'Logout', href: '/auth/logout', icon: ArrowRightOnRectangleIcon },

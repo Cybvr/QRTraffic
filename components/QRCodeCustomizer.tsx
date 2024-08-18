@@ -1,22 +1,18 @@
-import { useState } from 'react'
-import QRCode from 'qrcode.react'
+import React, { useState } from 'react'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Label } from "@/components/ui/label"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Image, PaintBucket, Frame } from "lucide-react"
 
 interface QRCodeCustomizerProps {
   qrCodeData: string
 }
 
-const frames = [
-  { id: 'none', name: 'No Frame' },
-  { id: 'frame1', name: 'Frame 1' },
-  { id: 'frame2', name: 'Frame 2' },
-  { id: 'frame3', name: 'Frame 3' },
-]
-
 export default function QRCodeCustomizer({ qrCodeData }: QRCodeCustomizerProps) {
   const [logo, setLogo] = useState<string | null>(null)
-  const [color, setColor] = useState('#000000')
+  const [color, setColor] = useState('#4F46E5')
   const [bgColor, setBgColor] = useState('#ffffff')
-  const [selectedFrame, setSelectedFrame] = useState('none')
 
   const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
@@ -27,65 +23,39 @@ export default function QRCodeCustomizer({ qrCodeData }: QRCodeCustomizerProps) 
     }
   }
 
-  const handleExport = () => {
-    const canvas = document.querySelector('canvas')
-    if (canvas) {
-      const pngUrl = canvas.toDataURL('image/png').replace('image/png', 'image/octet-stream')
-      const downloadLink = document.createElement('a')
-      downloadLink.href = pngUrl
-      downloadLink.download = 'qrcode.png'
-      document.body.appendChild(downloadLink)
-      downloadLink.click()
-      document.body.removeChild(downloadLink)
-    }
-  }
-
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-semibold mb-4">2. Customize</h2>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Logo</label>
-        <input type="file" onChange={handleLogoUpload} accept="image/*" />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Color</label>
-        <input type="color" value={color} onChange={(e) => setColor(e.target.value)} />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Background Color</label>
-        <input type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} />
-      </div>
-      <div className="mb-4">
-        <label className="block text-sm font-medium text-gray-700">Frame</label>
-        <select
-          value={selectedFrame}
-          onChange={(e) => setSelectedFrame(e.target.value)}
-          className="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md"
-        >
-          {frames.map((frame) => (
-            <option key={frame.id} value={frame.id}>{frame.name}</option>
-          ))}
-        </select>
-      </div>
-      <div className="bg-gray-100 p-4 rounded-lg flex flex-col items-center mt-4">
-        <QRCode
-          value={qrCodeData || "http://qrtraffic.com"}
-          size={200}
-          fgColor={color}
-          bgColor={bgColor}
-          level="H"
-          imageSettings={logo ? {
-            src: logo,
-            x: undefined,
-            y: undefined,
-            height: 24,
-            width: 24,
-            excavate: true,
-          } : undefined}
-        />
-        <p className="mt-2 text-gray-600">Scan Me</p>
-      </div>
-      <button onClick={handleExport} className="mt-4 bg-blue-500 text-white px-4 py-2 rounded w-full">Export</button>
-    </div>
+    <Tabs defaultValue="logo">
+      <TabsList className="grid w-full grid-cols-3">
+        <TabsTrigger value="logo"><Image className="mr-2" />Logo</TabsTrigger>
+        <TabsTrigger value="colors"><PaintBucket className="mr-2" />Colors</TabsTrigger>
+        <TabsTrigger value="frame"><Frame className="mr-2" />Frame</TabsTrigger>
+      </TabsList>
+      <TabsContent value="logo">
+        <p>With this QR code generator with logo, you can easily add your logo for stronger brand recall (300 × 300px, 72dpi)</p>
+        <div className="border-2 border-dashed border-gray-300 p-4 text-center mt-4">
+          <Label htmlFor="logo-upload" className="cursor-pointer">
+            Click to upload or drag and drop
+            <br />
+            SVG, PNG, JPG or GIF (max. 800x400px)
+          </Label>
+          <Input id="logo-upload" type="file" className="hidden" onChange={handleLogoUpload} accept="image/*" />
+        </div>
+      </TabsContent>
+      <TabsContent value="colors">
+        <p>Embellish your customized QR with your brand colors</p>
+        <div className="space-y-2 mt-4">
+          <Label htmlFor="color">Foreground Color</Label>
+          <Input id="color" type="color" value={color} onChange={(e) => setColor(e.target.value)} />
+        </div>
+        <div className="space-y-2 mt-4">
+          <Label htmlFor="bgColor">Background Color</Label>
+          <Input id="bgColor" type="color" value={bgColor} onChange={(e) => setBgColor(e.target.value)} />
+        </div>
+      </TabsContent>
+      <TabsContent value="frame">
+        <p>A quick response code with a frame and call-to-action gets 80% more scans</p>
+        {/* Add frame selection options here */}
+      </TabsContent>
+    </Tabs>
   )
 }
