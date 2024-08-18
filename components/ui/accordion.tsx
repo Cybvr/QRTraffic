@@ -1,4 +1,13 @@
-import React, { createContext, useContext, useState } from 'react';
+'use client';
+
+import React, { createContext, useContext, useState } from "react";
+
+// Extend AccordionProps to include type and collapsible
+interface AccordionProps {
+  children: React.ReactNode;
+  type?: string;
+  collapsible?: boolean;
+}
 
 interface AccordionContextType {
   openItem: string | null;
@@ -7,7 +16,7 @@ interface AccordionContextType {
 
 const AccordionContext = createContext<AccordionContextType | undefined>(undefined);
 
-export const Accordion: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const Accordion: React.FC<AccordionProps> = ({ children, type, collapsible }) => {
   const [openItem, setOpenItem] = useState<string | null>(null);
 
   const toggleItem = (item: string) => {
@@ -43,7 +52,7 @@ export const AccordionTrigger: React.FC<{ children: React.ReactNode }> = ({ chil
         viewBox="0 0 20 20"
         fill="currentColor"
       >
-        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 111.414 1.414l-4 4a1 1 01-1.414 0l-4-4a1 1 010-1.414z" clipRule="evenodd" />
       </svg>
     </button>
   );
@@ -58,4 +67,4 @@ export const AccordionContent: React.FC<{ children: React.ReactNode }> = ({ chil
   if (openItem !== children) return null;
 
   return <div className="px-4 py-2 text-gray-700">{children}</div>;
-};
+}

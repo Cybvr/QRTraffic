@@ -1,11 +1,10 @@
 // app/qr-codes/my-codes/page.tsx
 'use client'
-
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import QRCode from 'qrcode.react'
-import { auth } from '@/services/firebase'
-import { supabase } from '@/services/supabase'
+// import { auth } from '@/services/firebase'
+// import { supabase } from '@/services/supabase'
 
 interface QRCodeData {
   id: string
@@ -14,29 +13,25 @@ interface QRCodeData {
   created_at: string
 }
 
+// Mock data for demo purposes
+const mockQRCodes: QRCodeData[] = [
+  { id: '1', url: 'https://example.com/1', title: 'Example QR Code 1', created_at: '2023-08-01T00:00:00Z' },
+  { id: '2', url: 'https://example.com/2', title: 'Example QR Code 2', created_at: '2023-08-02T00:00:00Z' },
+  { id: '3', url: 'https://example.com/3', title: 'Example QR Code 3', created_at: '2023-08-03T00:00:00Z' },
+]
+
 export default function MyCodes() {
   const [qrCodes, setQRCodes] = useState<QRCodeData[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // Simulate fetching QR codes
     const fetchQRCodes = async () => {
-      const user = auth.currentUser
-      if (user) {
-        const { data, error } = await supabase
-          .from('qr_codes')
-          .select('*')
-          .eq('user_id', user.uid)
-          .order('created_at', { ascending: false })
-
-        if (error) {
-          console.error('Error fetching QR codes:', error)
-        } else {
-          setQRCodes(data || [])
-        }
-      }
+      // Simulate a delay
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      setQRCodes(mockQRCodes)
       setLoading(false)
     }
-
     fetchQRCodes()
   }, [])
 

@@ -1,8 +1,15 @@
 import { useState } from 'react'
 import { createQRCode } from '@/services/api'
 
+// Define the shape of the QR code data
+type QRCodeData = {
+  id: number;
+  url: string;
+  created_at: string;
+}
+
 export const useQRCode = () => {
-  const [qrCode, setQRCode] = useState<string | null>(null)
+  const [qrCodeData, setQRCodeData] = useState<QRCodeData | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -11,13 +18,13 @@ export const useQRCode = () => {
     setError(null)
     try {
       const result = await createQRCode(url)
-      setQRCode(result.qrCode)
+      setQRCodeData(result)
     } catch (err) {
-      setError(err.message)
+      setError(err instanceof Error ? err.message : 'An unknown error occurred')
     } finally {
       setLoading(false)
     }
   }
 
-  return { qrCode, error, loading, generateQRCode }
+  return { qrCodeData, error, loading, generateQRCode }
 }

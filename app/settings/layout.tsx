@@ -1,46 +1,84 @@
-'use client';
+// app/settings/layout.tsx
+'use client'
 
-import React from 'react';
-import dynamic from 'next/dynamic';
-import { ArrowUpIcon } from '@heroicons/react/24/solid';
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useState } from 'react'
+import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import { Button } from "@/components/ui/button"
+import {
+  Sheet,
+  SheetContent,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 
-const PieChart = dynamic(() => import('recharts/lib/chart/PieChart').then(mod => mod.PieChart), { ssr: false });
-const Pie = dynamic(() => import('recharts/lib/polar/Pie').then(mod => mod.Pie), { ssr: false });
-const Cell = dynamic(() => import('recharts/lib/component/Cell').then(mod => mod.Cell), { ssr: false });
+const settingsLinks = [
+  { href: '/settings/account', label: 'Account' },
+  { href: '/settings/company', label: 'Company' },
+  { href: '/settings/domains', label: 'Domains' },
+  { href: '/settings/plan-billing', label: 'Plan & Billing' },
+  { href: '/settings/members', label: 'Members' },
+  { href: '/settings/refer', label: 'Refer a friend' },
+]
 
-const deviceData = [
-  { name: 'Mobile', value: 400 },
-  { name: 'Desktop', value: 300 },
-  { name: 'Tablet', value: 200 },
-];
+export default function SettingsLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  const pathname = usePathname()
+  const [open, setOpen] = useState(false)
 
-export default function SettingsLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex flex-col space-y-8">
-      <h1 className="text-2xl font-bold">Settings</h1>
-      <div className="flex space-x-4">
-        <div className="w-64 h-64">
-          <PieChart width={250} height={250}>
-            <Pie
-              data={deviceData}
-              cx={125}
-              cy={125}
-              innerRadius={60}
-              outerRadius={80}
-              fill="#8884d8"
-              paddingAngle={5}
-              dataKey="value"
-            >
-              {deviceData.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={['#0088FE', '#00C49F', '#FFBB28'][index % 3]} />
-              ))}
-            </Pie>
-          </PieChart>
-        </div>
-        <div className="flex-1">
-          {children}
+    <div className="space-y-6">
+      <div className="border-b">
+        <div className="flex h-16 items-center px-4">
+          <div className="hidden md:flex items-center space-x-4 lg:space-x-6">
+            {settingsLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`text-sm font-medium transition-colors hover:text-primary ${
+                  pathname === link.href
+                    ? 'text-primary'
+                    : 'text-muted-foreground'
+                }`}
+              >
+                {link.label}
+              </Link>
+            ))}
+          </div>
+          <Sheet open={open} onOpenChange={setOpen}>
+            <SheetTrigger asChild>
+              <Button variant="outline" size="icon" className="md:hidden">
+                <ChevronDownIcon className="h-4 w-4" />
+                <span className="sr-only">Toggle Settings Menu</span>
+              </Button>
+            </SheetTrigger>
+            <SheetContent side="left">
+              <nav className="flex flex-col space-y-4">
+                {settingsLinks.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`text-sm font-medium transition-colors hover:text-primary ${
+                      pathname === link.href
+                        ? 'text-primary'
+                        : 'text-muted-foreground'
+                    }`}
+                    onClick={() => setOpen(false)}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+            </SheetContent>
+          </Sheet>
         </div>
       </div>
+      <div className="container mx-auto py-10">
+        {children}
+      </div>
     </div>
-  );
+  )
 }

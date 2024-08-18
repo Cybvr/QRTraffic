@@ -2,6 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { ArrowUpIcon } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
 // Mock data
 const mockData = {
@@ -78,13 +82,18 @@ const Header = () => (
   <div className="flex justify-between items-center mb-6">
     <h1 className="text-2xl font-bold">QR Code Analytics</h1>
     <div className="flex space-x-4">
-      <select className="border rounded p-2">
-        <option>Last 7 days</option>
-      </select>
+      <Select>
+        <SelectTrigger className="w-[180px]">
+          <SelectValue placeholder="Select a timeframe" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="7days">Last 7 days</SelectItem>
+          <SelectItem value="30days">Last 30 days</SelectItem>
+          <SelectItem value="90days">Last 90 days</SelectItem>
+        </SelectContent>
+      </Select>
       {['Filters', 'Export', 'Share'].map((text) => (
-        <button key={text} className="bg-blue-500 text-white px-4 py-2 rounded">
-          {text}
-        </button>
+        <Button key={text} variant="outline">{text}</Button>
       ))}
     </div>
   </div>
@@ -98,33 +107,49 @@ const StatCards = () => (
 );
 
 const StatCard = ({ title, value, change }) => (
-  <div className="bg-white p-6 rounded-lg shadow">
-    <h2 className="text-xl font-semibold mb-2">{title}</h2>
-    <p className="text-3xl font-bold">{value.toLocaleString()}</p>
-    <p className="text-green-500 flex items-center">
-      <ArrowUpIcon className="h-4 w-4 mr-1" />
-      {change}% than the previous month
-    </p>
-  </div>
+  <Card>
+    <CardHeader>
+      <CardTitle>{title}</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <p className="text-3xl font-bold">{value.toLocaleString()}</p>
+      <p className="text-green-500 flex items-center">
+        <ArrowUpIcon className="h-4 w-4 mr-1" />
+        {change}% than the previous month
+      </p>
+    </CardContent>
+  </Card>
 );
 
 const DataChart = ({ title, data, dataKey }) => (
-  <div className="bg-white p-6 rounded-lg shadow mb-8">
-    <h2 className="text-xl font-semibold mb-4">{title}</h2>
-    {data && data.length > 0 ? (
-      <div className="space-y-2">
-        {data.map((item, index) => (
-          <div key={index} className="flex justify-between">
-            <span>{item.date}</span>
-            <span>{item[dataKey]} {dataKey}</span>
-          </div>
-        ))}
-      </div>
-    ) : (
-      <p>No {dataKey} data available</p>
-    )}
-    <ChartSummary title={title} value={data.reduce((sum, item) => sum + item[dataKey], 0)} />
-  </div>
+  <Card className="mb-8">
+    <CardHeader>
+      <CardTitle>{title}</CardTitle>
+    </CardHeader>
+    <CardContent>
+      {data && data.length > 0 ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Date</TableHead>
+              <TableHead className="text-right">{title}</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.map((item, index) => (
+              <TableRow key={index}>
+                <TableCell>{item.date}</TableCell>
+                <TableCell className="text-right">{item[dataKey]} {dataKey}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <p>No {dataKey} data available</p>
+      )}
+      <ChartSummary title={title} value={data.reduce((sum, item) => sum + item[dataKey], 0)} />
+    </CardContent>
+  </Card>
 );
 
 const ChartSummary = ({ title, value }) => (
@@ -144,95 +169,103 @@ const PerformanceSection = ({ campaignTypes }) => (
 );
 
 const PerformanceCard = ({ title, data }) => (
-  <div className="bg-white p-6 rounded-lg shadow">
-    <h2 className="text-xl font-semibold mb-4">{title}</h2>
-    <div className="space-y-2">
-      {data.map((item, index) => (
-        <div key={index} className="flex justify-between">
-          <span>{item.name}</span>
-          <span>{(item.value * 100).toFixed(0)}%</span>
-        </div>
-      ))}
-    </div>
-  </div>
+  <Card>
+    <CardHeader>
+      <CardTitle>{title}</CardTitle>
+    </CardHeader>
+    <CardContent>
+      <Table>
+        <TableBody>
+          {data.map((item, index) => (
+            <TableRow key={index}>
+              <TableCell>{item.name}</TableCell>
+              <TableCell className="text-right">{(item.value * 100).toFixed(0)}%</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </CardContent>
+  </Card>
 );
 
 const DeviceSection = ({ deviceData }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
     <DeviceUsage deviceData={deviceData} />
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-semibold mb-4">Scans by Device Used</h2>
-      <p>Calendar view of scans by device would go here</p>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Scans by Device Used</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <p>Calendar view of scans by device would go here</p>
+      </CardContent>
+    </Card>
   </div>
 );
 
 const DeviceUsage = ({ deviceData }) => (
-  <div className="bg-white p-6 rounded-lg shadow">
-    <h2 className="text-xl font-semibold mb-4">Scans by Device Used</h2>
-    {deviceData && deviceData.length > 0 ? (
-      <>
-        <div className="space-y-2">
-          {deviceData.map((item, index) => (
-            <div key={index} className="flex justify-between">
-              <span>{item.name}</span>
-              <span>{item.value} scans</span>
-            </div>
-          ))}
-        </div>
-        <table className="w-full mt-4">
-          <thead>
-            <tr>
-              <th>Device Used</th>
-              <th>Scans</th>
-              <th>% of scans</th>
-            </tr>
-          </thead>
-          <tbody>
+  <Card>
+    <CardHeader>
+      <CardTitle>Scans by Device Used</CardTitle>
+    </CardHeader>
+    <CardContent>
+      {deviceData && deviceData.length > 0 ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Device Used</TableHead>
+              <TableHead>Scans</TableHead>
+              <TableHead>% of scans</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {deviceData.map((item, index) => (
-              <tr key={index}>
-                <td>{item.name}</td>
-                <td>{item.value}</td>
-                <td>{((item.value / deviceData.reduce((sum, d) => sum + d.value, 0)) * 100).toFixed(2)}%</td>
-              </tr>
+              <TableRow key={index}>
+                <TableCell>{item.name}</TableCell>
+                <TableCell>{item.value}</TableCell>
+                <TableCell>{((item.value / deviceData.reduce((sum, d) => sum + d.value, 0)) * 100).toFixed(2)}%</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </>
-    ) : (
-      <p>No device data available</p>
-    )}
-  </div>
+          </TableBody>
+        </Table>
+      ) : (
+        <p>No device data available</p>
+      )}
+    </CardContent>
+  </Card>
 );
 
 const CitySection = ({ cityData }) => (
-  <div className="bg-white p-6 rounded-lg shadow">
-    <h2 className="text-xl font-semibold mb-4">Scans by City</h2>
-    {cityData && cityData.length > 0 ? (
-      <table className="w-full">
-        <thead>
-          <tr>
-            <th className="text-left">City</th>
-            <th className="text-left">Country</th>
-            <th className="text-right">Scans</th>
-            <th className="text-right">% of scans</th>
-          </tr>
-        </thead>
-        <tbody>
-          {cityData.map((city, index) => (
-            <tr key={index}>
-              <td>{city.city}</td>
-              <td>{city.country}</td>
-              <td className="text-right">{city.scans}</td>
-              <td className="text-right">{city.percentage}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    ) : (
-      <p>No city data available</p>
-    )}
-  </div>
+  <Card>
+    <CardHeader>
+      <CardTitle>Scans by City</CardTitle>
+    </CardHeader>
+    <CardContent>
+      {cityData && cityData.length > 0 ? (
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>City</TableHead>
+              <TableHead>Country</TableHead>
+              <TableHead className="text-right">Scans</TableHead>
+              <TableHead className="text-right">% of scans</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {cityData.map((city, index) => (
+              <TableRow key={index}>
+                <TableCell>{city.city}</TableCell>
+                <TableCell>{city.country}</TableCell>
+                <TableCell className="text-right">{city.scans}</TableCell>
+                <TableCell className="text-right">{city.percentage}</TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      ) : (
+        <p>No city data available</p>
+      )}
+    </CardContent>
+  </Card>
 );
 
 export default AnalyticsDashboard;

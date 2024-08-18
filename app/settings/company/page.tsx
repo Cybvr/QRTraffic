@@ -1,80 +1,95 @@
+'use client'
+
+import { useState } from 'react'
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Separator } from "@/components/ui/separator"
+import { Switch } from "@/components/ui/switch"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+
 export default function CompanySettings() {
+  const [publicProfile, setPublicProfile] = useState('QR Traffic UI')
+  const [profileUrl, setProfileUrl] = useState('QR Traffic')
+  const [tagline, setTagline] = useState('QR Traffic UI is the ultimate Figma UI kit and design system to kickstart any project, startup, or freelance designer.')
+  const [reportsEnabled, setReportsEnabled] = useState(false)
+  const [emailsEnabled, setEmailsEnabled] = useState(false)
+
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-6">Company profile</h1>
-      <p className="text-gray-600 mb-8">Update your company photo and details here.</p>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Company profile</h1>
+        <p className="text-muted-foreground">Update your company photo and details here.</p>
+      </div>
 
-      <form className="space-y-6 max-w-2xl">
-        <div>
-          <label htmlFor="public-profile" className="block text-sm font-medium text-gray-700">Public profile</label>
-          <p className="text-sm text-gray-500">This will be displayed on your profile.</p>
-          <input type="text" id="public-profile" name="public-profile" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" defaultValue="QR Traffic UI" />
-        </div>
+      <Separator />
 
-        <div>
-          <label htmlFor="profile-url" className="block text-sm font-medium text-gray-700">Profile URL</label>
-          <div className="mt-1 flex rounded-md shadow-sm">
-            <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-gray-300 bg-gray-50 text-gray-500 text-sm">
-              qrtraffic.com/profile/
-            </span>
-            <input type="text" id="profile-url" name="profile-url" className="flex-1 min-w-0 block w-full px-3 py-2 rounded-none rounded-r-md focus:ring-indigo-500 focus:border-indigo-500 border-gray-300" defaultValue="QR Traffic" />
-          </div>
-        </div>
-
-        <div>
-          <label htmlFor="tagline" className="block text-sm font-medium text-gray-700">Tagline</label>
-          <p className="text-sm text-gray-500">A quick snapshot of your company.</p>
-          <textarea id="tagline" name="tagline" rows={3} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" defaultValue="QR Traffic UI is the ultimate Figma UI kit and design system to kickstart any project, startup, or freelance designer." />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Company logo</label>
-          <p className="text-sm text-gray-500">Update your company logo and then choose where you want it to display.</p>
-          <div className="mt-1 flex items-center">
-            <span className="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100">
-              <svg className="h-full w-full text-gray-300" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-            </span>
-            <button type="button" className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Change
-            </button>
-          </div>
-        </div>
-
-        <div>
-          <h3 className="text-lg font-medium leading-6 text-gray-900">Branding</h3>
-          <p className="mt-1 text-sm text-gray-500">Add your logo to reports and emails.</p>
-          <div className="mt-2 space-y-4">
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input id="reports" name="reports" type="checkbox" className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="reports" className="font-medium text-gray-700">Reports</label>
-                <p className="text-gray-500">Include my logo in summary reports.</p>
+      <form className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile</CardTitle>
+            <CardDescription>Update your company&apos;s public profile and details.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="public-profile">Public profile</Label>
+              <Input id="public-profile" value={publicProfile} onChange={(e) => setPublicProfile(e.target.value)} />
+              <p className="text-sm text-muted-foreground">This will be displayed on your profile.</p>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="profile-url">Profile URL</Label>
+              <div className="flex rounded-md shadow-sm">
+                <span className="inline-flex items-center px-3 rounded-l-md border border-r-0 border-input bg-muted text-muted-foreground text-sm">
+                  qrtraffic.com/profile/
+                </span>
+                <Input id="profile-url" value={profileUrl} onChange={(e) => setProfileUrl(e.target.value)} className="rounded-l-none" />
               </div>
             </div>
-            <div className="flex items-start">
-              <div className="flex items-center h-5">
-                <input id="emails" name="emails" type="checkbox" className="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
-              </div>
-              <div className="ml-3 text-sm">
-                <label htmlFor="emails" className="font-medium text-gray-700">Emails</label>
-                <p className="text-gray-500">Include my logo in customer emails.</p>
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="tagline">Tagline</Label>
+              <Textarea id="tagline" value={tagline} onChange={(e) => setTagline(e.target.value)} />
+              <p className="text-sm text-muted-foreground">A quick snapshot of your company.</p>
             </div>
-          </div>
-        </div>
+            <div className="space-y-2">
+              <Label>Company logo</Label>
+              <div className="flex items-center space-x-4">
+                <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                  Logo
+                </div>
+                <Button variant="outline">Change</Button>
+              </div>
+              <p className="text-sm text-muted-foreground">Update your company logo and then choose where you want it to display.</p>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="flex justify-end">
-          <button type="button" className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Cancel
-          </button>
-          <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Save
-          </button>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle>Branding</CardTitle>
+            <CardDescription>Add your logo to reports and emails.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="reports">Reports</Label>
+                <p className="text-sm text-muted-foreground">Include my logo in summary reports.</p>
+              </div>
+              <Switch id="reports" checked={reportsEnabled} onCheckedChange={setReportsEnabled} />
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label htmlFor="emails">Emails</Label>
+                <p className="text-sm text-muted-foreground">Include my logo in customer emails.</p>
+              </div>
+              <Switch id="emails" checked={emailsEnabled} onCheckedChange={setEmailsEnabled} />
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-end space-x-2">
+            <Button variant="outline">Cancel</Button>
+            <Button>Save changes</Button>
+          </CardFooter>
+        </Card>
       </form>
     </div>
   )

@@ -1,76 +1,87 @@
+'use client'
+
+import { useState } from 'react'
 import Image from 'next/image'
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Button } from "@/components/ui/button"
+import { Separator } from "@/components/ui/separator"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 
 export default function AccountSettings() {
+  const [firstName, setFirstName] = useState('Olivia')
+  const [lastName, setLastName] = useState('Rhye')
+  const [email, setEmail] = useState('olivia@qrtraffic.com')
+
   return (
-    <div>
-      <h1 className="text-2xl font-semibold mb-6">Personal info</h1>
-      <p className="text-gray-600 mb-8">Update your photo and personal details.</p>
-
-      <form className="space-y-6 max-w-2xl">
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">First name</label>
-            <input type="text" id="firstName" name="firstName" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" defaultValue="Olivia" />
-          </div>
-          <div>
-            <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">Last name</label>
-            <input type="text" id="lastName" name="lastName" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" defaultValue="Rhye" />
-          </div>
-        </div>
-
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email address</label>
-          <input type="email" id="email" name="email" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" defaultValue="olivia@qrtraffic.com" />
-        </div>
-
-        <div>
-          <label className="block text-sm font-medium text-gray-700">Photo</label>
-          <div className="mt-1 flex items-center">
-            <Image src="/path/to/avatar.jpg" alt="Profile" width={48} height={48} className="rounded-full" />
-            <button type="button" className="ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Change
-            </button>
-          </div>
-        </div>
-
-        <div className="flex justify-end">
-          <button type="button" className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Cancel
-          </button>
-          <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-            Save changes
-          </button>
-        </div>
-      </form>
-
-      <div className="mt-10 border-t border-gray-200 pt-10">
-        <h2 className="text-lg font-medium text-gray-900">Password</h2>
-        <p className="mt-1 text-sm text-gray-600">
-          Please enter your current password to change your password.
-        </p>
-        <form className="mt-6 space-y-6 max-w-2xl">
-          <div>
-            <label htmlFor="current-password" className="block text-sm font-medium text-gray-700">Current password</label>
-            <input type="password" id="current-password" name="current-password" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-          </div>
-          <div>
-            <label htmlFor="new-password" className="block text-sm font-medium text-gray-700">New password</label>
-            <input type="password" id="new-password" name="new-password" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-          </div>
-          <div>
-            <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700">Confirm new password</label>
-            <input type="password" id="confirm-password" name="confirm-password" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500" />
-          </div>
-          <div className="flex justify-end">
-            <button type="button" className="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Cancel
-            </button>
-            <button type="submit" className="ml-3 inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              Update password
-            </button>
-          </div>
-        </form>
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-2xl font-bold tracking-tight">Personal info</h1>
+        <p className="text-muted-foreground">Update your photo and personal details.</p>
       </div>
+      <Separator />
+      <form className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Profile</CardTitle>
+            <CardDescription>Update your personal information.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="firstName">First name</Label>
+                <Input id="firstName" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="lastName">Last name</Label>
+                <Input id="lastName" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="email">Email address</Label>
+              <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+            <div className="space-y-2">
+              <Label>Photo</Label>
+              <div className="flex items-center space-x-4">
+                <Image src="/path/to/avatar.jpg" alt="Profile" width={48} height={48} className="rounded-full" />
+                <Button variant="outline">Change</Button>
+              </div>
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-end space-x-2">
+            <Button variant="outline">Cancel</Button>
+            <Button>Save changes</Button>
+          </CardFooter>
+        </Card>
+      </form>
+      <Separator />
+      <form className="space-y-8">
+        <Card>
+          <CardHeader>
+            <CardTitle>Password</CardTitle>
+            <CardDescription>Change your password here. After saving, you&apos;ll be logged out.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="current-password">Current password</Label>
+              <Input id="current-password" type="password" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New password</Label>
+              <Input id="new-password" type="password" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm new password</Label>
+              <Input id="confirm-password" type="password" />
+            </div>
+          </CardContent>
+          <CardFooter className="flex justify-end space-x-2">
+            <Button variant="outline">Cancel</Button>
+            <Button>Update password</Button>
+          </CardFooter>
+        </Card>
+      </form>
     </div>
   )
 }

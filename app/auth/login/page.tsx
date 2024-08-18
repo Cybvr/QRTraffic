@@ -1,12 +1,9 @@
 'use client'
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Button from '@/components/common/Button'
 import Input from '@/components/common/Input'
-import { auth } from '@/services/firebase'
-import { signInWithEmailAndPassword } from 'firebase/auth'
 
 export default function Login() {
   const [email, setEmail] = useState('')
@@ -16,12 +13,16 @@ export default function Login() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      await signInWithEmailAndPassword(auth, email, password)
-      router.push('/dashboard')
-    } catch (err) {
-      setError('Failed to log in. Please check your credentials.')
-    }
+    // Comment out authentication logic for demo
+    // try {
+    //   await signInWithEmailAndPassword(auth, email, password)
+    //   router.push('/dashboard')
+    // } catch (err) {
+    //   setError('Failed to log in. Please check your credentials.')
+    // }
+
+    // For demo purposes, just redirect to dashboard
+    router.push('/dashboard')
   }
 
   return (

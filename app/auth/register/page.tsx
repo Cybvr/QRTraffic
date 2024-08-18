@@ -1,12 +1,9 @@
 'use client'
-
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Button from '@/components/common/Button'
 import Input from '@/components/common/Input'
-import { auth } from '@/services/firebase'
-import { createUserWithEmailAndPassword } from 'firebase/auth'
 
 export default function Register() {
   const [email, setEmail] = useState('')
@@ -16,12 +13,16 @@ export default function Register() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    try {
-      await createUserWithEmailAndPassword(auth, email, password)
-      router.push('/dashboard')
-    } catch (err) {
-      setError('Failed to create an account. Please try again.')
-    }
+    // Comment out authentication logic for demo
+    // try {
+    //   await createUserWithEmailAndPassword(auth, email, password)
+    //   router.push('/dashboard')
+    // } catch (err) {
+    //   setError('Failed to create an account. Please try again.')
+    // }
+
+    // For demo purposes, just redirect to dashboard
+    router.push('/dashboard')
   }
 
   return (

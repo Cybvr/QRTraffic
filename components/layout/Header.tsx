@@ -8,32 +8,34 @@ import {
   UserIcon, Cog6ToothIcon, BuildingOfficeIcon, UsersIcon, 
   UserPlusIcon, QuestionMarkCircleIcon, ArrowRightOnRectangleIcon 
 } from '@heroicons/react/24/outline'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 
 const dropdownItems = [
-  { label: 'View Profile', href: '#', icon: UserIcon },
-  { label: 'Settings', href: '#', icon: Cog6ToothIcon },
-  { label: 'Company Profile', href: '#', icon: BuildingOfficeIcon },
-  { label: 'Members', href: '#', icon: UsersIcon },
-  { label: 'Refer a Friend', href: '#', icon: UserPlusIcon },
-  { label: 'Support', href: '#', icon: QuestionMarkCircleIcon },
-  { label: 'Logout', href: '#', icon: ArrowRightOnRectangleIcon },
+  { label: 'View Profile', href: '/settings/account', icon: UserIcon },
+  { label: 'Settings', href: '/settings', icon: Cog6ToothIcon },
+  { label: 'Company Profile', href: '/settings/company', icon: BuildingOfficeIcon },
+  { label: 'Members', href: '/settings/members', icon: UsersIcon },
+  { label: 'Refer a Friend', href: '/settings/refer', icon: UserPlusIcon },
+  { label: 'Support', href: '/support', icon: QuestionMarkCircleIcon },
+  { label: 'Logout', href: '/auth/logout', icon: ArrowRightOnRectangleIcon },
 ];
 
-const Header = ({ toggleSidebar }) => {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+const Header = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [qrMenuOpen, setQrMenuOpen] = useState(false);
-  const headerRef = useRef(null);
-
-  const toggleDropdown = useCallback(() => {
-    setDropdownOpen(prev => !prev);
-    setMobileNavOpen(false);
-    setQrMenuOpen(false);
-  }, []);
+  const headerRef = useRef<HTMLDivElement>(null);
 
   const toggleMobileNav = useCallback(() => {
     setMobileNavOpen(prev => !prev);
-    setDropdownOpen(false);
     setQrMenuOpen(false);
   }, []);
 
@@ -42,9 +44,8 @@ const Header = ({ toggleSidebar }) => {
   }, []);
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (headerRef.current && !headerRef.current.contains(event.target)) {
-        setDropdownOpen(false);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (headerRef.current && !headerRef.current.contains(event.target as Node)) {
         setMobileNavOpen(false);
         setQrMenuOpen(false);
       }
@@ -61,57 +62,51 @@ const Header = ({ toggleSidebar }) => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-full">
         <div className="flex justify-between items-center h-full">
           <div className="flex-1 flex items-center h-full">
-            <button onClick={toggleMobileNav} className="text-gray-500 lg:hidden focus:outline-none mr-3">
+            <Button variant="ghost" size="icon" onClick={toggleMobileNav} className="lg:hidden mr-3">
               <Bars3Icon className="h-6 w-6" />
-            </button>
+            </Button>
             <div className="w-full max-w-lg lg:max-w-xs">
-              <label htmlFor="search" className="sr-only">Search</label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
-                </div>
-                <input
-                  id="search"
-                  name="search"
-                  className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-gray-100 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-                  placeholder="Search"
+                <MagnifyingGlassIcon className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+                <Input
                   type="search"
+                  placeholder="Search"
+                  className="pl-8"
                 />
               </div>
             </div>
           </div>
           <div className="ml-4 flex items-center">
-            <button className="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-              <span className="sr-only">View notifications</span>
-              <BellIcon className="h-6 w-6" aria-hidden="true" />
-            </button>
-            <div className="ml-3 relative">
-              <button onClick={toggleDropdown} className="max-w-xs bg-gray-200 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                <span className="sr-only">Open user menu</span>
-                <div className="h-8 w-8 rounded-full flex items-center justify-center bg-gray-300 text-gray-600">
+            <Button variant="ghost" size="icon" className="mr-3">
+              <BellIcon className="h-6 w-6" />
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 rounded-full bg-gray-200">
+                  <span className="sr-only">Open user menu</span>
                   JD
-                </div>
-              </button>
-              {dropdownOpen && (
-                <div className="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5">
-                  <div className="flex items-center px-4 py-2 border-b border-gray-100">
-                    <div className="h-8 w-8 rounded-full flex items-center justify-center bg-gray-300 text-gray-600">
-                      JD
-                    </div>
-                    <div className="ml-3">
-                      <p className="text-sm font-medium text-gray-900">John Doe</p>
-                      <p className="text-sm text-gray-500">john.doe@example.com</p>
-                    </div>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end">
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">John Doe</p>
+                    <p className="text-xs leading-none text-muted-foreground">
+                      john.doe@example.com
+                    </p>
                   </div>
-                  {dropdownItems.map((item, index) => (
-                    <Link key={index} href={item.href} className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                      <item.icon className="h-5 w-5 mr-3 text-gray-400" aria-hidden="true" />
-                      {item.label}
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                {dropdownItems.map((item, index) => (
+                  <DropdownMenuItem key={index} asChild>
+                    <Link href={item.href} className="flex items-center">
+                      <item.icon className="mr-2 h-4 w-4" />
+                      <span>{item.label}</span>
                     </Link>
-                  ))}
-                </div>
-              )}
-            </div>
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>
@@ -120,10 +115,14 @@ const Header = ({ toggleSidebar }) => {
           <Link href="/" className="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200">
             Home
           </Link>
-          <button onClick={toggleQrMenu} className="w-full px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200 text-left">
+          <Button 
+            variant="ghost" 
+            onClick={toggleQrMenu} 
+            className="w-full justify-start px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+          >
             QR Codes
-            <ChevronDownIcon className="h-5 w-5 inline-block ml-2" />
-          </button>
+            <ChevronDownIcon className="h-5 w-5 ml-2" />
+          </Button>
           {qrMenuOpen && (
             <div className="ml-6">
               <Link href="/qr-codes/my-codes" className="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200">
