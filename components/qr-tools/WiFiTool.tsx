@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface WiFiToolProps {
   setQRCodeData: (data: string) => void
@@ -15,40 +19,38 @@ export default function WiFiTool({ setQRCodeData }: WiFiToolProps) {
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">1. Setup</h2>
-      <p className="text-gray-600 mb-4">Create a QR code for WiFi access</p>
-      <div className="space-y-4">
-        <input
+    <Card>
+      <CardHeader>
+        <CardTitle>1. Setup</CardTitle>
+        <CardDescription>Create a QR code for WiFi access</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Input
           type="text"
           value={ssid}
           onChange={(e) => setSSID(e.target.value)}
           placeholder="Network Name (SSID)"
-          className="w-full border border-gray-300 rounded-md shadow-sm p-2"
         />
-        <input
+        <Input
           type="password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           placeholder="Password"
-          className="w-full border border-gray-300 rounded-md shadow-sm p-2"
         />
-        <select
-          value={encryption}
-          onChange={(e) => setEncryption(e.target.value)}
-          className="w-full border border-gray-300 rounded-md shadow-sm p-2"
-        >
-          <option value="WPA">WPA/WPA2</option>
-          <option value="WEP">WEP</option>
-          <option value="nopass">No Encryption</option>
-        </select>
-        <button 
-          onClick={handleGenerate}
-          className="bg-blue-500 text-white px-4 py-2 rounded w-full"
-        >
+        <Select value={encryption} onValueChange={setEncryption}>
+          <SelectTrigger>
+            <SelectValue placeholder="Select encryption" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="WPA">WPA/WPA2</SelectItem>
+            <SelectItem value="WEP">WEP</SelectItem>
+            <SelectItem value="nopass">No Encryption</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button onClick={handleGenerate} className="w-full">
           Generate QR Code
-        </button>
-      </div>
-    </div>
+        </Button>
+      </CardContent>
+    </Card>
   )
 }

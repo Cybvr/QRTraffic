@@ -1,4 +1,8 @@
+// components/qr-tools/BusinessTool.tsx
 import { useState } from 'react'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
 
 interface BusinessToolProps {
   setQRCodeData: (data: string) => void
@@ -16,45 +20,40 @@ export default function BusinessTool({ setQRCodeData }: BusinessToolProps) {
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">1. Setup</h2>
-      <p className="text-gray-600 mb-4">Create a QR code for your business information</p>
-      <div className="space-y-4">
-        <input
+    <Card>
+      <CardHeader>
+        <CardTitle>1. Setup</CardTitle>
+        <CardDescription>Create a QR code for your business information</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Input
           type="text"
           value={businessName}
           onChange={(e) => setBusinessName(e.target.value)}
           placeholder="Business Name"
-          className="w-full border border-gray-300 rounded-md shadow-sm p-2"
         />
-        <input
+        <Input
           type="text"
           value={address}
           onChange={(e) => setAddress(e.target.value)}
           placeholder="Address"
-          className="w-full border border-gray-300 rounded-md shadow-sm p-2"
         />
-        <input
+        <Input
           type="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
           placeholder="Phone"
-          className="w-full border border-gray-300 rounded-md shadow-sm p-2"
         />
-        <input
+        <Input
           type="url"
           value={website}
           onChange={(e) => setWebsite(e.target.value)}
           placeholder="Website"
-          className="w-full border border-gray-300 rounded-md shadow-sm p-2"
         />
-        <button 
-          onClick={handleGenerate}
-          className="bg-blue-500 text-white px-4 py-2 rounded w-full"
-        >
+        <Button onClick={handleGenerate} className="w-full">
           Generate QR Code
-        </button>
-      </div>
-    </div>
+        </Button>
+      </CardContent>
+    </Card>
   )
 }

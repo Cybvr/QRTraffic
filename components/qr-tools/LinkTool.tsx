@@ -1,4 +1,8 @@
 import { useState } from 'react'
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Label } from "@/components/ui/label"
 
 interface LinkToolProps {
   setQRCodeData: (data: string) => void
@@ -13,39 +17,36 @@ export default function LinkTool({ setQRCodeData }: LinkToolProps) {
   }
 
   return (
-    <div>
-      <h2 className="text-xl font-semibold mb-4">1. Setup</h2>
-      <p className="text-gray-600 mb-4">When scanned, redirects user to specified website URL or content link</p>
-      <div className="space-y-4">
-        <div>
-          <label htmlFor="title" className="block text-sm font-medium text-gray-700">Title</label>
-          <input
-            type="text"
+    <Card>
+      <CardHeader>
+        <CardTitle>1. Setup</CardTitle>
+        <CardDescription>When scanned, redirects user to specified website URL or content link</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="title">Title</Label>
+          <Input
             id="title"
+            type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
             placeholder="My QR Code"
           />
         </div>
-        <div>
-          <label htmlFor="url" className="block text-sm font-medium text-gray-700">Enter URL</label>
-          <input
-            type="url"
+        <div className="space-y-2">
+          <Label htmlFor="url">Enter URL</Label>
+          <Input
             id="url"
+            type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
             placeholder="http://qrtraffic.com"
           />
         </div>
-        <button 
-          onClick={handleGenerate}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
+        <Button onClick={handleGenerate} className="w-full">
           Generate QR Code
-        </button>
-      </div>
-    </div>
+        </Button>
+      </CardContent>
+    </Card>
   )
 }

@@ -1,5 +1,5 @@
 import React from 'react'
-import Image from 'next/image'
+import { Card, CardContent } from "@/components/ui/card"
 
 interface QRCodeDisplayProps {
   qrCode: string;
@@ -7,13 +7,14 @@ interface QRCodeDisplayProps {
 
 const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCode }) => {
   return (
-    <div className="mt-8">
-      <h2 className="text-xl font-bold mb-4">Your QR Code:</h2>
-      {/* For now, we'll just display the URL. In a real app, this would be an actual QR code image */}
-      <div className="border p-4 inline-block">
-        <p>{qrCode}</p>
-      </div>
-    </div>
+    <Card>
+      <CardContent className="p-6">
+        <h2 className="text-xl font-bold mb-4">Your QR Code:</h2>
+        <div className="border p-4 inline-block">
+          <p>{qrCode}</p>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
