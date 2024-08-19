@@ -1,4 +1,5 @@
 "use client"
+
 import { useState, useRef, useEffect } from 'react'
 import { LinkIcon, UserIcon, Square3Stack3DIcon, BuildingOfficeIcon, WifiIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
 import LinkTool from '@/components/qr-tools/LinkTool'
@@ -8,6 +9,13 @@ import FacebookTool from '@/components/qr-tools/FacebookTool'
 import BusinessTool from '@/components/qr-tools/BusinessTool'
 import WiFiTool from '@/components/qr-tools/WiFiTool'
 import QRCodeDisplay from '@/components/qr-tools/QRCodeDisplay'
+
+interface CustomizationType {
+  logo?: string;
+  color: string;
+  bgColor: string;
+  frame: string;
+}
 
 const tools = [
   { name: 'Link', icon: LinkIcon, component: LinkTool },
@@ -21,6 +29,11 @@ const tools = [
 export default function NewQRCode() {
   const [selectedTool, setSelectedTool] = useState<string | null>(null)
   const [qrCodeData, setQRCodeData] = useState<string>('')
+  const [customization, setCustomization] = useState<CustomizationType>({
+    color: '#000000',
+    bgColor: '#ffffff',
+    frame: 'square',
+  })
   const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
@@ -30,7 +43,6 @@ export default function NewQRCode() {
         scrollContainerRef.current.style.justifyContent = isScrollable ? 'flex-start' : 'space-between'
       }
     }
-
     handleResize()
     window.addEventListener('resize', handleResize)
     return () => window.removeEventListener('resize', handleResize)
@@ -49,7 +61,6 @@ export default function NewQRCode() {
     <div className="container mx-auto px-4 py-8 w-full">
       <h1 className="text-2xl font-bold mb-2">Create New QR Code</h1>
       <p className="text-gray-400 font-light mb-4">Select a tool to get started</p>
-
       <div className="mb-6 bg-white rounded-lg overflow-x-auto">
         <div 
           ref={scrollContainerRef}
@@ -72,7 +83,6 @@ export default function NewQRCode() {
           ))}
         </div>
       </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           {selectedTool ? (
@@ -85,7 +95,7 @@ export default function NewQRCode() {
           )}
         </div>
         <div className="bg-gray-100 p-6 rounded-lg">
-          <QRCodeDisplay qrCode={qrCodeData} />
+          <QRCodeDisplay qrCode={qrCodeData} customization={customization} />
         </div>
       </div>
     </div>

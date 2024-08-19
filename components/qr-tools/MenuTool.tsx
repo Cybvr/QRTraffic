@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
@@ -17,28 +17,30 @@ export default function MenuTool({ setQRCodeData }: MenuToolProps) {
   }
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>1. Setup</CardTitle>
-        <CardDescription>Create a QR code for your restaurant menu</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <Input
-          type="text"
-          value={restaurantName}
-          onChange={(e) => setRestaurantName(e.target.value)}
-          placeholder="Restaurant Name"
-        />
-        <Input
-          type="url"
-          value={menuUrl}
-          onChange={(e) => setMenuUrl(e.target.value)}
-          placeholder="Menu URL"
-        />
-        <Button onClick={handleGenerate} className="w-full">
-          Generate QR Code
-        </Button>
-      </CardContent>
-    </Card>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>1. Setup</CardTitle>
+          <CardDescription>Create a QR code for your restaurant menu</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <Input
+            type="text"
+            value={restaurantName}
+            onChange={(e) => setRestaurantName(e.target.value)}
+            placeholder="Restaurant Name"
+          />
+          <Input
+            type="url"
+            value={menuUrl}
+            onChange={(e) => setMenuUrl(e.target.value)}
+            placeholder="Menu URL"
+          />
+          <Button onClick={handleGenerate} className="w-full">
+            Generate QR Code
+          </Button>
+        </CardContent>
+      </Card>
+    </div>
   )
 }

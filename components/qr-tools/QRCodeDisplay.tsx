@@ -4,13 +4,14 @@ import QRCode from 'qrcode.react'
 
 interface QRCodeDisplayProps {
   qrCode: string;
+  customization: any; // Add this line
 }
 
 const QRCodeDisplay: React.FC<QRCodeDisplayProps> = ({ qrCode }) => {
   return (
     <Card>
       <CardContent className="p-6">
-        <h2 className="text-xl font-bold mb-4">Yourz QR Code:</h2>
+        <h2 className="text-xl font-bold mb-4">Your QR Code:</h2>
         <div className="border p-4 inline-block">
           {qrCode ? (
             <QRCode value={qrCode} size={200} />

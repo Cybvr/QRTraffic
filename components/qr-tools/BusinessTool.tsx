@@ -2,9 +2,6 @@ import React, { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import QRCodeCustomizer from './../QRCodeCustomizer'
-
 
 interface BusinessToolProps {
   setQRCodeData: (data: string) => void
@@ -61,19 +58,7 @@ export default function BusinessTool({ setQRCodeData }: BusinessToolProps) {
             </Button>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>2. Customize</CardTitle>
-            <CardDescription>When scanned, redirects user to specified website URL or content link</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <QRCodeCustomizer qrCodeData={qrCodeData} />
-          </CardContent>
-        </Card>
       </div>
-
-      
     </div>
   )
 }

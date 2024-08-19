@@ -1,4 +1,3 @@
-// app/analytics/page.tsx
 'use client'
 
 import React, { useState, useEffect } from 'react';
@@ -11,9 +10,31 @@ import TopPerformingQRCodes from "@/components/analytics/TopPerformingQRCodes";
 import TopPerformingCampaignTypes from "@/components/analytics/TopPerformingCampaignTypes";
 import DeviceSection from "@/components/analytics/DeviceSection";
 import CitySection from "@/components/analytics/CitySection";
-import { DataPoint } from '@/types/DataPoint';
 
-const mockData = {
+// Define the DataPoint type if it's not already defined elsewhere
+interface DataPoint {
+  date: string;
+  scans?: number;
+  users?: number;
+}
+
+interface CityData {
+  city: string;
+  country: string;
+  scans: number;
+  percentage: string;
+}
+
+interface MockData {
+  scansData: DataPoint[];
+  usersData: DataPoint[];
+  deviceData: { name: string; value: number }[];
+  campaignTypes: { name: string; value: number }[];
+  topQRCodes: { name: string; value: number }[];
+  cityData: CityData[];
+}
+
+const mockData: MockData = {
   scansData: [
     { date: '2024-07-22', scans: 30 },
     { date: '2024-07-23', scans: 40 },
@@ -22,7 +43,7 @@ const mockData = {
     { date: '2024-07-26', scans: 25 },
     { date: '2024-07-27', scans: 40 },
     { date: '2024-07-28', scans: 50 },
-  ] as DataPoint[],
+  ],
   usersData: [
     { date: '2024-07-22', users: 30 },
     { date: '2024-07-23', users: 35 },
@@ -31,7 +52,7 @@ const mockData = {
     { date: '2024-07-26', users: 25 },
     { date: '2024-07-27', users: 35 },
     { date: '2024-07-28', users: 45 },
-  ] as DataPoint[],
+  ],
   deviceData: [
     { name: 'iPhone', value: 20 },
     { name: 'Mac', value: 4 },
@@ -61,10 +82,9 @@ const mockData = {
   ],
 };
 
-
 const AnalyticsDashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState(mockData);
+  const [data, setData] = useState<MockData>(mockData);
   const [timeframe, setTimeframe] = useState('7days');
 
   useEffect(() => {

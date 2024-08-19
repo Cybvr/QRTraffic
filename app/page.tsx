@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { ArrowUpIcon } from '@heroicons/react/24/solid'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
+
 export default function Dashboard() {
   return (
     <div className="space-y-6">

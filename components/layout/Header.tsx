@@ -1,10 +1,9 @@
-// components/layout/Header.tsx
 "use client"
 
 import { useState, useCallback, useEffect, useRef } from 'react'
 import Link from 'next/link'
 import { 
-  BellIcon, MagnifyingGlassIcon, Bars3Icon, ChevronDownIcon, 
+  MagnifyingGlassIcon, Bars3Icon, ChevronDownIcon, 
   UserIcon, Cog6ToothIcon, BuildingOfficeIcon, UsersIcon, 
   UserPlusIcon, QuestionMarkCircleIcon, ArrowRightOnRectangleIcon 
 } from '@heroicons/react/24/outline'
@@ -75,9 +74,6 @@ const Header = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
             </div>
           </div>
           <div className="ml-4 flex items-center">
-            <Button variant="ghost" size="icon" className="mr-3">
-              <BellIcon className="h-6 w-6" />
-            </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 rounded-full bg-gray-200">
