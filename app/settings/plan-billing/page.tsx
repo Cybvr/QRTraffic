@@ -160,7 +160,8 @@ export default function PlanBilling() {
                   <TableCell>{invoice.date}</TableCell>
                   <TableCell>{invoice.amount}</TableCell>
                   <TableCell>
-                    <Badge variant={invoice.status === 'Paid' ? 'success' : 'warning'}>
+                      <Badge variant={invoice.status === 'Paid' ? 'default' : 'secondary'}>
+
                       {invoice.status}
                     </Badge>
                   </TableCell>
