@@ -3,14 +3,36 @@ import { Dialog, Transition } from '@headlessui/react'
 import { XMarkIcon } from '@heroicons/react/24/outline'
 import Image from 'next/image'
 import Link from 'next/link'
-import { HomeIcon, QrCodeIcon, ChartBarIcon, QuestionMarkCircleIcon, Cog6ToothIcon } from '@heroicons/react/24/outline'
+import { HomeIcon, QrCodeIcon, ChartBarIcon, QuestionMarkCircleIcon, Cog6ToothIcon, PlusIcon } from '@heroicons/react/24/outline'
 
 interface MobileMenuProps {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
 }
 
+interface MobileMenuLinkProps {
+  href: string;
+  icon: React.ElementType;
+  text: string;
+  onClick: () => void;
+}
+
+const MobileMenuLink: React.FC<MobileMenuLinkProps> = ({ href, icon: Icon, text, onClick }) => (
+  <Link
+    href={href}
+    className="flex items-center px-4 py-3 text-base font-medium text-gray-700 hover:bg-gray-200 transition-colors duration-200"
+    onClick={onClick}
+  >
+    <Icon className="h-5 w-5 mr-3 text-gray-500" aria-hidden="true" />
+    {text}
+  </Link>
+)
+
 const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
+  const closeMenu = () => {
+    setIsOpen(false);
+  };
+
   return (
     <Transition.Root show={isOpen} as={Fragment}>
       <Dialog as="div" className="fixed inset-0 flex z-40 md:hidden" onClose={setIsOpen}>
@@ -60,11 +82,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
                 <Image src="/images/logo.png" alt="QRTraffic Logo" width={32} height={32} />
               </div>
               <nav className="mt-5 px-2 space-y-1">
-                <MobileMenuLink href="/" icon={HomeIcon} text="Home" />
-                <MobileMenuLink href="/qr-codes" icon={QrCodeIcon} text="QR Codes" />
-                <MobileMenuLink href="/analytics" icon={ChartBarIcon} text="Analytics" />
-                <MobileMenuLink href="/support" icon={QuestionMarkCircleIcon} text="Support" />
-                <MobileMenuLink href="/settings" icon={Cog6ToothIcon} text="Settings" />
+                <MobileMenuLink href="/" icon={HomeIcon} text="Home" onClick={closeMenu} />
+                <MobileMenuLink href="/qr-codes" icon={QrCodeIcon} text="My QR Codes" onClick={closeMenu} />
+                <MobileMenuLink href="/qr-codes/new" icon={PlusIcon} text="New QR Code" onClick={closeMenu} />
+                <MobileMenuLink href="/analytics" icon={ChartBarIcon} text="Analytics" onClick={closeMenu} />
+                <MobileMenuLink href="/support" icon={QuestionMarkCircleIcon} text="Support" onClick={closeMenu} />
+                <MobileMenuLink href="/settings/account" icon={Cog6ToothIcon} text="Settings" onClick={closeMenu} />
               </nav>
             </div>
           </div>
@@ -74,21 +97,5 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
     </Transition.Root>
   )
 }
-
-interface MobileMenuLinkProps {
-  href: string;
-  icon: React.ElementType;
-  text: string;
-}
-
-const MobileMenuLink: React.FC<MobileMenuLinkProps> = ({ href, icon: Icon, text }) => (
-  <Link
-    href={href}
-    className="flex items-center px-2 py-2 text-base font-medium rounded-md text-gray-600 hover:bg-gray-50 hover:text-gray-900"
-  >
-    <Icon className="mr-4 flex-shrink-0 h-6 w-6 text-gray-400" aria-hidden="true" />
-    {text}
-  </Link>
-)
 
 export default MobileMenu

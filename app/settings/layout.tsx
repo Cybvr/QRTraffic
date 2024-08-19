@@ -18,24 +18,22 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
 
   return (
     <div className="space-y-6">
-      <div className="border-b">
-        <div className="container mx-auto">
-          <Tabs value={currentTab} onValueChange={(value) => router.push(value)}>
-            <TabsList className="h-16">
-              {settingsLinks.map((link) => (
-                <TabsTrigger 
-                  key={link.href} 
-                  value={link.href}
-                  className="text-sm font-medium"
-                >
-                  {link.label}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </div>
+      <div className="border-b overflow-x-auto">
+        <Tabs value={currentTab} onValueChange={(value) => router.push(value)} className="w-full">
+          <TabsList className="inline-flex h-10 items-center justify-start p-0 w-max">
+            {settingsLinks.map((link) => (
+              <TabsTrigger 
+                key={link.href} 
+                value={link.href}
+                className="px-4 py-2 text-sm font-medium whitespace-nowrap data-[state=active]:border-b-2 data-[state=active]:border-primary"
+              >
+                {link.label}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
       </div>
-      <div className="container mx-auto py-5 px-4 sm:py-6 sm:px-2">
+      <div className="px-4">
         {children}
       </div>
     </div>

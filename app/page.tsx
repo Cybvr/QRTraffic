@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { ArrowUpIcon } from '@heroicons/react/24/solid'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-
+import RecentQRCodes from '@/components/common/RecentQRCodes'
 
 export default function Dashboard() {
   return (
@@ -52,6 +52,8 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
+
+      <RecentQRCodes />
     </div>
   )
 }
