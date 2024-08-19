@@ -1,24 +1,105 @@
-Welcome to the NextJS base template bootstrapped using the `create-next-app`. This template supports TypeScript, but you can use normal JavaScript as well.
+# QRTraffic
+
+QRTraffic is an all-in-one platform for QR code generation, management, and analytics. Our mission is to help businesses bridge the gap between physical and digital marketing through innovative QR code solutions.
+
+## Features
+
+- Multiple QR code types (URL, vCard, WiFi, Business, Facebook, Menu, etc.)
+- Dynamic QR codes with editable content
+- Advanced analytics and tracking
+- Customization options for QR code design
+- Team collaboration tools
+- API access for integration
 
 ## Getting Started
 
-Hit the run button to start the development server.
+### Prerequisites
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- Node.js (v14 or later)
+- npm or yarn
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on `/api/hello`. This endpoint can be edited in `pages/api/hello.ts`.
+### Installation
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+1. Clone the repository:
+    
+    ```
+    git clone <https://github.com/your-username/qrtraffic.git>
+    
+    ```
+    
+2. Navigate to the project directory:
+    
+    ```
+    cd qrtraffic
+    
+    ```
+    
+3. Install dependencies:
+    
+    ```
+    npm install
+    
+    ```
+    
+4. Set up environment variables:
+    - Copy `.env.example` to `.env`
+    - Fill in the required values
+5. Run the development server:
+    
+    ```
+    npm run dev
+    
+    ```
+    
+6. Open [http://localhost:3000](http://localhost:3000/) in your browser to see the application.
 
-## Learn More
+## Project Structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+├── analytics/
+├── api/
+├── auth/
+├── dashboard/
+├── qr-codes/
+├── settings/
+├── support/
+components/
+├── common/
+├── layout/
+├── qr-tools/
+hooks/
+services/
+styles/
+tests/
+types/
+utils/
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
 
-## Productionizing your Next App
+## Technologies Used
 
-To make your next App run smoothly in production make sure to deploy your project with [Repl Deployments](https://docs.replit.com/hosting/deployments/about-deployments)!
+- Next.js
+- React
+- TypeScript
+- Tailwind CSS
+- Firebase Authentication
+- Supabase
 
-You can also produce a production build by running `npm run build` and [changing the run command](https://docs.replit.com/programming-ide/configuring-repl#run) to `npm run start`.
+## Contributing
+
+We welcome contributions to QRTraffic! Please read our [CONTRIBUTING.md](https://www.notion.so/CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE.md](https://www.notion.so/LICENSE.md) file for details.
+
+## Support
+
+If you need help or have any questions, please contact our support team at [support@qrtraffic.com](mailto:support@qrtraffic.com) or visit our [Help Center](https://qrtraffic.com/help).
+
+## Acknowledgments
+
+- [qrcode.react](https://github.com/zpao/qrcode.react) for QR code generation
+- [Heroicons](https://heroicons.com/) for icons
+- All our contributors and users who make QRTraffic possible!

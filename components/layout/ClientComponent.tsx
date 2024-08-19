@@ -20,7 +20,7 @@ const ClientComponent = ({ children }: { children: React.ReactNode }) => {
       {!isAuthPage && <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />}
       <div className="flex flex-col flex-1 overflow-hidden">
         {!isAuthPage && <Header toggleSidebar={toggleSidebar} />}
-        <main className="flex-1 overflow-auto p-6 bg-white">
+        <main className="flex-1 overflow-auto  sm:p-2 md:p-2 lg:p-12 xl:p-12 bg-white">
           {children}
         </main>
       </div>
