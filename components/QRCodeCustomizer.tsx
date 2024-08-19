@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
-import { Image, PaintBucket, Frame } from "lucide-react"
+import { Image as ImageIcon, PaintBucket, Frame } from "lucide-react"
 
 export type CustomizationType = {
   logo?: string;
@@ -44,7 +44,7 @@ export default function QRCodeCustomizer({
   return (
     <Tabs defaultValue="logo">
       <TabsList className="grid w-full grid-cols-3">
-        <TabsTrigger value="logo"><Image className="mr-2" />Logo</TabsTrigger>
+        <TabsTrigger value="logo"><ImageIcon className="mr-2" />Logo</TabsTrigger>
         <TabsTrigger value="colors"><PaintBucket className="mr-2" />Colors</TabsTrigger>
         <TabsTrigger value="frame"><Frame className="mr-2" />Frame</TabsTrigger>
       </TabsList>

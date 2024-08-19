@@ -1,22 +1,25 @@
-// components/layout/ClientComponent.tsx
-"use client"
+'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import Sidebar from '@/components/layout/Sidebar'
 import Header from '@/components/layout/Header'
 
 const ClientComponent = ({ children }: { children: React.ReactNode }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const pathname = usePathname();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
   }
 
+  const isAuthPage = pathname === '/auth/login' || pathname === '/auth/register';
+
   return (
     <div className="flex h-screen overflow-hidden">
-      <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+      {!isAuthPage && <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />}
       <div className="flex flex-col flex-1 overflow-hidden">
-        <Header toggleSidebar={toggleSidebar} />
+        {!isAuthPage && <Header toggleSidebar={toggleSidebar} />}
         <main className="flex-1 overflow-auto p-6 bg-white">
           {children}
         </main>
