@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from "next/link"
+import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -30,6 +31,7 @@ export default function Register() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
+        <Image src="/images/logo.svg" alt="Logo" width={100} height={100} className="mx-auto mb-4" />
         <CardTitle className="text-xl">Sign Up</CardTitle>
         <CardDescription>
           Enter your information to create an account

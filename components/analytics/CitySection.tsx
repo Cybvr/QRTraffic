@@ -1,33 +1,33 @@
-// components/analytics/DeviceSection.tsx
+// components/analytics/CitySection.tsx
 import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 
-interface DeviceData {
+interface CityData {
   name: string;
   value: number;
 }
 
-interface DeviceSectionProps {
-  deviceData: DeviceData[];
+interface CitySectionProps {
+  cityData: CityData[];
 }
 
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8'];
 
-const DeviceSection: React.FC<DeviceSectionProps> = ({ deviceData }) => {
-  const total = deviceData.reduce((sum, device) => sum + device.value, 0);
+const CitySection: React.FC<CitySectionProps> = ({ cityData }) => {
+  const total = cityData.reduce((sum, city) => sum + city.value, 0);
 
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle>Device Distribution</CardTitle>
+        <CardTitle>City Distribution</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="h-[300px]">
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={deviceData}
+                data={cityData}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
@@ -36,7 +36,7 @@ const DeviceSection: React.FC<DeviceSectionProps> = ({ deviceData }) => {
                 paddingAngle={5}
                 dataKey="value"
               >
-                {deviceData.map((entry, index) => (
+                {cityData.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
@@ -48,16 +48,16 @@ const DeviceSection: React.FC<DeviceSectionProps> = ({ deviceData }) => {
           </ResponsiveContainer>
         </div>
         <div className="mt-4 space-y-2">
-          {deviceData.map((device, index) => (
-            <div key={device.name} className="flex items-center justify-between">
+          {cityData.map((city, index) => (
+            <div key={city.name} className="flex items-center justify-between">
               <div className="flex items-center">
                 <div
                   className="w-3 h-3 rounded-full mr-2"
                   style={{ backgroundColor: COLORS[index % COLORS.length] }}
                 />
-                <span>{device.name}</span>
+                <span>{city.name}</span>
               </div>
-              <span>{((device.value / total) * 100).toFixed(2)}%</span>
+              <span>{((city.value / total) * 100).toFixed(2)}%</span>
             </div>
           ))}
         </div>
@@ -66,4 +66,4 @@ const DeviceSection: React.FC<DeviceSectionProps> = ({ deviceData }) => {
   );
 };
 
-export default DeviceSection;
+export default CitySection;

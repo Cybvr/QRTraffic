@@ -2,6 +2,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from "next/link"
+import Image from 'next/image'
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -28,6 +29,7 @@ export default function Login() {
   return (
     <Card className="mx-auto max-w-sm">
       <CardHeader>
+        <Image src="/images/logo.svg" alt="Logo" width={100} height={100} className="mx-auto mb-4" />
         <CardTitle className="text-2xl">Login</CardTitle>
         <CardDescription>
           Enter your email below to login to your account
