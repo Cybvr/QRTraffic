@@ -84,7 +84,6 @@ utils/
 - TypeScript
 - Tailwind CSS
 - Firebase Authentication
-- Supabase
 
 ## Contributing
 
