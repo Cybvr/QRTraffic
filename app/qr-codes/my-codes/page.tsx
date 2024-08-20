@@ -192,92 +192,88 @@ export default function MyCodes() {
         </div>
       </div>
 
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50px]">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="w-[50px]">
+              <Checkbox
+                checked={selectedCodes.length === filteredQRCodes.length}
+                onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
+              />
+            </TableHead>
+            <TableHead>QR code name</TableHead>
+            <TableHead>QR code type</TableHead>
+            <TableHead>Scans</TableHead>
+            <TableHead>Status</TableHead>
+            <TableHead>Creation date</TableHead>
+            <TableHead className="text-right">Actions</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {filteredQRCodes.map((qrCode) => (
+            <TableRow 
+              key={qrCode.id} 
+              className="cursor-pointer hover:bg-gray-50"
+              onClick={() => handleEditCode(qrCode.id)}
+            >
+              <TableCell onClick={(e) => e.stopPropagation()}>
                 <Checkbox
-                  checked={selectedCodes.length === filteredQRCodes.length}
-                  onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
+                  checked={selectedCodes.includes(qrCode.id)}
+                  onCheckedChange={(checked) => handleSelectCode(qrCode.id, checked as boolean)}
                 />
-              </TableHead>
-              <TableHead>QR code name</TableHead>
-              <TableHead>QR code type</TableHead>
-              <TableHead>Scans</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead>Creation date</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredQRCodes.map((qrCode) => (
-              <TableRow 
-                key={qrCode.id} 
-                className="cursor-pointer hover:bg-gray-50"
-                onClick={() => handleEditCode(qrCode.id)}
-              >
-                <TableCell onClick={(e) => e.stopPropagation()}>
-                  <Checkbox
-                    checked={selectedCodes.includes(qrCode.id)}
-                    onCheckedChange={(checked) => handleSelectCode(qrCode.id, checked as boolean)}
+              </TableCell>
+              <TableCell className="font-medium">
+                <div className="flex items-center space-x-2">
+                  <Image 
+                    src={qrCode.qrCodeImage} 
+                    alt="QR Code" 
+                    width={40} 
+                    height={40}
+                    className="w-10 h-10"
                   />
-                </TableCell>
-                <TableCell className="font-medium">
-                  <div className="flex items-center space-x-2">
-                    <Image 
-                      src={qrCode.qrCodeImage} 
-                      alt="QR Code" 
-                      width={40} 
-                      height={40}
-                      className="w-10 h-10"
-                    />
-                    <span>{qrCode.name}</span>
-                  </div>
-                </TableCell>
-                <TableCell>{qrCode.type}</TableCell>
-                <TableCell>{qrCode.scans}</TableCell>
-                <TableCell>
-                  <Badge variant={qrCode.status === 'Active' ? 'default' : 'secondary'}>
-                    {qrCode.status}
-                  </Badge>
-                </TableCell>
-                <TableCell>{qrCode.creationDate}</TableCell>
-                <TableCell className="text-right">
-                  <div onClick={(e) => e.stopPropagation()} className="flex justify-end">
-                    <Button variant="outline" size="sm" className="mr-2">
-                      <Share className="h-4 w-4" />
-                    </Button>
-                    <Button variant="outline" size="sm" className="mr-2">
-                      <Download className="h-4 w-4" />
-                    </Button>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="outline" size="sm">
-                          <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent>
-                        <DropdownMenuItem onClick={() => handleEditCode(qrCode.id)}>
-                          <Edit className="mr-2 h-4 w-4" /> Edit
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleViewAnalytics(qrCode.id)}>
-                          <Eye className="mr-2 h-4 w-4" /> View Analytics
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleDeleteCode(qrCode.id)}>
-                          <Trash2 className="mr-2 h-4 w-4" /> Delete
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      )}
+                  <span>{qrCode.name}</span>
+                </div>
+              </TableCell>
+              <TableCell>{qrCode.type}</TableCell>
+              <TableCell>{qrCode.scans}</TableCell>
+              <TableCell>
+                <Badge variant={qrCode.status === 'Active' ? 'default' : 'secondary'}>
+                  {qrCode.status}
+                </Badge>
+              </TableCell>
+              <TableCell>{qrCode.creationDate}</TableCell>
+              <TableCell className="text-right">
+                <div onClick={(e) => e.stopPropagation()} className="flex justify-end">
+                  <Button variant="outline" size="sm" className="mr-2">
+                    <Share className="h-4 w-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" className="mr-2">
+                    <Download className="h-4 w-4" />
+                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="outline" size="sm">
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
+                      <DropdownMenuItem onClick={() => handleEditCode(qrCode.id)}>
+                        <Edit className="mr-2 h-4 w-4" /> Edit
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleViewAnalytics(qrCode.id)}>
+                        <Eye className="mr-2 h-4 w-4" /> View Analytics
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => handleDeleteCode(qrCode.id)}>
+                        <Trash2 className="mr-2 h-4 w-4" /> Delete
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
     </div>
   )
 }
