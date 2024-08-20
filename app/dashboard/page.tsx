@@ -1,19 +1,15 @@
 'use client'
-
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowUpIcon } from '@heroicons/react/24/solid'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import RecentQRCodes from '@/components/common/RecentQRCodes'
-import { supabase } from '@/lib/supabase'
+import { auth } from '@/lib/firebase'
 
 type User = {
-  id: string;
   email: string;
-  user_metadata: {
-    full_name?: string;
-  };
+  displayName?: string;
 };
 
 export default function Dashboard() {
@@ -22,16 +18,19 @@ export default function Dashboard() {
   const router = useRouter()
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user) {
-        setUser(user as User)
+    const checkAuth = async () => {
+      const currentUser = auth.currentUser
+      if (currentUser) {
+        setUser({
+          email: currentUser.email!,
+          displayName: currentUser.displayName || undefined
+        })
       } else {
         router.push('/auth/login')
       }
       setLoading(false)
     }
-    getUser()
+    checkAuth()
   }, [router])
 
   if (loading) {
@@ -39,10 +38,10 @@ export default function Dashboard() {
   }
 
   if (!user) {
-    return null // This should never render because of the redirect in getUser
+    return null
   }
 
-  const firstName = user.user_metadata?.full_name?.split(' ')[0] || user.email
+  const firstName = user.displayName?.split(' ')[0] || user.email?.split('@')[0]
 
   return (
     <div className="space-y-6">

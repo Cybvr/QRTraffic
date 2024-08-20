@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from "next/link"
 import Image from 'next/image'
@@ -25,6 +25,16 @@ export default function Register() {
   const [message, setMessage] = useState('')
   const router = useRouter()
 
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      if (user) {
+        router.push('/dashboard')
+      }
+    })
+
+    return () => unsubscribe()
+  }, [router])
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -35,8 +45,7 @@ export default function Register() {
       await updateProfile(userCredential.user, {
         displayName: `${firstName} ${lastName}`
       })
-      setMessage('Registration successful. You can now log in.')
-      setTimeout(() => router.push('/auth/login'), 3000)
+      setMessage('Registration successful. Redirecting to dashboard...')
     } catch (error) {
       setError(error.message)
     }
@@ -46,7 +55,6 @@ export default function Register() {
     const provider = new GoogleAuthProvider();
     try {
       await signInWithPopup(auth, provider)
-      router.push('/dashboard')
     } catch (error) {
       setError(error.message)
     }
