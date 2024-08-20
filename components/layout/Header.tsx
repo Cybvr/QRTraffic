@@ -74,6 +74,14 @@ const Header = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
             </div>
           </div>
           <div className="ml-4 flex items-center">
+            {/* Notification */}
+            <div className="mr-4 text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded-full">
+              3/20 Codes
+              <Link href="/pricing" className="text-blue-600 hover:underline ml-1">
+                (Upgrade)
+              </Link>
+            </div>
+            {/* Avatar Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="h-8 w-8 rounded-full bg-gray-200">

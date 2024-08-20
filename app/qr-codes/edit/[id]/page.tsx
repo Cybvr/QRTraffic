@@ -13,6 +13,9 @@ import MenuTool from '@/components/qr-tools/MenuTool'
 import FacebookTool from '@/components/qr-tools/FacebookTool'
 import BusinessTool from '@/components/qr-tools/BusinessTool'
 import WiFiTool from '@/components/qr-tools/WiFiTool'
+import QRCodeCustomizer from '@/components/qr-tools/QRCodeCustomizer'
+import { useAuth } from '@/context/AuthContext'
+import { getQRCode, updateQRCode } from '@/services/qrCodeService'
 
 interface CustomizationType {
   logo?: string;
@@ -43,34 +46,18 @@ const tools: Record<string, React.ComponentType<ToolProps>> = {
   WiFi: WiFiTool,
 }
 
-// Mock function to fetch QR code data
-const fetchQRCodeData = async (id: string): Promise<QRCodeDetails> => {
-  // Simulating API call
-  await new Promise(resolve => setTimeout(resolve, 1000))
-  return {
-    id,
-    name: 'My Food Website',
-    type: 'Link',
-    data: { url: 'https://example.com' },
-    customization: {
-      logo: 'path/to/logo.png',
-      color: '#4F46E5',
-      bgColor: '#ffffff',
-      frame: 'rounded'
-    }
-  }
-}
-
 export default function EditQRCode({ params }: { params: { id: string } }) {
   const router = useRouter()
+  const { user } = useAuth()
   const [qrCodeData, setQRCodeData] = useState<string>('')
   const [qrCodeDetails, setQRCodeDetails] = useState<QRCodeDetails | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const loadQRCodeData = async () => {
+      if (!user) return
       try {
-        const data = await fetchQRCodeData(params.id)
+        const data = await getQRCode(params.id)
         setQRCodeDetails(data)
         setQRCodeData(JSON.stringify(data.data))
       } catch (error) {
@@ -81,16 +68,28 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
       }
     }
     loadQRCodeData()
-  }, [params.id])
+  }, [params.id, user])
 
   const handleSave = async () => {
+    if (!user || !qrCodeDetails) return
     try {
-      // Simulating save operation
-      await new Promise(resolve => setTimeout(resolve, 1000))
+      await updateQRCode(qrCodeDetails.id, {
+        ...qrCodeDetails,
+        data: JSON.parse(qrCodeData)
+      })
       router.push('/qr-codes/my-codes')
     } catch (error) {
       console.error('Error saving QR code:', error)
       // Handle error (e.g., show error message to user)
+    }
+  }
+
+  const handleCustomizationChange = (newCustomization: CustomizationType) => {
+    if (qrCodeDetails) {
+      setQRCodeDetails({
+        ...qrCodeDetails,
+        customization: newCustomization
+      })
     }
   }
 
@@ -152,7 +151,10 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
               <CardTitle>2. Customize</CardTitle>
             </CardHeader>
             <CardContent>
-              
+              <QRCodeCustomizer
+                customization={qrCodeDetails.customization}
+                onCustomizationChange={handleCustomizationChange}
+              />
             </CardContent>
           </Card>
         </div>

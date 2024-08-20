@@ -1,11 +1,12 @@
-// app/qr-codes/my-codes/page.tsx
+// File: app/qr-codes/my-codes/page.tsx
+
 'use client'
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
-import { Plus, Share, Download, MoreHorizontal, Eye, Trash2, Edit } from 'lucide-react'
+import { Plus, Share, Download, MoreHorizontal, Eye, Trash2, Edit, Folder } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -17,6 +18,9 @@ import {
   DropdownMenuItem, 
   DropdownMenuTrigger 
 } from "@/components/ui/dropdown-menu"
+import { useAuth } from '@/context/AuthContext'
+import { getUserQRCodes, deleteQRCode, getUserFolders } from '@/services/qrCodeService'
+import { toast } from '@/components/ui/use-toast'
 
 interface QRCodeData {
   id: string
@@ -28,32 +32,41 @@ interface QRCodeData {
   qrCodeImage: string
 }
 
-// Mock data for demo purposes
-const mockQRCodes: QRCodeData[] = [
-  { id: '1', name: 'VisualHQ', type: 'Website URL', scans: 150, status: 'Active', creationDate: 'Aug 07, 2024', qrCodeImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==' },
-  { id: '2', name: 'CoffeeShop Menu', type: 'Menu', scans: 75, status: 'Active', creationDate: 'Sep 15, 2024', qrCodeImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==' },
-  { id: '3', name: 'TechConf 2025', type: 'vCard', scans: 200, status: 'Inactive', creationDate: 'Oct 01, 2024', qrCodeImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==' },
-  { id: '4', name: 'WiFi Hotspot', type: 'WiFi', scans: 50, status: 'Active', creationDate: 'Nov 20, 2024', qrCodeImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==' },
-  { id: '5', name: 'Facebook Page', type: 'Social Media', scans: 100, status: 'Active', creationDate: 'Dec 05, 2024', qrCodeImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==' },
-  { id: '6', name: 'Product Catalog', type: 'PDF', scans: 80, status: 'Active', creationDate: 'Jan 10, 2025', qrCodeImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAACklEQVR4nGMAAQAABQABDQottAAAAABJRU5ErkJggg==' },
-]
+interface FolderData {
+  id: string
+  name: string
+  qrCodesCount: number
+}
 
 export default function MyCodes() {
   const router = useRouter()
+  const { user } = useAuth()
   const [qrCodes, setQRCodes] = useState<QRCodeData[]>([])
+  const [folders, setFolders] = useState<FolderData[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [selectedCodes, setSelectedCodes] = useState<string[]>([])
 
   useEffect(() => {
-    // Simulate fetching QR codes
-    const fetchQRCodes = async () => {
-      await new Promise(resolve => setTimeout(resolve, 1000))
-      setQRCodes(mockQRCodes)
-      setLoading(false)
+    const fetchData = async () => {
+      if (!user) return
+      try {
+        const [fetchedQRCodes, fetchedFolders] = await Promise.all([
+          getUserQRCodes(user.uid),
+          getUserFolders(user.uid)
+        ])
+        setQRCodes(fetchedQRCodes)
+        setFolders(fetchedFolders)
+      } catch (error) {
+        console.error('Error fetching data:', error)
+        setError('Failed to load QR codes and folders. Please try again.')
+      } finally {
+        setLoading(false)
+      }
     }
-    fetchQRCodes()
-  }, [])
+    fetchData()
+  }, [user])
 
   const filteredQRCodes = qrCodes.filter(qr => 
     qr.name.toLowerCase().includes(searchTerm.toLowerCase())
@@ -75,9 +88,16 @@ export default function MyCodes() {
     }
   }
 
-  const handleDeleteSelected = () => {
-    setQRCodes(prev => prev.filter(qr => !selectedCodes.includes(qr.id)))
-    setSelectedCodes([])
+  const handleDeleteSelected = async () => {
+    try {
+      await Promise.all(selectedCodes.map(id => deleteQRCode(id)))
+      setQRCodes(prev => prev.filter(qr => !selectedCodes.includes(qr.id)))
+      setSelectedCodes([])
+      toast({ title: "QR codes deleted successfully" })
+    } catch (error) {
+      console.error('Error deleting QR codes:', error)
+      toast({ title: "Failed to delete QR codes", variant: "destructive" })
+    }
   }
 
   const handleEditCode = (id: string) => {
@@ -88,8 +108,35 @@ export default function MyCodes() {
     router.push(`/analytics?qr=${id}`)
   }
 
-  const handleDeleteCode = (id: string) => {
-    setQRCodes(prev => prev.filter(qr => qr.id !== id))
+  const handleDeleteCode = async (id: string) => {
+    try {
+      await deleteQRCode(id)
+      setQRCodes(prev => prev.filter(qr => qr.id !== id))
+      toast({ title: "QR code deleted successfully" })
+    } catch (error) {
+      console.error('Error deleting QR code:', error)
+      toast({ title: "Failed to delete QR code", variant: "destructive" })
+    }
+  }
+
+  if (loading) {
+    return <div className="flex justify-center items-center h-screen">Loading...</div>
+  }
+
+  if (error) {
+    return <div className="text-center text-red-500">{error}</div>
+  }
+
+  if (qrCodes.length === 0 && folders.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <h2 className="text-2xl font-bold mb-4">No QR Codes or Folders Yet</h2>
+        <p className="mb-4">Get started by creating your first QR code or folder!</p>
+        <Button asChild>
+          <Link href="/qr-codes/new">Create QR Code</Link>
+        </Button>
+      </div>
+    )
   }
 
   return (
@@ -120,6 +167,28 @@ export default function MyCodes() {
               <Plus className="mr-2 h-4 w-4" /> Create QR code
             </Link>
           </Button>
+        </div>
+      </div>
+
+      {/* Folders Section */}
+      <div className="mb-8">
+        <h2 className="text-xl font-semibold mb-4">Folders</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {folders.map((folder) => (
+            <div key={folder.id} className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer">
+              <div className="flex items-center space-x-3">
+                <Folder className="h-6 w-6 text-blue-500" />
+                <div>
+                  <h3 className="font-medium">{folder.name}</h3>
+                  <p className="text-sm text-gray-500">{folder.qrCodesCount} QR codes</p>
+                </div>
+              </div>
+            </div>
+          ))}
+          <div className="bg-gray-100 p-4 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer flex items-center justify-center">
+            <Plus className="h-6 w-6 text-gray-500 mr-2" />
+            <span className="text-gray-500 font-medium">New Folder</span>
+          </div>
         </div>
       </div>
 

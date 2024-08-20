@@ -1,102 +1,60 @@
-"use client"
+// File: app/qr-codes/new/page.tsx
+'use client'
 
-import { useState, useRef, useEffect } from 'react'
-import { LinkIcon, UserIcon, Square3Stack3DIcon, BuildingOfficeIcon, WifiIcon, GlobeAltIcon } from '@heroicons/react/24/outline'
-import LinkTool from '@/components/qr-tools/LinkTool'
-import VCardTool from '@/components/qr-tools/VCardTool'
-import MenuTool from '@/components/qr-tools/MenuTool'
-import FacebookTool from '@/components/qr-tools/FacebookTool'
-import BusinessTool from '@/components/qr-tools/BusinessTool'
-import WiFiTool from '@/components/qr-tools/WiFiTool'
-import QRCodeDisplay from '@/components/qr-tools/QRCodeDisplay'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useAuth } from '@/context/AuthContext' // Assuming you have this
+import { createQRCode } from '@/services/qrCodeService'
+import QRCodeTypeSelector from '../QRCodeTypeSelector'
+import QRCodeContentForm from '../QRCodeContentForm'
+import QRCodeCustomizer from '../QRCodeCustomizer'
+import ProgressSteps from '@/components/common/ProgressSteps'
 
-interface CustomizationType {
-  logo?: string;
-  color: string;
-  bgColor: string;
-  frame: string;
-}
-
-const tools = [
-  { name: 'Link', icon: LinkIcon, component: LinkTool },
-  { name: 'VCard', icon: UserIcon, component: VCardTool },
-  { name: 'Menu', icon: Square3Stack3DIcon, component: MenuTool },
-  { name: 'Facebook', icon: GlobeAltIcon, component: FacebookTool },
-  { name: 'Business', icon: BuildingOfficeIcon, component: BusinessTool },
-  { name: 'WiFi', icon: WifiIcon, component: WiFiTool },
-]
+const steps = ['Choose QR Code Type', 'Add Content', 'Customize Design']
 
 export default function NewQRCode() {
-  const [selectedTool, setSelectedTool] = useState<string | null>(null)
-  const [qrCodeData, setQRCodeData] = useState<string>('')
-  const [customization, setCustomization] = useState<CustomizationType>({
-    color: '#000000',
-    bgColor: '#ffffff',
-    frame: 'square',
-  })
-  const scrollContainerRef = useRef<HTMLDivElement>(null)
+  const [currentStep, setCurrentStep] = useState(0)
+  const [selectedType, setSelectedType] = useState('')
+  const [qrCodeData, setQRCodeData] = useState<any>({})
+  const { user } = useAuth()
+  const router = useRouter()
 
-  useEffect(() => {
-    const handleResize = () => {
-      if (scrollContainerRef.current) {
-        const isScrollable = scrollContainerRef.current.scrollWidth > scrollContainerRef.current.clientWidth
-        scrollContainerRef.current.style.justifyContent = isScrollable ? 'flex-start' : 'space-between'
-      }
-    }
-    handleResize()
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
-  }, [])
+  const handleTypeSelect = (type: string) => {
+    setSelectedType(type)
+    setCurrentStep(1)
+  }
 
-  const renderSelectedTool = () => {
-    const tool = tools.find(t => t.name === selectedTool)
-    if (tool) {
-      const ToolComponent = tool.component
-      return <ToolComponent setQRCodeData={setQRCodeData} />
+  const handleContentSubmit = (data: any) => {
+    setQRCodeData(data)
+    setCurrentStep(2)
+  }
+
+  const handleCustomizationComplete = async (customization: any) => {
+    if (!user) {
+      // Handle unauthenticated user
+      return
     }
-    return null
+
+    try {
+      const qrCodeId = await createQRCode(user.uid, {
+        type: selectedType,
+        content: qrCodeData,
+        customization
+      })
+      router.push(`/qr-codes/${qrCodeId}`)
+    } catch (error) {
+      console.error('Error creating QR code:', error)
+      // Handle error (show error message to user)
+    }
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 w-full">
-      <h1 className="text-2xl font-bold mb-2">Create New QR Code</h1>
-      <p className="text-gray-400 font-light mb-4">Select a tool to get started</p>
-      <div className="mb-6 bg-white rounded-lg overflow-x-auto">
-        <div 
-          ref={scrollContainerRef}
-          className="flex whitespace-nowrap"
-          style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-        >
-          {tools.map((tool) => (
-            <button
-              key={tool.name}
-              onClick={() => setSelectedTool(tool.name)}
-              className={`inline-flex items-center px-4 py-3 text-sm flex-shrink-0 ${
-                selectedTool === tool.name 
-                  ? 'text-blue-600 border-b-2 border-blue-600' 
-                  : 'text-gray-700 hover:bg-gray-50'
-              } transition-colors duration-200`}
-            >
-              <tool.icon className="h-5 w-5 mr-2" />
-              {tool.name}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          {selectedTool ? (
-            renderSelectedTool()
-          ) : (
-            <div className="bg-white p-6 rounded-lg">
-              <h2 className="text-xl font-semibold mb-4">Select a Tool</h2>
-              <p className="text-gray-500 font-light">Choose a tool from above to start creating your QR code.</p>
-            </div>
-          )}
-        </div>
-        <div className="bg-gray-100 p-6 rounded-lg">
-          <QRCodeDisplay qrCode={qrCodeData} customization={customization} />
-        </div>
+    <div className="container mx-auto px-4 py-8">
+      <ProgressSteps steps={steps} currentStep={currentStep} />
+      <div className="mt-8">
+        {currentStep === 0 && <QRCodeTypeSelector onSelect={handleTypeSelect} />}
+        {currentStep === 1 && <QRCodeContentForm type={selectedType} onSubmit={handleContentSubmit} />}
+        {currentStep === 2 && <QRCodeCustomizer onComplete={handleCustomizationComplete} />}
       </div>
     </div>
   )
