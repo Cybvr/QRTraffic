@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
+import { auth } from '@/lib/firebase'
 
 export default function Register() {
   const [email, setEmail] = useState('')
@@ -20,12 +22,34 @@ export default function Register() {
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
   const [error, setError] = useState('')
+  const [message, setMessage] = useState('')
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    // For demo purposes, just redirect to dashboard
-    router.push('/dashboard')
+    setError('')
+    setMessage('')
+
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      await updateProfile(userCredential.user, {
+        displayName: `${firstName} ${lastName}`
+      })
+      setMessage('Registration successful. You can now log in.')
+      setTimeout(() => router.push('/auth/login'), 3000)
+    } catch (error) {
+      setError(error.message)
+    }
+  }
+
+  const handleGoogleSignUp = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider)
+      router.push('/dashboard')
+    } catch (error) {
+      setError(error.message)
+    }
   }
 
   return (
@@ -39,6 +63,7 @@ export default function Register() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {message && <p className="text-green-500 text-sm mb-4">{message}</p>}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -88,6 +113,11 @@ export default function Register() {
               Create an account
             </Button>
           </form>
+          <div className="mt-4">
+            <Button onClick={handleGoogleSignUp} variant="outline" className="w-full">
+              Sign up with Google
+            </Button>
+          </div>
           <div className="mt-4 text-center text-sm">
             Already have an account?{" "}
             <Link href="/auth/login" className="underline">

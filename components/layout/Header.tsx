@@ -106,7 +106,7 @@ const Header = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
       </div>
       {mobileNavOpen && (
         <div className="lg:hidden bg-white shadow-lg mt-2">
-          <Link href="/" className="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200">
+          <Link href="/dashboard" className="block px-4 py-2 text-gray-700 hover:bg-gray-200 transition-colors duration-200">
             Home
           </Link>
           <Button 

@@ -1,39 +1,95 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Button from '@/components/common/Button'
-import QRCodeGenerator from '@/components/qr-tools/QRCodeGenerator'
-import QRCodeDisplay from '@/components/qr-tools/QRCodeDisplay'
-import { useQRCode } from '@/hooks/useQRCode'
+import Link from 'next/link'
+import { ArrowUpIcon } from '@heroicons/react/24/solid'
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import RecentQRCodes from '@/components/common/RecentQRCodes'
+import { supabase } from '@/lib/supabase'
 
-export default function DashboardPage() {
-  const [user] = useState({ email: 'demo@example.com' }) // Demo user
+type User = {
+  id: string;
+  email: string;
+  user_metadata: {
+    full_name?: string;
+  };
+};
+
+export default function Dashboard() {
+  const [user, setUser] = useState<User | null>(null)
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
-  const { qrCodeData, error, loading, generateQRCode } = useQRCode()
 
-  const handleLogout = async () => {
-    // Implement actual logout logic here
-    // await auth.signOut()
-    router.push('/')
+  useEffect(() => {
+    const getUser = async () => {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUser(user as User)
+      } else {
+        router.push('/auth/login')
+      }
+      setLoading(false)
+    }
+    getUser()
+  }, [router])
+
+  if (loading) {
+    return <div>Loading...</div>
   }
 
+  if (!user) {
+    return null // This should never render because of the redirect in getUser
+  }
+
+  const firstName = user.user_metadata?.full_name?.split(' ')[0] || user.email
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-4">Dashboard</h1>
-      <p className="mb-4">Welcome, {user.email}!</p>
-      <Button onClick={handleLogout} className="mb-8">
-        Logout
-      </Button>
-      <QRCodeGenerator onGenerate={generateQRCode} />
-      {loading && <p>Generating QR Code...</p>}
-      {error && <p className="text-red-500">{error}</p>}
-      {qrCodeData && (
-        <QRCodeDisplay
-          qrCode={qrCodeData.url}
-          customization={{}} // Replace with appropriate value or remove if not needed
-        />
-      )}
+    <div className="space-y-6">
+      <div>
+        <h1 className="text-3xl font-bold tracking-tight">Good morning, {firstName}! 👋</h1>
+        <p className="text-muted-foreground">Here is a summary of your QR code campaigns.</p>
+      </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">QR Codes</CardTitle>
+            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+              <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+            </div>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">1</div>
+            <p className="text-xs text-muted-foreground">Total QR Codes</p>
+            <p className="text-xs text-muted-foreground mt-2">Linkpages Create your own link-in-bio page</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Scans</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">5,476</div>
+            <p className="text-xs text-green-500 flex items-center">
+              <ArrowUpIcon className="h-4 w-4 mr-1" />
+              15% than the previous month
+            </p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Users</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">758</div>
+            <p className="text-xs text-green-500 flex items-center">
+              <ArrowUpIcon className="h-4 w-4 mr-1" />
+              20% than the previous month
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+      <RecentQRCodes />
     </div>
   )
 }

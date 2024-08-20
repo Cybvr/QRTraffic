@@ -1,6 +1,5 @@
 'use client'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
 import Link from "next/link"
 import Image from 'next/image'
 import { Button } from "@/components/ui/button"
@@ -13,33 +12,26 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
-import { auth } from '@/lib/firebase'
+import { supabase } from '@/lib/supabase'
 
-export default function Login() {
+export default function ForgotPassword() {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [error, setError] = useState('')
-  const router = useRouter()
+  const [message, setMessage] = useState('')
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    try {
-      await signInWithEmailAndPassword(auth, email, password)
-      router.push('/dashboard')
-    } catch (error) {
-      setError(error.message)
-    }
-  }
+    setMessage('')
 
-  const handleGoogleSignIn = async () => {
-    const provider = new GoogleAuthProvider();
-    try {
-      await signInWithPopup(auth, provider)
-      router.push('/dashboard')
-    } catch (error) {
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/auth/reset-password`,
+    })
+
+    if (error) {
       setError(error.message)
+    } else {
+      setMessage('Password reset link sent. Please check your email.')
     }
   }
 
@@ -48,12 +40,13 @@ export default function Login() {
       <Card className="w-full max-w-sm">
         <CardHeader className="space-y-1">
           <Image src="/images/logo.svg" alt="Logo" width={100} height={100} className="mx-auto mb-4" />
-          <CardTitle className="text-2xl text-center">Login</CardTitle>
+          <CardTitle className="text-2xl text-center">Forgot Password</CardTitle>
           <CardDescription className="text-center">
-            Enter your email below to login to your account
+            Enter your email to receive a password reset link
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {message && <p className="text-green-500 text-sm mb-4">{message}</p>}
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -66,35 +59,15 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <div className="space-y-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link href="/auth/forgot-password" className="ml-auto text-sm underline">
-                  Forgot password?
-                </Link>
-              </div>
-              <Input 
-                id="password" 
-                type="password" 
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
             {error && <p className="text-red-500 text-sm">{error}</p>}
             <Button type="submit" className="w-full">
-              Login
+              Send Reset Link
             </Button>
           </form>
-          <div className="mt-4">
-            <Button onClick={handleGoogleSignIn} variant="outline" className="w-full">
-              Sign in with Google
-            </Button>
-          </div>
           <div className="mt-4 text-center text-sm">
-            Don&apos;t have an account?{" "}
-            <Link href="/auth/register" className="underline">
-              Sign up
+            Remember your password?{" "}
+            <Link href="/auth/login" className="underline">
+              Sign in
             </Link>
           </div>
         </CardContent>

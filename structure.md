@@ -1,22 +1,27 @@
-app/
-├── analytics/
-│   └── page.tsx
+root/
+│
+├── page.tsx
 ├── api/
 │   ├── generate-qr/
-│   │   └── route.ts
 │   └── qr-codes/
-│       └── route.ts
+│
 ├── auth/
 │   ├── login/
 │   │   └── page.tsx
-│   └── register/
-│       └── page.tsx
-├── dashboard/
-│   └── page.tsx
-├── qr-codes/
-│   ├── new/
+│   ├── register/
 │   │   └── page.tsx
-│   └── page.tsx
+│   └── dashboard/
+│       └── page.tsx
+│
+├── qr-codes/
+│   ├── edit/
+│   │   └── [id]/
+│   │       └── page.tsx
+│   ├── my-codes/
+│   │   └── page.tsx
+│   └── new/
+│       └── page.tsx
+│
 ├── settings/
 │   ├── account/
 │   │   └── page.tsx
@@ -24,19 +29,30 @@ app/
 │   │   └── page.tsx
 │   ├── domains/
 │   │   └── page.tsx
-│   ├── plan-billing/
-│   │   ├── page.tsx
-│   │   ├── layout.tsx
+│   ├── members/
 │   │   └── page.tsx
+│   ├── plan-billing/
+│   │   └── page.tsx
+│   └── refer/
+│       └── page.tsx
+│
+├── layout.tsx
 ├── support/
-│   ├── page.tsx
 │   ├── layout.tsx
 │   └── page.tsx
+│
 ├── cache/
+│
 ├── components/
+│   ├── analytics/
+│   │   ├── ScanActivityChart.tsx
+│   │   ├── ScansByCity.tsx
+│   │   ├── ScansByCountry.tsx
+│   │   └── ScansByOS.tsx
 │   ├── common/
 │   │   ├── Button.tsx
-│   │   └── Input.tsx
+│   │   ├── Input.tsx
+│   │   └── RecentQRCodes.tsx
 │   ├── layout/
 │   │   ├── ClientComponent.tsx
 │   │   ├── Footer.tsx
@@ -45,41 +61,46 @@ app/
 │   │   ├── MobileMenu.tsx
 │   │   └── Sidebar.tsx
 │   ├── qr-tools/
-│       ├── BusinessTool.tsx
-│       ├── FacebookTool.tsx
-│       ├── LinkTool.tsx
-│       ├── MenuTool.tsx
-│       ├── QRCodeCustomizer.tsx
-│       ├── QRCodeDisplay.tsx
-│       ├── QRCodeGenerator.tsx
-│       ├── VCardTool.tsx
-│       ├── WiFiTool.tsx
-│       └── QRCodeCustomizer.tsx (appears twice)
+│   │   ├── BusinessTool.tsx
+│   │   ├── FacebookTool.tsx
+│   │   ├── LinkTool.tsx
+│   │   ├── MenuTool.tsx
+│   │   ├── QRCodeDisplay.tsx
+│   │   ├── QRCodeGenerator.tsx
+│   │   ├── VCardTool.tsx
+│   │   └── UITool.tsx
+│   └── QRCodeCustomizer.tsx
+│
 ├── hooks/
 │   └── useQRCode.ts
+│
 ├── public/
 ├── services/
 │   ├── api.ts
 │   ├── firebase.ts
 │   └── supabase.ts
+│
 ├── styles/
 │   └── globals.css
+│
 ├── tests/
-│   └── components/
-│       └── Button.test.tsx
 ├── types/
-│   └── index.ts
+│   ├── analytics.ts
+│   ├── DataPoint.ts
+│   ├── index.ts
+│   └── recharts.d.ts
+│
 ├── utils/
-│   └── helpers.ts
-.eslintrc.json
-.gitignore
-next-env.d.ts
-next.config.js
-postcss.config.js
-README.md
-tailwind.config.js
-tsconfig.json
-.upm
-node_modules/
-package-lock.json
-package.json
+│
+├── .env.local
+├── .eslintcrc.json
+├── components.json
+├── middleware.ts
+├── next-env.d.ts
+├── next.config.js
+├── postcss.config.js
+├── README.md
+├── structure.md
+├── tailwind.config.js
+├── tsconfig.json
+└── .gitignore
