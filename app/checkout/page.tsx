@@ -1,13 +1,11 @@
 "use client";
+
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
 const CheckoutPage: React.FC = () => {
-  const router = useRouter();
-  const { plan } = router.query;
   const [email, setEmail] = useState('');
   const [cardNumber, setCardNumber] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
@@ -15,17 +13,16 @@ const CheckoutPage: React.FC = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically process the payment
-    console.log('Processing payment...');
-    // After successful payment, redirect to a success page or dashboard
-    router.push('/dashboard');
+    // Dummy action
+    console.log('Form submitted');
+    alert('This is a dummy checkout page. No actual payment is processed.');
   };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <CardTitle>Checkout - {plan} Plan</CardTitle>
+          <CardTitle>Checkout - Dummy Plan</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">

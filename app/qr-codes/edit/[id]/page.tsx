@@ -13,7 +13,7 @@ import MenuTool from '@/components/qr-tools/MenuTool'
 import FacebookTool from '@/components/qr-tools/FacebookTool'
 import BusinessTool from '@/components/qr-tools/BusinessTool'
 import WiFiTool from '@/components/qr-tools/WiFiTool'
-import QRCodeCustomizer from '../../QRCodeCustomizer'
+import QRCodeCustomizer from '@/components/QRCodeCustomizer'
 import { useAuth } from '@/context/AuthContext'
 import { getQRCode, updateQRCode } from '@/services/qrCodeService'
 
@@ -58,13 +58,28 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
       if (!user) return
       try {
         const data = await getQRCode(params.id)
-        setQRCodeDetails(data)
-        setQRCodeData(JSON.stringify(data.data))
+        if (data && typeof data === 'object') {
+          setQRCodeDetails({
+            id: 'id' in data ? (data.id as string) : '',
+            name: 'name' in data ? (data.name as string) : 'Untitled',
+            type: 'type' in data ? (data.type as string) : 'Link',
+            data: 'data' in data && data.data ? (data.data as any) : {},
+            customization: 'customization' in data && typeof data.customization === 'object' 
+              ? (data.customization as CustomizationType) 
+              : {
+                  color: '#000000',
+                  bgColor: '#FFFFFF',
+                  frame: ''
+                }
+          })
+          setQRCodeData(JSON.stringify('data' in data ? data.data : {}))
+        } else {
+          console.error('Invalid QR code data structure')
+        }
       } catch (error) {
         console.error('Error fetching QR code data:', error)
-        // Handle error (e.g., show error message to user)
       } finally {
-        setLoading(false)
+        setLoading(false);
       }
     }
     loadQRCodeData()
@@ -80,7 +95,6 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
       router.push('/qr-codes/my-codes')
     } catch (error) {
       console.error('Error saving QR code:', error)
-      // Handle error (e.g., show error message to user)
     }
   }
 

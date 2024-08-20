@@ -1,5 +1,3 @@
-// File: app/qr-codes/my-codes/page.tsx
-
 'use client'
 
 import { useState, useEffect } from 'react'
@@ -20,27 +18,28 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from '@/context/AuthContext'
 import { getUserQRCodes, deleteQRCode, getUserFolders } from '@/services/qrCodeService'
-import { toast } from '@/components/ui/use-toast'
+import { useToast } from '@/components/ui/toast'
 
 interface QRCodeData {
-  id: string
-  name: string
-  type: string
-  scans: number
-  status: 'Active' | 'Inactive'
-  creationDate: string
-  qrCodeImage: string
+  id: string;
+  name: string;
+  type: string;
+  scans: number;
+  status: 'Active' | 'Inactive';
+  creationDate: string;
+  qrCodeImage: string;
 }
 
 interface FolderData {
-  id: string
-  name: string
-  qrCodesCount: number
+  id: string;
+  name?: string;
+  qrCodesCount?: number;
 }
 
 export default function MyCodes() {
   const router = useRouter()
   const { user } = useAuth()
+  const { addToast } = useToast()
   const [qrCodes, setQRCodes] = useState<QRCodeData[]>([])
   const [folders, setFolders] = useState<FolderData[]>([])
   const [loading, setLoading] = useState(true)
@@ -53,11 +52,16 @@ export default function MyCodes() {
       if (!user) return
       try {
         const [fetchedQRCodes, fetchedFolders] = await Promise.all([
-          getUserQRCodes(user.uid),
-          getUserFolders(user.uid)
+          getUserQRCodes(user.uid) as Promise<QRCodeData[]>,
+          getUserFolders(user.uid) as Promise<FolderData[]>
         ])
         setQRCodes(fetchedQRCodes)
-        setFolders(fetchedFolders)
+        const foldersWithCorrectStructure = fetchedFolders.map((folder: FolderData) => ({
+          id: folder.id,
+          name: folder.name || 'Unnamed Folder',
+          qrCodesCount: folder.qrCodesCount || 0,
+        }));
+        setFolders(foldersWithCorrectStructure)
       } catch (error) {
         console.error('Error fetching data:', error)
         setError('Failed to load QR codes and folders. Please try again.')
@@ -93,10 +97,10 @@ export default function MyCodes() {
       await Promise.all(selectedCodes.map(id => deleteQRCode(id)))
       setQRCodes(prev => prev.filter(qr => !selectedCodes.includes(qr.id)))
       setSelectedCodes([])
-      toast({ title: "QR codes deleted successfully" })
+      addToast("QR codes deleted successfully", 3000)
     } catch (error) {
       console.error('Error deleting QR codes:', error)
-      toast({ title: "Failed to delete QR codes", variant: "destructive" })
+      addToast("Failed to delete QR codes", 3000)
     }
   }
 
@@ -112,10 +116,10 @@ export default function MyCodes() {
     try {
       await deleteQRCode(id)
       setQRCodes(prev => prev.filter(qr => qr.id !== id))
-      toast({ title: "QR code deleted successfully" })
+      addToast("QR code deleted successfully", 3000)
     } catch (error) {
       console.error('Error deleting QR code:', error)
-      toast({ title: "Failed to delete QR code", variant: "destructive" })
+      addToast("Failed to delete QR code", 3000)
     }
   }
 
@@ -170,7 +174,6 @@ export default function MyCodes() {
         </div>
       </div>
 
-      {/* Folders Section */}
       <div className="mb-8">
         <h2 className="text-xl font-semibold mb-4">Folders</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Select } from "@/components/ui/select"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { X } from 'lucide-react'
 
@@ -33,29 +33,31 @@ const UserOnboarding: React.FC<OnboardingProps> = ({ onComplete }) => {
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Company Size</label>
-            <Select
-              value={companySize}
-              onValueChange={setCompanySize}
-              placeholder="Select your company size"
-            >
-              <Select.Option value="1-10">1-10 employees</Select.Option>
-              <Select.Option value="11-50">11-50 employees</Select.Option>
-              <Select.Option value="51-200">51-200 employees</Select.Option>
-              <Select.Option value="201+">201+ employees</Select.Option>
+            <Select value={companySize} onValueChange={setCompanySize}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select company size" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="1-10">1-10 employees</SelectItem>
+                <SelectItem value="11-50">11-50 employees</SelectItem>
+                <SelectItem value="51-200">51-200 employees</SelectItem>
+                <SelectItem value="201+">201+ employees</SelectItem>
+              </SelectContent>
             </Select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Industry</label>
-            <Select
-              value={industry}
-              onValueChange={setIndustry}
-              placeholder="Select an industry"
-            >
-              <Select.Option value="technology">Technology</Select.Option>
-              <Select.Option value="healthcare">Healthcare</Select.Option>
-              <Select.Option value="education">Education</Select.Option>
-              <Select.Option value="finance">Finance</Select.Option>
-              <Select.Option value="other">Other</Select.Option>
+            <Select value={industry} onValueChange={setIndustry}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Select industry" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="technology">Technology</SelectItem>
+                <SelectItem value="healthcare">Healthcare</SelectItem>
+                <SelectItem value="education">Education</SelectItem>
+                <SelectItem value="finance">Finance</SelectItem>
+                <SelectItem value="other">Other</SelectItem>
+              </SelectContent>
             </Select>
           </div>
         </div>

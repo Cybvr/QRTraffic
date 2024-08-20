@@ -4,7 +4,7 @@ import React, { createContext, useContext, useState, ReactNode } from 'react';
 type Toast = {
   id: string;
   message: string;
-  duration?: number; // Optional, default duration for the toast
+  duration?: number;
 };
 
 type ToastContextType = {
@@ -46,17 +46,11 @@ export const useToast = () => {
 
 const ToastContainer = ({ toasts }: { toasts: Toast[] }) => {
   return (
-    <div style={{ position: 'fixed', top: '1rem', right: '1rem', zIndex: 9999 }}>
+    <div className="fixed top-4 right-4 z-50">
       {toasts.map((toast) => (
         <div
           key={toast.id}
-          style={{
-            marginBottom: '1rem',
-            padding: '1rem',
-            backgroundColor: '#333',
-            color: '#fff',
-            borderRadius: '4px',
-          }}
+          className="mb-4 p-4 bg-gray-800 text-white rounded-md shadow-lg"
         >
           {toast.message}
         </div>

@@ -1,6 +1,6 @@
-// File: components/qr-tools/QRCodeContentForm.tsx
+// File: app/qr-codes/QRCodeContentForm.tsx
 
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import { useForm } from 'react-hook-form'
 
 interface Props {
@@ -24,7 +24,7 @@ const QRCodeContentForm: FC<Props> = ({ type, onSubmit }) => {
                 {...register('name', { required: 'Name is required' })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
               />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message}</p>}
+              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message?.toString()}</p>}
             </div>
             <div>
               <label htmlFor="url" className="block text-sm font-medium text-gray-700">Website URL</label>
@@ -34,7 +34,7 @@ const QRCodeContentForm: FC<Props> = ({ type, onSubmit }) => {
                 {...register('url', { required: 'URL is required', pattern: { value: /^https?:\/\/.+\..+/, message: 'Enter a valid URL' } })}
                 className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
               />
-              {errors.url && <p className="mt-1 text-sm text-red-600">{errors.url.message}</p>}
+              {errors.url && <p className="mt-1 text-sm text-red-600">{errors.url.message?.toString()}</p>}
             </div>
           </div>
         )
