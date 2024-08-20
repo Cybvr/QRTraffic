@@ -13,7 +13,7 @@ import MenuTool from '@/components/qr-tools/MenuTool'
 import FacebookTool from '@/components/qr-tools/FacebookTool'
 import BusinessTool from '@/components/qr-tools/BusinessTool'
 import WiFiTool from '@/components/qr-tools/WiFiTool'
-import QRCodeCustomizer from '@/components/qr-tools/QRCodeCustomizer'
+import QRCodeCustomizer from '../../QRCodeCustomizer'
 import { useAuth } from '@/context/AuthContext'
 import { getQRCode, updateQRCode } from '@/services/qrCodeService'
 
