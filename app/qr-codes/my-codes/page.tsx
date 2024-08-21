@@ -32,8 +32,8 @@ interface QRCodeData {
 
 interface FolderData {
   id: string;
-  name?: string;
-  qrCodesCount?: number;
+  name: string;
+  qrCodesCount: number;
 }
 
 export default function MyCodes() {
@@ -52,16 +52,11 @@ export default function MyCodes() {
       if (!user) return
       try {
         const [fetchedQRCodes, fetchedFolders] = await Promise.all([
-          getUserQRCodes(user.uid) as Promise<QRCodeData[]>,
-          getUserFolders(user.uid) as Promise<FolderData[]>
+          getUserQRCodes(user.uid),
+          getUserFolders(user.uid)
         ])
         setQRCodes(fetchedQRCodes)
-        const foldersWithCorrectStructure = fetchedFolders.map((folder: FolderData) => ({
-          id: folder.id,
-          name: folder.name || 'Unnamed Folder',
-          qrCodesCount: folder.qrCodesCount || 0,
-        }));
-        setFolders(foldersWithCorrectStructure)
+        setFolders(fetchedFolders)
       } catch (error) {
         console.error('Error fetching data:', error)
         setError('Failed to load QR codes and folders. Please try again.')
@@ -124,19 +119,21 @@ export default function MyCodes() {
   }
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>
+    return <div className="flex justify-center items-center h-screen">
+      <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+    </div>
   }
 
   if (error) {
-    return <div className="text-center text-red-500">{error}</div>
+    return <div className="text-center text-red-500 p-4 bg-red-50 rounded-lg">{error}</div>
   }
 
   if (qrCodes.length === 0 && folders.length === 0) {
     return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold mb-4">No QR Codes or Folders Yet</h2>
-        <p className="mb-4">Get started by creating your first QR code or folder!</p>
-        <Button asChild>
+      <div className="text-center py-16 bg-gray-50 rounded-lg shadow-sm">
+        <h2 className="text-3xl font-bold mb-4 text-gray-800">No QR Codes or Folders Yet</h2>
+        <p className="mb-6 text-gray-600">Get started by creating your first QR code or folder!</p>
+        <Button asChild className="px-6 py-3 text-lg">
           <Link href="/qr-codes/new">Create QR Code</Link>
         </Button>
       </div>
@@ -144,139 +141,140 @@ export default function MyCodes() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="bg-blue-100 p-4 rounded-lg mb-6 flex justify-between items-center">
-        <p className="text-blue-800">
-          You have 20 out of 20 free scans left. Subscribe to get unlimited scans.
+    <div className="container mx-auto px-4 py-8 max-w-7xl">
+      <div className="bg-blue-50 p-6 rounded-xl mb-8 shadow-sm">
+        <p className="text-blue-800 text-base">
+          You have <span className="font-semibold">20 out of 20</span> free scans left. <Link href="/pricing" className="font-medium hover:underline text-blue-600">Subscribe to get unlimited scans.</Link>
         </p>
-        <Button className="bg-blue-500 hover:bg-blue-600 text-white">Subscribe</Button>
       </div>
 
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
         <Input
           type="text"
           placeholder="Search by QR code name"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
+          className="max-w-sm border-gray-300 focus:border-blue-500 focus:ring-blue-500"
         />
         <div className="space-x-2">
           {selectedCodes.length > 0 && (
-            <Button variant="destructive" onClick={handleDeleteSelected}>
+            <Button variant="destructive" onClick={handleDeleteSelected} size="sm" className="bg-red-500 hover:bg-red-600">
               Delete Selected
             </Button>
           )}
-          <Button asChild>
-            <Link href="/qr-codes/new" className="bg-orange-500 hover:bg-orange-600 text-white">
+          <Button asChild size="sm" className="bg-blue-500 hover:bg-blue-600">
+            <Link href="/qr-codes/new">
               <Plus className="mr-2 h-4 w-4" /> Create QR code
             </Link>
           </Button>
         </div>
       </div>
 
-      <div className="mb-8">
-        <h2 className="text-xl font-semibold mb-4">Folders</h2>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <div className="mb-12">
+        <h2 className="text-2xl font-semibold mb-6 text-gray-800">Folders</h2>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {folders.map((folder) => (
-            <div key={folder.id} className="bg-white p-4 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer">
-              <div className="flex items-center space-x-3">
-                <Folder className="h-6 w-6 text-blue-500" />
+            <div key={folder.id} className="bg-white p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-colors cursor-pointer shadow-sm hover:shadow-md">
+              <div className="flex items-center space-x-4">
+                <Folder className="h-8 w-8 text-blue-500" />
                 <div>
-                  <h3 className="font-medium">{folder.name}</h3>
+                  <h3 className="font-medium text-lg text-gray-800">{folder.name}</h3>
                   <p className="text-sm text-gray-500">{folder.qrCodesCount} QR codes</p>
                 </div>
               </div>
             </div>
           ))}
-          <div className="bg-gray-100 p-4 rounded-lg shadow hover:shadow-md transition-shadow cursor-pointer flex items-center justify-center">
-            <Plus className="h-6 w-6 text-gray-500 mr-2" />
-            <span className="text-gray-500 font-medium">New Folder</span>
+          <div className="bg-gray-50 p-6 rounded-xl border border-gray-200 hover:border-blue-300 transition-colors cursor-pointer shadow-sm hover:shadow-md flex items-center justify-center">
+            <Plus className="h-8 w-8 text-blue-500 mr-3" />
+            <span className="text-blue-600 font-medium text-lg">New Folder</span>
           </div>
         </div>
       </div>
 
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="w-[50px]">
-              <Checkbox
-                checked={selectedCodes.length === filteredQRCodes.length}
-                onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
-              />
-            </TableHead>
-            <TableHead>QR code name</TableHead>
-            <TableHead>QR code type</TableHead>
-            <TableHead>Scans</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Creation date</TableHead>
-            <TableHead className="text-right">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {filteredQRCodes.map((qrCode) => (
-            <TableRow 
-              key={qrCode.id} 
-              className="cursor-pointer hover:bg-gray-50"
-              onClick={() => handleEditCode(qrCode.id)}
-            >
-              <TableCell onClick={(e) => e.stopPropagation()}>
+      <div className="overflow-x-auto bg-white rounded-xl shadow-sm">
+        <Table>
+          <TableHeader>
+            <TableRow className="bg-gray-50">
+              <TableHead className="w-[50px]">
                 <Checkbox
-                  checked={selectedCodes.includes(qrCode.id)}
-                  onCheckedChange={(checked) => handleSelectCode(qrCode.id, checked as boolean)}
+                  checked={selectedCodes.length === filteredQRCodes.length}
+                  onCheckedChange={(checked) => handleSelectAll(checked as boolean)}
                 />
-              </TableCell>
-              <TableCell className="font-medium">
-                <div className="flex items-center space-x-2">
-                  <Image 
-                    src={qrCode.qrCodeImage} 
-                    alt="QR Code" 
-                    width={40} 
-                    height={40}
-                    className="w-10 h-10"
-                  />
-                  <span>{qrCode.name}</span>
-                </div>
-              </TableCell>
-              <TableCell>{qrCode.type}</TableCell>
-              <TableCell>{qrCode.scans}</TableCell>
-              <TableCell>
-                <Badge variant={qrCode.status === 'Active' ? 'default' : 'secondary'}>
-                  {qrCode.status}
-                </Badge>
-              </TableCell>
-              <TableCell>{qrCode.creationDate}</TableCell>
-              <TableCell className="text-right">
-                <div onClick={(e) => e.stopPropagation()} className="flex justify-end">
-                  <Button variant="outline" size="sm" className="mr-2">
-                    <Share className="h-4 w-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" className="mr-2">
-                    <Download className="h-4 w-4" />
-                  </Button>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                      <Button variant="outline" size="sm">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                      <DropdownMenuItem onClick={() => handleEditCode(qrCode.id)}>
-                        <Edit className="mr-2 h-4 w-4" /> Edit
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleViewAnalytics(qrCode.id)}>
-                        <Eye className="mr-2 h-4 w-4" /> View Analytics
-                      </DropdownMenuItem>
-                      <DropdownMenuItem onClick={() => handleDeleteCode(qrCode.id)}>
-                        <Trash2 className="mr-2 h-4 w-4" /> Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
-                </div>
-              </TableCell>
+              </TableHead>
+              <TableHead className="font-semibold text-gray-700">QR code name</TableHead>
+              <TableHead className="font-semibold text-gray-700">QR code type</TableHead>
+              <TableHead className="font-semibold text-gray-700">Scans</TableHead>
+              <TableHead className="font-semibold text-gray-700">Status</TableHead>
+              <TableHead className="font-semibold text-gray-700">Creation date</TableHead>
+              <TableHead className="text-right font-semibold text-gray-700">Actions</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {filteredQRCodes.map((qrCode) => (
+              <TableRow 
+                key={qrCode.id} 
+                className="cursor-pointer hover:bg-gray-50 transition-colors"
+                onClick={() => handleEditCode(qrCode.id)}
+              >
+                <TableCell onClick={(e) => e.stopPropagation()}>
+                  <Checkbox
+                    checked={selectedCodes.includes(qrCode.id)}
+                    onCheckedChange={(checked) => handleSelectCode(qrCode.id, checked as boolean)}
+                  />
+                </TableCell>
+                <TableCell>
+                  <div className="flex items-center space-x-3">
+                    <Image 
+                      src={qrCode.qrCodeImage} 
+                      alt="QR Code" 
+                      width={48} 
+                      height={48}
+                      className="rounded-lg shadow-sm"
+                    />
+                    <span className="font-medium text-gray-800">{qrCode.name}</span>
+                  </div>
+                </TableCell>
+                <TableCell className="text-gray-600">{qrCode.type}</TableCell>
+                <TableCell className="text-gray-600">{qrCode.scans}</TableCell>
+                <TableCell>
+                  <Badge variant={qrCode.status === 'Active' ? 'default' : 'secondary'} className={qrCode.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                    {qrCode.status}
+                  </Badge>
+                </TableCell>
+                <TableCell className="text-gray-600">{qrCode.creationDate}</TableCell>
+                <TableCell className="text-right">
+                  <div onClick={(e) => e.stopPropagation()} className="flex justify-end space-x-2">
+                    <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500">
+                      <Share className="h-4 w-4" />
+                    </Button>
+                    <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500">
+                      <Download className="h-4 w-4" />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-white shadow-lg rounded-lg border border-gray-200">
+                        <DropdownMenuItem onClick={() => handleEditCode(qrCode.id)} className="hover:bg-gray-100">
+                          <Edit className="mr-2 h-4 w-4 text-blue-500" /> Edit
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleViewAnalytics(qrCode.id)} className="hover:bg-gray-100">
+                          <Eye className="mr-2 h-4 w-4 text-green-500" /> View Analytics
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleDeleteCode(qrCode.id)} className="hover:bg-gray-100">
+                          <Trash2 className="mr-2 h-4 w-4 text-red-500" /> Delete
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   )
 }

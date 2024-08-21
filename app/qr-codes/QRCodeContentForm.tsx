@@ -1,60 +1,93 @@
-// File: app/qr-codes/QRCodeContentForm.tsx
-
 import { FC } from 'react'
 import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 
 interface Props {
   type: string
   onSubmit: (data: any) => void
 }
 
+const formSchema = z.object({
+  name: z.string().min(2, {
+    message: "Name must be at least 2 characters.",
+  }),
+  url: z.string().url({
+    message: "Please enter a valid URL.",
+  }),
+})
+
 const QRCodeContentForm: FC<Props> = ({ type, onSubmit }) => {
-  const { register, handleSubmit, formState: { errors } } = useForm()
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      url: "",
+    },
+  })
 
   const renderForm = () => {
     switch (type) {
       case 'Website URL':
         return (
-          <div className="space-y-4">
-            <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700">QR Code Name</label>
-              <input
-                type="text"
-                id="name"
-                {...register('name', { required: 'Name is required' })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+          <Form {...form}>
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>QR Code Name</FormLabel>
+                    <FormControl>
+                      <Input placeholder="My QR Code" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Give your QR code a memorable name.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.name && <p className="mt-1 text-sm text-red-600">{errors.name.message?.toString()}</p>}
-            </div>
-            <div>
-              <label htmlFor="url" className="block text-sm font-medium text-gray-700">Website URL</label>
-              <input
-                type="url"
-                id="url"
-                {...register('url', { required: 'URL is required', pattern: { value: /^https?:\/\/.+\..+/, message: 'Enter a valid URL' } })}
-                className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
+              <FormField
+                control={form.control}
+                name="url"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Website URL</FormLabel>
+                    <FormControl>
+                      <Input placeholder="https://example.com" {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      Enter the full URL including http:// or https://
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
               />
-              {errors.url && <p className="mt-1 text-sm text-red-600">{errors.url.message?.toString()}</p>}
-            </div>
-          </div>
+              <Button type="submit" className="w-full">Continue</Button>
+            </form>
+          </Form>
         )
       // Add more cases for other QR code types
       default:
-        return <p>Unsupported QR code type</p>
+        return <p className="text-muted-foreground">Unsupported QR code type</p>
     }
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="max-w-lg mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Add content for {type}</h2>
-      {renderForm()}
-      <button
-        type="submit"
-        className="mt-6 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-      >
-        Continue
-      </button>
-    </form>
+    <Card className="w-full max-w-lg mx-auto">
+      <CardHeader>
+        <CardTitle>Add content for {type}</CardTitle>
+        <CardDescription>Enter the details for your QR code content.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {renderForm()}
+      </CardContent>
+    </Card>
   )
 }
 

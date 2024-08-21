@@ -4,9 +4,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const settingsLinks = [
   { href: '/settings/account', label: 'Account' },
-  { href: '/settings/company', label: 'Company' },
   { href: '/settings/plan-billing', label: 'Plan & Billing' },
-  { href: '/settings/members', label: 'Members' },
   { href: '/settings/refer', label: 'Refer a friend' },
 ]
 
