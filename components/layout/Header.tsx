@@ -146,6 +146,7 @@ const Header = ({ toggleSidebar }: { toggleSidebar: () => void }) => {
           </Link>
         </div>
       )}
+      
     </header>
   )
 }
