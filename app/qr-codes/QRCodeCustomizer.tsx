@@ -1,4 +1,5 @@
 // File: app/qr-codes/QRCodeCustomizer.tsx
+
 import React, { FC, useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -11,7 +12,7 @@ import { Upload, X } from 'lucide-react';
 
 const defaultCustomization = {
   frame: 'no-frame',
-  frameUrl: '',
+  frameUrl: '',  // Ensure frameUrl is included
   frameColor: '#000000',
   frameText: 'Scan me!',
   backgroundColor: '#FFFFFF',
@@ -203,7 +204,7 @@ const QRCodeCustomizer: FC<Props> = ({
                   onDragEnter={handleDrag}
                   onDragLeave={handleDrag}
                   onDragOver={handleDrag}
-                  onDrop={handleDrop}
+                  onDrop={handleDrag}
                 >
                   <Input
                     id="logo-upload"

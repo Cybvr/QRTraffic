@@ -36,6 +36,11 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
   }
 
   const handleCustomizationChange = (customization: any) => {
+    // Ensure frameUrl is retained during customization change
+    customization = {
+      ...customization,
+      frameUrl: customization.frameUrl || '' // Default to empty string if frameUrl is not present
+    }
     setQRCodeData(prev => ({ ...prev, customization }))
   }
 
@@ -75,6 +80,7 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
         <CardContent>
           <QRCodeCustomizer
             customization={qrCodeData.customization}
+            initialData={qrCodeData}
             onCustomizationChange={handleCustomizationChange}
             onComplete={handleSave}
             initialContent={qrCodeData.content}
