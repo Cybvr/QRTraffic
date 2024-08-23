@@ -37,21 +37,41 @@ export default function NewQRCode() {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleTypeSelect = (type: string) => {
+    console.log('Selected QR Code type:', type)
     setQRCodeData(prev => ({ ...prev, type }))
     setCurrentStep(1)
   }
 
   const handleContentSubmit = (data: any) => {
-    setQRCodeData(prev => ({ ...prev, ...data }))
+    console.log('Content form data:', data)
+    setQRCodeData(prev => ({
+      ...prev,
+      content: data.url,
+      name: data.name
+    }))
     setCurrentStep(2)
   }
 
   const handleCustomizationChange = (customization: any) => {
+    console.log('Customization data:', customization)
     setQRCodeData(prev => ({ ...prev, customization }))
   }
 
   const validateQRCodeData = (data: typeof qrCodeData): boolean => {
-    return !!(data.type && data.content && data.name && data.customization)
+    const { type, content, name, customization } = data;
+    const isValid = !!(
+      type && content && name &&
+      customization.frame &&
+      customization.frameColor &&
+      customization.frameText &&
+      customization.backgroundColor &&
+      customization.textColor &&
+      customization.qrCodeColor &&
+      typeof customization.transparentBackground === 'boolean' &&
+      customization.frameUrl !== undefined
+    );
+    console.log('QR Code data validation result:', isValid)
+    return isValid;
   }
 
   const handleCustomizationComplete = async () => {
@@ -59,6 +79,7 @@ export default function NewQRCode() {
       setError('User not authenticated. Please log in and try again.')
       return
     }
+    console.log('QR Code data before validation:', qrCodeData)
     if (!validateQRCodeData(qrCodeData)) {
       setError('Invalid QR code data. Please fill all required fields.')
       return
