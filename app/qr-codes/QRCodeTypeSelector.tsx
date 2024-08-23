@@ -1,6 +1,8 @@
+// File: app/qr-codes/QRCodeTypeSelector.tsx
+
 import { FC } from 'react'
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Clock, Globe, User, FileText, Image, Share2, Video, Type, Briefcase, Facebook, Wifi } from 'lucide-react'
+import { Globe, User, FileText, Image, Share2, Video, Type, Briefcase, Facebook, Wifi } from 'lucide-react'
 
 interface QRCodeType {
   name: string

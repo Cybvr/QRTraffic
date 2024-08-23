@@ -1,4 +1,5 @@
-// File: /app/qr-codes/new/page.tsx
+// File: app/qr-codes/new/page.tsx
+
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -15,51 +16,46 @@ const steps = ['Choose QR Code Type', 'Add Content', 'Customize Design']
 
 export default function NewQRCode() {
   const [currentStep, setCurrentStep] = useState(0)
-  const [selectedType, setSelectedType] = useState('')
-  const [qrCodeData, setQRCodeData] = useState<any>({})
-  const [customization, setCustomization] = useState({
-    frame: 'no-frame',
-    frameUrl: '',
-    frameColor: '#000000',
-    frameText: 'Scan me!',
-    backgroundColor: '#FFFFFF',
-    textColor: '#000000',
-    transparentBackground: false,
-    logo: '',
-    customLogo: ''
+  const [qrCodeData, setQRCodeData] = useState({
+    type: '',
+    content: '',
+    name: '',
+    customization: {
+      frame: 'no-frame',
+      frameText: 'Scan me!',
+      frameColor: '#000000',
+      backgroundColor: '#FFFFFF',
+      textColor: '#000000',
+      qrCodeColor: '#000000',
+      transparentBackground: false,
+      logo: '',
+      customLogo: ''
+    }
   })
   const { user } = useAuth()
   const router = useRouter()
 
   const handleTypeSelect = (type: string) => {
-    setSelectedType(type)
+    setQRCodeData(prev => ({ ...prev, type }))
     setCurrentStep(1)
   }
 
   const handleContentSubmit = (data: any) => {
-    setQRCodeData(data)
+    setQRCodeData(prev => ({ ...prev, ...data }))
     setCurrentStep(2)
   }
 
-  const handleCustomizationChange = (newCustomization: any) => {
-    setCustomization(newCustomization)
+  const handleCustomizationChange = (customization: any) => {
+    setQRCodeData(prev => ({ ...prev, customization }))
   }
 
   const handleCustomizationComplete = async () => {
-    if (!user) {
-      // Handle unauthenticated user
-      return
-    }
+    if (!user) return
     try {
-      const qrCodeId = await createQRCode(user.uid, {
-        type: selectedType,
-        content: qrCodeData,
-        customization
-      })
+      const qrCodeId = await createQRCode(user.uid, qrCodeData)
       router.push(`/qr-codes/${qrCodeId}`)
     } catch (error) {
       console.error('Error creating QR code:', error)
-      // Handle error (show error message to user)
     }
   }
 
@@ -68,14 +64,16 @@ export default function NewQRCode() {
       case 0:
         return <QRCodeTypeSelector onSelect={handleTypeSelect} />
       case 1:
-        return <QRCodeContentForm type={selectedType} onSubmit={handleContentSubmit} />
+        return <QRCodeContentForm type={qrCodeData.type} onSubmit={handleContentSubmit} />
       case 2:
         return (
           <QRCodeCustomizer
+            customization={qrCodeData.customization}
             initialData={qrCodeData}
-            customization={customization}
             onCustomizationChange={handleCustomizationChange}
             onComplete={handleCustomizationComplete}
+            initialContent={qrCodeData.content}
+            initialName={qrCodeData.name}
           />
         )
       default:
@@ -92,13 +90,7 @@ export default function NewQRCode() {
       </Card>
       <Card>
         <CardContent className="p-8">
-          <h1 className="text-2xl font-bold mb-6">
-            {currentStep === 0
-              ? steps[0]
-              : currentStep === 1
-              ? steps[1]
-              : steps[2]}
-          </h1>
+          <h1 className="text-2xl font-bold mb-6">{steps[currentStep]}</h1>
           {renderContent()}
         </CardContent>
       </Card>

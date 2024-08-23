@@ -1,38 +1,39 @@
 // File: services/qrCodeService.ts
+
 import { db } from '@/lib/firebase'
-import { collection, addDoc, updateDoc, deleteDoc, doc, getDocs, getDoc, query, where, arrayUnion, arrayRemove, Timestamp } from 'firebase/firestore'
+import { collection, addDoc, updateDoc, doc, getDoc, getDocs, deleteDoc, query, where, Timestamp } from 'firebase/firestore'
 
 interface QRCodeData {
+  id?: string
+  type: string
+  content: string
+  name: string
   customization: {
-    bgColor: string;
-    color: string;
-    frame: string;
-  };
-  data: {
-    url: string;
-    name: string;
-    qrCodeImage: string;
-    scans: number;
-  };
-  status: ("active" | "Inactive")[];
-  type: string;
-  userId: string;
-  creationDate: Timestamp;
+    frame: string
+    frameColor: string
+    frameText: string
+    backgroundColor: string
+    textColor: string
+    qrCodeColor: string
+    logo: string
+    transparentBackground: boolean
+  }
+  userId: string
+  creationDate: Timestamp
+  lastModified: Timestamp
+  scanCount: number
+  status: 'Active' | 'Inactive'
 }
 
-interface FolderData {
-  id: string;
-  name: string;
-  qrCodes: string[];
-  userId: string;
-}
-
-export const createQRCode = async (userId: string, qrCodeData: Omit<QRCodeData, 'userId' | 'creationDate'>) => {
+export const createQRCode = async (userId: string, data: Omit<QRCodeData, 'id' | 'userId' | 'creationDate' | 'lastModified' | 'scanCount' | 'status'>) => {
   try {
     const docRef = await addDoc(collection(db, 'qr_codes'), {
-      ...qrCodeData,
+      ...data,
       userId,
       creationDate: Timestamp.now(),
+      lastModified: Timestamp.now(),
+      scanCount: 0,
+      status: 'Active'
     })
     return docRef.id
   } catch (error) {
@@ -41,43 +42,25 @@ export const createQRCode = async (userId: string, qrCodeData: Omit<QRCodeData, 
   }
 }
 
-export const updateQRCode = async (qrCodeId: string, updateData: Partial<QRCodeData>) => {
+export const updateQRCode = async (qrCodeId: string, data: Partial<QRCodeData>) => {
   try {
     const qrCodeRef = doc(db, 'qr_codes', qrCodeId)
-    await updateDoc(qrCodeRef, updateData)
+    await updateDoc(qrCodeRef, {
+      ...data,
+      lastModified: Timestamp.now()
+    })
   } catch (error) {
     console.error('Error updating QR code:', error)
     throw error
   }
 }
 
-export const deleteQRCode = async (qrCodeId: string) => {
-  try {
-    const qrCodeRef = doc(db, 'qr_codes', qrCodeId)
-    await deleteDoc(qrCodeRef)
-  } catch (error) {
-    console.error('Error deleting QR code:', error)
-    throw error
-  }
-}
-
-export const getUserQRCodes = async (userId: string): Promise<(QRCodeData & { id: string })[]> => {
-  try {
-    const q = query(collection(db, 'qr_codes'), where('userId', '==', userId))
-    const querySnapshot = await getDocs(q)
-    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() as QRCodeData }))
-  } catch (error) {
-    console.error('Error fetching user QR codes:', error)
-    throw error
-  }
-}
-
-export const getQRCode = async (qrCodeId: string): Promise<QRCodeData & { id: string }> => {
+export const getQRCode = async (qrCodeId: string): Promise<QRCodeData> => {
   try {
     const docRef = doc(db, 'qr_codes', qrCodeId)
     const docSnap = await getDoc(docRef)
     if (docSnap.exists()) {
-      return { id: docSnap.id, ...docSnap.data() as QRCodeData }
+      return { id: docSnap.id, ...docSnap.data() } as QRCodeData
     } else {
       throw new Error('QR code not found')
     }
@@ -87,67 +70,24 @@ export const getQRCode = async (qrCodeId: string): Promise<QRCodeData & { id: st
   }
 }
 
-export const createFolder = async (userId: string, folderName: string) => {
+export const getUserQRCodes = async (userId: string): Promise<QRCodeData[]> => {
   try {
-    const docRef = await addDoc(collection(db, 'folders'), {
-      userId,
-      name: folderName,
-      createdAt: Timestamp.now(),
-      qrCodes: []
-    })
-    return docRef.id
+    const q = query(collection(db, 'qr_codes'), where('userId', '==', userId))
+    const querySnapshot = await getDocs(q)
+    return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as QRCodeData))
   } catch (error) {
-    console.error('Error creating folder:', error)
+    console.error('Error fetching user QR codes:', error)
     throw error
   }
 }
 
-export const getUserFolders = async (userId: string): Promise<FolderData[]> => {
+export const deleteQRCode = async (qrCodeId: string) => {
   try {
-    const q = query(collection(db, 'folders'), where('userId', '==', userId));
-    const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      name: doc.data().name,
-      qrCodes: doc.data().qrCodes || [],
-      userId: doc.data().userId
-    }));
+    await deleteDoc(doc(db, 'qr_codes', qrCodeId))
   } catch (error) {
-    console.error('Error fetching user folders:', error);
-    throw error;
-  }
-};
-
-export const addQRCodeToFolder = async (folderId: string, qrCodeId: string) => {
-  try {
-    const folderRef = doc(db, 'folders', folderId)
-    await updateDoc(folderRef, {
-      qrCodes: arrayUnion(qrCodeId)
-    })
-  } catch (error) {
-    console.error('Error adding QR code to folder:', error)
+    console.error('Error deleting QR code:', error)
     throw error
   }
 }
 
-export const removeQRCodeFromFolder = async (folderId: string, qrCodeId: string) => {
-  try {
-    const folderRef = doc(db, 'folders', folderId)
-    await updateDoc(folderRef, {
-      qrCodes: arrayRemove(qrCodeId)
-    })
-  } catch (error) {
-    console.error('Error removing QR code from folder:', error)
-    throw error
-  }
-}
-
-export const deleteFolder = async (folderId: string) => {
-  try {
-    const folderRef = doc(db, 'folders', folderId)
-    await deleteDoc(folderRef)
-  } catch (error) {
-    console.error('Error deleting folder:', error)
-    throw error
-  }
-}
+// Implement other necessary functions like getUserFolders if needed

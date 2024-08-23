@@ -1,4 +1,4 @@
-// File: app/qr-codes/[id]/page.tsx
+// File: /app/qr-codes/[id]/page.tsx
 
 'use client'
 
@@ -9,7 +9,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getQRCode } from '@/services/qrCodeService'
-import QRCodeDisplay from '@/components/qr-tools/QRCodeDisplay'
 
 // Dummy data for analytics
 const analyticsData = [
@@ -62,7 +61,7 @@ export default function QRCodeDetail({ params }: { params: { id: string } }) {
               <CardTitle>QR Code Details</CardTitle>
             </CardHeader>
             <CardContent>
-              <QRCodeDisplay qrCode={JSON.stringify(qrCodeDetails.data)} customization={qrCodeDetails.customization} />
+              { /* QRCodeDisplay component removed */}
               <div className="mt-4">
                 <p><strong>Type:</strong> {qrCodeDetails.type}</p>
                 <p><strong>Created:</strong> {new Date(qrCodeDetails.createdAt).toLocaleDateString()}</p>

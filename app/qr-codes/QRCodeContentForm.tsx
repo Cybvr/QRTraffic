@@ -1,5 +1,5 @@
-// File: /app/qr-codes/QRCodeContentForm.tsx
-import { FC, useState } from 'react'
+// File: app/qr-codes/QRCodeContentForm.tsx
+import { FC, useState, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
@@ -10,6 +10,8 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/com
 
 interface Props {
   type: string
+  initialContent?: string
+  initialName?: string
   onSubmit: (data: any) => void
 }
 
@@ -22,27 +24,30 @@ const formSchema = z.object({
   }),
 })
 
-const QRCodeContentForm: FC<Props> = ({ type, onSubmit }) => {
+const QRCodeContentForm: FC<Props> = ({ type, initialContent, initialName, onSubmit }) => {
   const [showCustomizer, setShowCustomizer] = useState(false)
   const [formData, setFormData] = useState<any>(null)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      url: "",
+      name: initialName || "",
+      url: initialContent || ""
     },
   })
 
   const handleFormSubmit = (data: z.infer<typeof formSchema>) => {
     setFormData(data)
     setShowCustomizer(true)
-    onSubmit(data); // Proceed to next step
+    onSubmit(data)
   }
 
-  const handleCustomizationComplete = (customization: any) => {
-    onSubmit({ ...formData, customization })
-  }
+  useEffect(() => {
+    form.reset({
+      name: initialName || "",
+      url: initialContent || ""
+    });
+  }, [initialContent, initialName]);
 
   return (
     <div className="w-full max-w-1xl mx-auto">
