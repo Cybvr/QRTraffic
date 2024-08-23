@@ -1,5 +1,3 @@
-// File: services/qrCodeService.ts
-
 import { db } from '@/lib/firebase'
 import { collection, addDoc, updateDoc, doc, getDoc, getDocs, deleteDoc, query, where, Timestamp } from 'firebase/firestore'
 
@@ -17,6 +15,8 @@ interface QRCodeData {
     qrCodeColor: string
     logo: string
     transparentBackground: boolean
+    frameUrl: string
+    customLogo: string
   }
   userId: string
   creationDate: Timestamp
@@ -38,7 +38,11 @@ export const createQRCode = async (userId: string, data: Omit<QRCodeData, 'id' |
     return docRef.id
   } catch (error) {
     console.error('Error creating QR code:', error)
-    throw error
+    if (error instanceof Error) {
+      throw new Error(`Failed to create QR code: ${error.message}`)
+    } else {
+      throw new Error('An unknown error occurred while creating the QR code')
+    }
   }
 }
 
@@ -51,7 +55,11 @@ export const updateQRCode = async (qrCodeId: string, data: Partial<QRCodeData>) 
     })
   } catch (error) {
     console.error('Error updating QR code:', error)
-    throw error
+    if (error instanceof Error) {
+      throw new Error(`Failed to update QR code: ${error.message}`)
+    } else {
+      throw new Error('An unknown error occurred while updating the QR code')
+    }
   }
 }
 
@@ -66,7 +74,11 @@ export const getQRCode = async (qrCodeId: string): Promise<QRCodeData> => {
     }
   } catch (error) {
     console.error('Error fetching QR code:', error)
-    throw error
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch QR code: ${error.message}`)
+    } else {
+      throw new Error('An unknown error occurred while fetching the QR code')
+    }
   }
 }
 
@@ -77,7 +89,11 @@ export const getUserQRCodes = async (userId: string): Promise<QRCodeData[]> => {
     return querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as QRCodeData))
   } catch (error) {
     console.error('Error fetching user QR codes:', error)
-    throw error
+    if (error instanceof Error) {
+      throw new Error(`Failed to fetch user QR codes: ${error.message}`)
+    } else {
+      throw new Error('An unknown error occurred while fetching user QR codes')
+    }
   }
 }
 
@@ -86,8 +102,10 @@ export const deleteQRCode = async (qrCodeId: string) => {
     await deleteDoc(doc(db, 'qr_codes', qrCodeId))
   } catch (error) {
     console.error('Error deleting QR code:', error)
-    throw error
+    if (error instanceof Error) {
+      throw new Error(`Failed to delete QR code: ${error.message}`)
+    } else {
+      throw new Error('An unknown error occurred while deleting the QR code')
+    }
   }
 }
-
-// Implement other necessary functions like getUserFolders if needed

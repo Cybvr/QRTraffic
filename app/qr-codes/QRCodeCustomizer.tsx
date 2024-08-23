@@ -12,7 +12,7 @@ import { Upload, X } from 'lucide-react';
 
 const defaultCustomization = {
   frame: 'no-frame',
-  frameUrl: '',  // Ensure frameUrl is always included
+  frameUrl: '',
   frameColor: '#000000',
   frameText: 'Scan me!',
   backgroundColor: '#FFFFFF',
@@ -20,7 +20,7 @@ const defaultCustomization = {
   qrCodeColor: '#000000',
   transparentBackground: false,
   logo: '',
-  customLogo: ''
+  customLogo: '',
 };
 
 const frames = [
@@ -47,9 +47,10 @@ const QRCodeCustomizer: FC<Props> = ({
   onCustomizationChange,
   onComplete,
   initialContent,
-  initialName
+  initialName,
 }) => {
   const [localCustomization, setLocalCustomization] = useState(customization);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setLocalCustomization(customization);
@@ -89,6 +90,32 @@ const QRCodeCustomizer: FC<Props> = ({
     } catch (error) {
       console.error('Error generating JPEG:', error);
     }
+  };
+
+  const validateQRCodeData = (data: any): boolean => {
+    const requiredFields = [
+      'frame', 'frameText', 'frameColor',
+      'backgroundColor', 'textColor', 'qrCodeColor', 
+      'logo', 'transparentBackground', 'frameUrl'
+    ];
+
+    for (const field of requiredFields) {
+      if (!data[field] && typeof data[field] !== 'boolean') {
+        return false;
+      }
+    }
+
+    return true;
+  };
+
+  const handleComplete = () => {
+    if (!validateQRCodeData(localCustomization)) {
+      setError('Invalid QR code data. Please fill all required fields.');
+      return;
+    }
+
+    setError(null);
+    onComplete();
   };
 
   return (
@@ -249,6 +276,10 @@ const QRCodeCustomizer: FC<Props> = ({
             <Button onClick={handleSaveAsJpeg} className="w-full">
               Save as JPEG
             </Button>
+            <Button onClick={handleComplete} className="w-full mt-2">
+              Complete Customization
+            </Button>
+            {error && <p className="text-red-500 mt-2">{error}</p>}
           </CardContent>
         </Card>
       </div>

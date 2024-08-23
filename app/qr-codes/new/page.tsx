@@ -1,5 +1,3 @@
-// File: app/qr-codes/new/page.tsx
-
 'use client'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -22,7 +20,7 @@ export default function NewQRCode() {
     name: '',
     customization: {
       frame: 'no-frame',
-      frameUrl: '',  // Ensure frameUrl is always included
+      frameUrl: '',
       frameText: 'Scan me!',
       frameColor: '#000000',
       backgroundColor: '#FFFFFF',
@@ -35,6 +33,8 @@ export default function NewQRCode() {
   })
   const { user } = useAuth()
   const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
 
   const handleTypeSelect = (type: string) => {
     setQRCodeData(prev => ({ ...prev, type }))
@@ -50,13 +50,31 @@ export default function NewQRCode() {
     setQRCodeData(prev => ({ ...prev, customization }))
   }
 
+  const validateQRCodeData = (data: typeof qrCodeData): boolean => {
+    return !!(data.type && data.content && data.name && data.customization)
+  }
+
   const handleCustomizationComplete = async () => {
-    if (!user) return
+    if (!user) {
+      setError('User not authenticated. Please log in and try again.')
+      return
+    }
+    if (!validateQRCodeData(qrCodeData)) {
+      setError('Invalid QR code data. Please fill all required fields.')
+      return
+    }
+    setError(null)
+    setIsLoading(true)
     try {
-      const qrCodeId = await createQRCode(user.uid, qrCodeData)
-      router.push(`/qr-codes/my-codes`)  // Redirect to My Codes after creation
+      console.log('Creating QR code with data:', qrCodeData)
+      await createQRCode(user.uid, qrCodeData)
+      console.log('QR code created successfully')
+      router.push(`/qr-codes/my-codes`)
     } catch (error) {
       console.error('Error creating QR code:', error)
+      setError(error instanceof Error ? error.message : 'Failed to create QR code. Please try again.')
+    } finally {
+      setIsLoading(false)
     }
   }
 
@@ -93,13 +111,15 @@ export default function NewQRCode() {
         <CardContent className="p-8">
           <h1 className="text-2xl font-bold mb-6">{steps[currentStep]}</h1>
           {renderContent()}
+          {error && <p className="text-red-500 mt-4">{error}</p>}
           {currentStep === 2 && (
             <Button
               onClick={handleCustomizationComplete}
-              variant="default"  // Corrected variant
+              variant="default"
               className="w-full mt-4"
+              disabled={isLoading}
             >
-              Save and Continue
+              {isLoading ? 'Creating...' : 'Save and Continue'}
             </Button>
           )}
         </CardContent>
@@ -116,5 +136,3 @@ export default function NewQRCode() {
     </div>
   )
 }
-
- 
