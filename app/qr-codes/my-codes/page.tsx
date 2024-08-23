@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Share, Download, MoreHorizontal, Edit, Eye, Trash2 } from 'lucide-react'
 import Image from 'next/image'
+import EmptyState from '@/components/ui/emptyState'
 
 export default function MyQRCodes() {
   const [qrCodes, setQRCodes] = useState<any[]>([])
@@ -50,6 +51,65 @@ export default function MyQRCodes() {
     } catch (error) {
       console.error('Error deleting QR code:', error)
     }
+  }
+
+  if (!qrCodes.length) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <EmptyState
+          title="No QR Codes Found"
+          description="Create your first QR code to get started."
+          buttonText="Create New QR Code"
+          buttonAction={() => router.push('/qr-codes/new')}
+        />
+        <Table className="mt-8">
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[50px]">
+                <Checkbox disabled={true}/>
+              </TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Type</TableHead>
+              <TableHead>Scans</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Created</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell>
+                <Checkbox disabled={true}/>
+              </TableCell>
+              <TableCell>
+                <div className="flex items-center space-x-3">
+                  <Image
+                    src="/placeholder-qr.png"
+                    alt="Placeholder QR"
+                    width={48}
+                    height={48}
+                    className="rounded-lg shadow-sm"
+                  />
+                  <span className="font-medium text-gray-800">Example QR Code</span>
+                </div>
+              </TableCell>
+              <TableCell className="text-gray-600">Type</TableCell>
+              <TableCell className="text-gray-600">0</TableCell>
+              <TableCell>
+                <Badge
+                  variant="secondary"
+                  className="bg-gray-100 text-gray-800"
+                >
+                  Inactive
+                </Badge>
+              </TableCell>
+              <TableCell className="text-gray-600">MM/DD/YYYY</TableCell>
+              <TableCell className="text-right text-gray-600">Actions</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </div>
+    )
   }
 
   return (

@@ -54,7 +54,7 @@ export default function NewQRCode() {
     if (!user) return
     try {
       const qrCodeId = await createQRCode(user.uid, qrCodeData)
-      router.push(`/qr-codes/${qrCodeId}`)
+      router.push(`/qr-codes/my-codes`)  // Redirect to My Codes after creation
     } catch (error) {
       console.error('Error creating QR code:', error)
     }
@@ -70,7 +70,7 @@ export default function NewQRCode() {
         return (
           <QRCodeCustomizer
             customization={qrCodeData.customization}
-            initialData={{ url: qrCodeData.content }}  // Ensure matching structure
+            initialData={{ url: qrCodeData.content }}
             onCustomizationChange={handleCustomizationChange}
             onComplete={handleCustomizationComplete}
             initialContent={qrCodeData.content}
@@ -93,6 +93,15 @@ export default function NewQRCode() {
         <CardContent className="p-8">
           <h1 className="text-2xl font-bold mb-6">{steps[currentStep]}</h1>
           {renderContent()}
+          {currentStep === 2 && (
+            <Button
+              onClick={handleCustomizationComplete}
+              variant="default"  // Corrected variant
+              className="w-full mt-4"
+            >
+              Save and Continue
+            </Button>
+          )}
         </CardContent>
       </Card>
       {currentStep > 0 && (
