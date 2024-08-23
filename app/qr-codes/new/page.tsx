@@ -99,8 +99,12 @@ export default function NewQRCode() {
 <<<<<<< HEAD
               variant="default"  // Corrected variant
 =======
+<<<<<<< HEAD
+              variant="default"  // Corrected variant
+=======
               variant="solid"
 >>>>>>> 3d9f1ebde7398490cbfe7bc0a20a2014f4c00574
+>>>>>>> 60351270fcc50b6d7e4e8fab040f3ec3b6adfd19
               className="w-full mt-4"
             >
               Save and Continue
@@ -121,4 +125,8 @@ export default function NewQRCode() {
   )
 }
 
+<<<<<<< HEAD
  
+=======
+ 
+>>>>>>> 60351270fcc50b6d7e4e8fab040f3ec3b6adfd19
