@@ -118,6 +118,7 @@ export default function NewQRCode() {
         </Button>
       )}
     </div>
+      
   )
 }
 
