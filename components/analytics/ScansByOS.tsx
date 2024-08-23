@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
-import { DoughnutChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 
 const generateRandomValue = () => Math.floor(Math.random() * 1000) + 500;
 
@@ -18,7 +18,7 @@ const ScansByOS = () => (
       <h3 className="text-lg font-semibold mb-4">Scans by operating system</h3>
       {data.some(item => item.value > 0) ? (
         <ResponsiveContainer width="100%" height={300}>
-          <DoughnutChart>
+          <PieChart>
             <Pie
               data={data}
               cx="50%"
@@ -34,7 +34,7 @@ const ScansByOS = () => (
               ))}
             </Pie>
             <Legend />
-          </DoughnutChart>
+          </PieChart>
         </ResponsiveContainer>
       ) : (
         <p className="text-sm text-muted-foreground">Not enough data to show statistics</p>
