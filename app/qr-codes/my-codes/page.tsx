@@ -1,4 +1,4 @@
-'use client'
+"use client"
 
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
@@ -10,24 +10,33 @@ import { Input } from "@/components/ui/input"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Badge } from "@/components/ui/badge"
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from '@/context/AuthContext'
 import { getUserQRCodes, deleteQRCode, getUserFolders } from '@/services/qrCodeService'
 import { useToast } from '@/components/ui/toast'
+import { Timestamp } from 'firebase/firestore'
 
 interface QRCodeData {
   id: string;
-  name: string;
+  customization: {
+    bgColor: string;
+    color: string;
+    frame: string;
+  };
+  data: {
+    url: string;
+    name: string;
+    qrCodeImage: string;
+    scans: number;
+  };
+  status: ("active" | "Inactive")[];
   type: string;
-  scans: number;
-  status: 'Active' | 'Inactive';
   creationDate: string;
-  qrCodeImage: string;
 }
 
 interface FolderData {
@@ -49,26 +58,39 @@ export default function MyCodes() {
 
   useEffect(() => {
     const fetchData = async () => {
-      if (!user) return
+      if (!user) return;
       try {
         const [fetchedQRCodes, fetchedFolders] = await Promise.all([
           getUserQRCodes(user.uid),
           getUserFolders(user.uid)
-        ])
-        setQRCodes(fetchedQRCodes)
-        setFolders(fetchedFolders)
-      } catch (error) {
-        console.error('Error fetching data:', error)
-        setError('Failed to load QR codes and folders. Please try again.')
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchData()
-  }, [user])
+        ]);
 
-  const filteredQRCodes = qrCodes.filter(qr => 
-    qr.name.toLowerCase().includes(searchTerm.toLowerCase())
+        // Convert Timestamp to string for each QR code
+        const formattedQRCodes: QRCodeData[] = fetchedQRCodes.map(qrCode => ({
+          ...qrCode,
+          creationDate: (qrCode.creationDate as Timestamp).toDate().toISOString()
+        }));
+
+        // Format folders to include qrCodesCount
+        const formattedFolders: FolderData[] = fetchedFolders.map(folder => ({
+          ...folder,
+          qrCodesCount: folder.qrCodes.length
+        }));
+
+        setQRCodes(formattedQRCodes);
+        setFolders(formattedFolders);
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        setError('Failed to load QR codes and folders. Please try again.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
+  }, [user]);
+
+  const filteredQRCodes = qrCodes.filter(qr =>
+    qr.data.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   const handleSelectAll = (checked: boolean) => {
@@ -211,8 +233,8 @@ export default function MyCodes() {
           </TableHeader>
           <TableBody>
             {filteredQRCodes.map((qrCode) => (
-              <TableRow 
-                key={qrCode.id} 
+              <TableRow
+                key={qrCode.id}
                 className="cursor-pointer hover:bg-gray-50 transition-colors"
                 onClick={() => handleEditCode(qrCode.id)}
               >
@@ -224,24 +246,27 @@ export default function MyCodes() {
                 </TableCell>
                 <TableCell>
                   <div className="flex items-center space-x-3">
-                    <Image 
-                      src={qrCode.qrCodeImage} 
-                      alt="QR Code" 
-                      width={48} 
+                    <Image
+                      src={qrCode.data.qrCodeImage || '/placeholder-qr.png'}
+                      alt={qrCode.data.name}
+                      width={48}
                       height={48}
                       className="rounded-lg shadow-sm"
                     />
-                    <span className="font-medium text-gray-800">{qrCode.name}</span>
+                    <span className="font-medium text-gray-800">{qrCode.data.name}</span>
                   </div>
                 </TableCell>
                 <TableCell className="text-gray-600">{qrCode.type}</TableCell>
-                <TableCell className="text-gray-600">{qrCode.scans}</TableCell>
+                <TableCell className="text-gray-600">{qrCode.data.scans}</TableCell>
                 <TableCell>
-                  <Badge variant={qrCode.status === 'Active' ? 'default' : 'secondary'} className={qrCode.status === 'Active' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                    {qrCode.status}
+                  <Badge
+                    variant={qrCode.status.includes('active') ? 'default' : 'secondary'}
+                    className={qrCode.status.includes('active') ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}
+                  >
+                    {qrCode.status.includes('active') ? 'Active' : 'Inactive'}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-gray-600">{qrCode.creationDate}</TableCell>
+                <TableCell className="text-gray-600">{new Date(qrCode.creationDate).toLocaleDateString()}</TableCell>
                 <TableCell className="text-right">
                   <div onClick={(e) => e.stopPropagation()} className="flex justify-end space-x-2">
                     <Button variant="ghost" size="sm" className="text-gray-500 hover:text-blue-500">

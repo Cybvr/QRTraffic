@@ -1,85 +1,215 @@
-// File: components/qr-tools/QRCodeCustomizer.tsx
+import React, { FC, useState, useEffect } from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Button } from "@/components/ui/button";
+import QRCode from 'qrcode.react';
 
-import { FC, useState } from 'react'
-import { SketchPicker } from 'react-color'
-import QRCode from 'qrcode.react'
+const defaultCustomization = {
+  frame: 'no-frame',
+  frameUrl: '',
+  frameColor: '#000000',
+  frameText: 'Scan me!',
+  backgroundColor: '#FFFFFF',
+  textColor: '#000000',
+  qrCodeColor: '#000000',
+  transparentBackground: false,
+  logo: '',
+  customLogo: ''
+};
 
 interface Props {
-  onComplete: (customization: any) => void
+  initialData: any;
+  customization?: typeof defaultCustomization;
+  onCustomizationChange: (customization: any) => void;
+  onComplete: () => void;
 }
 
-const QRCodeCustomizer: FC<Props> = ({ onComplete }) => {
-  const [customization, setCustomization] = useState({
-    fgColor: '#000000',
-    bgColor: '#ffffff',
-    includeImage: false,
-    imageUrl: '',
-  })
+const QRCodeCustomizer: FC<Props> = ({ initialData, customization = defaultCustomization, onCustomizationChange, onComplete }) => {
+  const [localCustomization, setLocalCustomization] = useState(customization);
 
-  const handleColorChange = (color: any, type: 'fgColor' | 'bgColor') => {
-    setCustomization({ ...customization, [type]: color.hex })
-  }
+  const frames = [
+    { thumb: '/images/frames/thumb1.png', full: '/images/frames/frame1.png' },
+    { thumb: '/images/frames/thumb2.png', full: '/images/frames/frame2.png' },
+    { thumb: '/images/frames/thumb3.png', full: '/images/frames/frame3.png' },
+    { thumb: '/images/frames/thumb4.png', full: '/images/frames/frame4.png' },
+    { thumb: '/images/frames/thumb5.png', full: '/images/frames/frame5.png' },
+    { thumb: '/images/frames/thumb6.png', full: '/images/frames/frame6.png' },
+  ];
 
-  const handleImageToggle = () => {
-    setCustomization({ ...customization, includeImage: !customization.includeImage })
-  }
+  useEffect(() => {
+    setLocalCustomization(customization);
+  }, [customization]);
 
-  const handleImageUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setCustomization({ ...customization, imageUrl: e.target.value })
-  }
+  const handleChange = (key: string, value: any) => {
+    const newCustomization = { ...localCustomization, [key]: value };
+    setLocalCustomization(newCustomization);
+    onCustomizationChange(newCustomization);
+  };
+
+  const handleFrameSelection = (frameUrl: string) => {
+    handleChange('frameUrl', frameUrl);
+  };
+
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const result = e.target?.result as string;
+        handleChange('logo', result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleSaveAsJpeg = () => {
+    // Implement save as JPEG functionality
+    onComplete();
+  };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <h2 className="text-2xl font-bold mb-6">Customize QR Code</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Foreground Color</h3>
-            <SketchPicker color={customization.fgColor} onChange={(color) => handleColorChange(color, 'fgColor')} />
-          </div>
-          <div>
-            <h3 className="text-lg font-semibold mb-2">Background Color</h3>
-            <SketchPicker color={customization.bgColor} onChange={(color) => handleColorChange(color, 'bgColor')} />
-          </div>
-          <div>
-            <label className="flex items-center">
-              <input
-                type="checkbox"
-                checked={customization.includeImage}
-                onChange={handleImageToggle}
-                className="form-checkbox h-5 w-5 text-blue-600"
+    <div className="flex flex-col md:flex-row md:space-x-4">
+      <div className="w-full md:w-2/3 space-y-4">
+        <Card>
+          <CardContent className="p-4">
+            <h3 className="text-lg font-semibold mb-2">QR Code Frame</h3>
+            <div className="grid grid-cols-6 gap-2 mb-2">
+              {frames.map((frame, index) => (
+                <div
+                  key={index}
+                  className={`border p-2 cursor-pointer ${localCustomization.frameUrl === frame.full ? 'border-blue-500' : 'border-gray-300'}`}
+                  onClick={() => handleFrameSelection(frame.full)}
+                >
+                  <img src={frame.thumb} alt={`Frame ${index + 1}`} className="w-full h-18 object-cover" />
+                </div>
+              ))}
+            </div>
+            <div>
+              <Label htmlFor="frameText">Frame Text</Label>
+              <Input
+                id="frameText"
+                value={localCustomization.frameText}
+                onChange={(e) => handleChange('frameText', e.target.value)}
+                placeholder="Scan me!"
               />
-              <span className="ml-2 text-gray-700">Include Logo</span>
-            </label>
-            {customization.includeImage && (
-              <input
-                type="text"
-                value={customization.imageUrl}
-                onChange={handleImageUrlChange}
-                placeholder="Enter logo URL"
-                className="mt-2 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50"
-              />
-            )}
-          </div>
-        </div>
-        <div className="flex flex-col items-center justify-center bg-gray-100 p-8 rounded-lg">
-          <QRCode
-            value="https://example.com"
-            size={200}
-            fgColor={customization.fgColor}
-            bgColor={customization.bgColor}
-            imageSettings={customization.includeImage ? { src: customization.imageUrl, excavate: true, width: 40, height: 40 } : undefined}
-          />
-        </div>
-      </div>
-      <button
-        onClick={() => onComplete(customization)}
-        className="mt-8 w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
-      >
-        Finish
-      </button>
-    </div>
-  )
-}
+            </div>
+          </CardContent>
+        </Card>
 
-export default QRCodeCustomizer
+        <Card>
+          <CardContent className="p-4">
+            <h3 className="text-lg font-semibold mb-2">Colors</h3>
+            <div className="grid grid-cols-2 gap-2 mb-2">
+              <div>
+                <Label htmlFor="backgroundColor">Background color</Label>
+                <Input
+                  id="backgroundColor"
+                  type="color"
+                  value={localCustomization.backgroundColor}
+                  onChange={(e) => handleChange('backgroundColor', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="textColor">Text color</Label>
+                <Input
+                  id="textColor"
+                  type="color"
+                  value={localCustomization.textColor}
+                  onChange={(e) => handleChange('textColor', e.target.value)}
+                />
+              </div>
+              <div>
+                <Label htmlFor="qrCodeColor">QR Code color</Label>
+                <Input
+                  id="qrCodeColor"
+                  type="color"
+                  value={localCustomization.qrCodeColor}
+                  onChange={(e) => handleChange('qrCodeColor', e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex items-center">
+              <Checkbox
+                id="transparentBackground"
+                checked={localCustomization.transparentBackground}
+                onCheckedChange={(checked) => handleChange('transparentBackground', checked)}
+              />
+              <Label htmlFor="transparentBackground" className="ml-2">Transparent background</Label>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardContent className="p-4">
+            <h3 className="text-lg font-semibold mb-2">Add Logo</h3>
+            <div className="grid grid-cols-2 gap-4 mb-2">
+              <div>
+                <h4>Social Media Logos</h4>
+                <div className="grid grid-cols-4 gap-2 mb-2">
+                  {['Facebook.png', 'Instagram.png', 'Linkedin.png', 'Snapchat.png', 'Tiktok.png', 'X.png', 'Youtube.png'].map((logo) => (
+                    <div
+                      key={logo}
+                      className={`border p-2 cursor-pointer ${localCustomization.logo === `/images/Socials/${logo}` ? 'border-blue-500' : 'border-gray-300'}`}
+                      onClick={() => handleChange('logo', `/images/Socials/${logo}`)}
+                    >
+                      <img src={`/images/Socials/${logo}`} alt={logo} className="w-full h-12 object-cover" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4>Upload Your Own Logo</h4>
+                <Label htmlFor="logo-upload" className="cursor-pointer">
+                  Click to upload or drag and drop
+                  <br />
+                  SVG, PNG, JPG or GIF (max. 800x400px)
+                </Label>
+                <Input id="logo-upload" type="file" className="hidden" onChange={handleLogoUpload} accept="image/*" />
+              </div>
+            </div>
+            {localCustomization.logo && (
+              <div className="mt-4">
+                <p>Uploaded Logo:</p>
+                <img src={localCustomization.logo} alt="Uploaded logo" className="max-w-full h-auto" />
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="w-full md:w-1/3 mt-4 md:mt-0">
+        <Card>
+          <CardContent className="p-4">
+            <div className="bg-white rounded-lg mb-4 relative" style={{ width: '300px', height: '300px', overflow: 'hidden' }}>
+              {localCustomization.frameUrl && (
+                <img 
+                  src={localCustomization.frameUrl} 
+                  alt="QR Code Frame" 
+                  className="absolute inset-0 w-full h-full object-contain pointer-events-none"
+                />
+              )}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <QRCode
+                  value={initialData.url || "https://example.com"}
+                  size={180}
+                  fgColor={localCustomization.qrCodeColor}
+                  bgColor={localCustomization.transparentBackground ? 'transparent' : localCustomization.backgroundColor}
+                  level="H"
+                  imageSettings={localCustomization.logo ? { src: localCustomization.logo, excavate: true, width: 30, height: 30 } : undefined}
+                />
+              </div>
+              <p className="absolute bottom-2 left-0 right-0 text-center text-sm" style={{ color: localCustomization.textColor }}>{localCustomization.frameText}</p>
+            </div>
+            <Button onClick={handleSaveAsJpeg} className="w-full">
+              Save as JPEG
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default QRCodeCustomizer;
