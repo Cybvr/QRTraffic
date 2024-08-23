@@ -12,7 +12,7 @@ import { Upload, X } from 'lucide-react';
 
 const defaultCustomization = {
   frame: 'no-frame',
-  frameUrl: '',  // Ensure frameUrl is included
+  frameUrl: '',  // Ensure frameUrl is always included
   frameColor: '#000000',
   frameText: 'Scan me!',
   backgroundColor: '#FFFFFF',
@@ -23,6 +23,15 @@ const defaultCustomization = {
   customLogo: ''
 };
 
+const frames = [
+  { thumb: '/images/frames/thumb1.png', full: '/images/frames/frame1.png' },
+  { thumb: '/images/frames/thumb2.png', full: '/images/frames/frame2.png' },
+  { thumb: '/images/frames/thumb3.png', full: '/images/frames/frame3.png' },
+  { thumb: '/images/frames/thumb4.png', full: '/images/frames/frame4.png' },
+  { thumb: '/images/frames/thumb5.png', full: '/images/frames/frame5.png' },
+  { thumb: '/images/frames/thumb6.png', full: '/images/frames/frame6.png' },
+];
+
 interface Props {
   initialData?: { url?: string };
   customization?: typeof defaultCustomization;
@@ -32,25 +41,15 @@ interface Props {
   initialName?: string;
 }
 
-const QRCodeCustomizer: FC<Props> = ({ 
-  initialData = {}, 
-  customization = defaultCustomization, 
-  onCustomizationChange, 
+const QRCodeCustomizer: FC<Props> = ({
+  initialData = {},
+  customization = defaultCustomization,
+  onCustomizationChange,
   onComplete,
   initialContent,
-  initialName 
+  initialName
 }) => {
   const [localCustomization, setLocalCustomization] = useState(customization);
-  const [dragActive, setDragActive] = useState(false);
-
-  const frames = [
-    { thumb: '/images/frames/thumb1.png', full: '/images/frames/frame1.png' },
-    { thumb: '/images/frames/thumb2.png', full: '/images/frames/frame2.png' },
-    { thumb: '/images/frames/thumb3.png', full: '/images/frames/frame3.png' },
-    { thumb: '/images/frames/thumb4.png', full: '/images/frames/frame4.png' },
-    { thumb: '/images/frames/thumb5.png', full: '/images/frames/frame5.png' },
-    { thumb: '/images/frames/thumb6.png', full: '/images/frames/frame6.png' },
-  ];
 
   useEffect(() => {
     setLocalCustomization(customization);
@@ -76,19 +75,6 @@ const QRCodeCustomizer: FC<Props> = ({
       reader.readAsDataURL(file);
     }
   }, [handleChange]);
-
-  const handleDrag = (e: React.DragEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragleave' || e.type === 'dragover') {
-      setDragActive(e.type === 'dragenter' || e.type === 'dragover');
-    } else if (e.type === 'drop') {
-      setDragActive(false);
-      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-        handleLogoUpload(e.dataTransfer.files[0]);
-      }
-    }
-  };
 
   const handleSaveAsJpeg = async () => {
     const qrCodeElement = document.querySelector('.qr-code-preview');
@@ -198,13 +184,7 @@ const QRCodeCustomizer: FC<Props> = ({
               <div>
                 <h4 className="text-sm font-medium mb-2">Upload Your Own Logo</h4>
                 <div
-                  className={`border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors ${
-                    dragActive ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
-                  }`}
-                  onDragEnter={handleDrag}
-                  onDragLeave={handleDrag}
-                  onDragOver={handleDrag}
-                  onDrop={handleDrag}
+                  className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors border-gray-300 hover:border-gray-400"
                 >
                   <Input
                     id="logo-upload"

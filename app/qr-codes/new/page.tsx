@@ -22,6 +22,7 @@ export default function NewQRCode() {
     name: '',
     customization: {
       frame: 'no-frame',
+      frameUrl: '',  // Ensure frameUrl is always included
       frameText: 'Scan me!',
       frameColor: '#000000',
       backgroundColor: '#FFFFFF',
@@ -69,7 +70,7 @@ export default function NewQRCode() {
         return (
           <QRCodeCustomizer
             customization={qrCodeData.customization}
-            initialData={qrCodeData}
+            initialData={{ url: qrCodeData.content }}  // Ensure matching structure
             onCustomizationChange={handleCustomizationChange}
             onComplete={handleCustomizationComplete}
             initialContent={qrCodeData.content}
