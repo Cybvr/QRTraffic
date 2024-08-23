@@ -96,7 +96,11 @@ export default function NewQRCode() {
           {currentStep === 2 && (
             <Button
               onClick={handleCustomizationComplete}
+<<<<<<< HEAD
+              variant="default"  // Corrected variant
+=======
               variant="solid"
+>>>>>>> 3d9f1ebde7398490cbfe7bc0a20a2014f4c00574
               className="w-full mt-4"
             >
               Save and Continue
@@ -116,3 +120,5 @@ export default function NewQRCode() {
     </div>
   )
 }
+
+ 
