@@ -1,94 +1,108 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { ArrowUpIcon } from '@heroicons/react/24/solid'
+import { ArrowUpIcon } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import RecentQRCodes from '@/components/common/RecentQRCodes'
-import { auth } from '@/lib/firebase'
-
-type User = {
-  email: string;
-  displayName?: string;
-};
+import { useAuth } from '@/context/AuthContext'
+import { getUserQRCodes } from '@/services/qrCodeService'
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import Image from 'next/image'
+import { Badge } from "@/components/ui/badge"
 
 export default function Dashboard() {
-  const [user, setUser] = useState<User | null>(null)
-  const [loading, setLoading] = useState(true)
-  const router = useRouter()
+  const [qrCodes, setQRCodes] = useState<any[]>([])
+  const { user } = useAuth()
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const currentUser = auth.currentUser
-      if (currentUser) {
-        setUser({
-          email: currentUser.email!,
-          displayName: currentUser.displayName || undefined
-        })
-      } else {
-        router.push('/auth/login')
+    const fetchQRCodes = async () => {
+      if (user) {
+        const codes = await getUserQRCodes(user.uid, 4) // Fetch recent 4 QR codes
+        setQRCodes(codes)
       }
-      setLoading(false)
     }
-    checkAuth()
-  }, [router])
-
-  if (loading) {
-    return <div>Loading...</div>
-  }
-
-  if (!user) {
-    return null
-  }
-
-  const firstName = user.displayName?.split(' ')[0] || user.email?.split('@')[0]
+    fetchQRCodes()
+  }, [user])
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Good morning, {firstName}! 👋</h1>
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">Good morning, {user?.firstName}! 👋</h1>
         <p className="text-muted-foreground">Here is a summary of your QR code campaigns.</p>
       </div>
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">QR Codes</CardTitle>
-            <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-              <div className="w-4 h-4 bg-blue-500 rounded-full"></div>
+            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+              <div className="w-4 h-4 bg-primary rounded-full"></div>
             </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">1</div>
             <p className="text-xs text-muted-foreground">Total QR Codes</p>
-            <p className="text-xs text-muted-foreground mt-2">Linkpages Create your own link-in-bio page</p>
+            <p className="text-xs text-muted-foreground mt-2">Linkpages: Create your own link-in-bio page</p>
           </CardContent>
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Scans</CardTitle>
+            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+              <ArrowUpIcon className="h-4 w-4 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">5,476</div>
-            <p className="text-xs text-green-500 flex items-center">
+            <p className="text-xs text-emerald-500 flex items-center">
               <ArrowUpIcon className="h-4 w-4 mr-1" />
-              15% than the previous month
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Users</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">758</div>
-            <p className="text-xs text-green-500 flex items-center">
-              <ArrowUpIcon className="h-4 w-4 mr-1" />
-              20% than the previous month
+              15% more than last month
             </p>
           </CardContent>
         </Card>
       </div>
-      <RecentQRCodes />
+      <Card>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="w-[250px]">Name</TableHead>
+                <TableHead>Type</TableHead>
+                <TableHead>Scans</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Created</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {qrCodes.map((qrCode) => (
+                <TableRow key={qrCode.id}>
+                  <TableCell className="font-medium">
+                    <div className="flex items-center space-x-3">
+                      <Image
+                        src={qrCode.customization.logo || '/placeholder-qr.png'}
+                        alt={qrCode.name}
+                        width={48}
+                        height={48}
+                        className="rounded-lg shadow-sm"
+                      />
+                      <span>{qrCode.name}</span>
+                    </div>
+                  </TableCell>
+                  <TableCell>{qrCode.type}</TableCell>
+                  <TableCell>{qrCode.scanCount}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={qrCode.status === 'Active' ? 'default' : 'secondary'}
+                      className={qrCode.status === 'Active' ? 'bg-emerald-100 text-emerald-800' : 'bg-secondary text-secondary-foreground'}
+                    >
+                      {qrCode.status}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-right">{new Date(qrCode.creationDate.toDate()).toLocaleDateString()}</TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
     </div>
   )
 }

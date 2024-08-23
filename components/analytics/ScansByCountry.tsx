@@ -19,15 +19,27 @@ const ScansByCountry = () => (
       {data.some(item => item.scans > 0) ? (
         <ResponsiveContainer width="100%" height={300}>
           <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="name" />
-            <YAxis />
+            <CartesianGrid strokeDasharray="3 3" className="stroke-[color:var(--muted-foreground)]" />
+            <XAxis
+              dataKey="name"
+              stroke="var(--foreground)"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+            />
+            <YAxis
+              stroke="var(--foreground)"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `${value}`}
+            />
             <Tooltip />
-            <Bar dataKey="scans" fill="#8884d8" />
+            <Bar dataKey="scans" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
       ) : (
-        <p className="text-sm text-gray-500">Not enough data to show statistics</p>
+        <p className="text-sm text-muted-foreground">Not enough data to show statistics</p>
       )}
     </CardContent>
   </Card>
