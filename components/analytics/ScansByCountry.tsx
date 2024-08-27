@@ -1,48 +1,42 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { getAnalytics } from '@/services/qrCodeService';
 
-const generateRandomScans = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+const ScansByCountry = ({ qrCodeId }) => {
+  const [countryData, setCountryData] = useState([]);
 
-const data = [
-  { name: 'USA', scans: generateRandomScans(1000, 5000) },
-  { name: 'UK', scans: generateRandomScans(1000, 5000) },
-  { name: 'Canada', scans: generateRandomScans(1000, 5000) },
-  { name: 'Australia', scans: generateRandomScans(1000, 5000) },
-  { name: 'Germany', scans: generateRandomScans(1000, 5000) },
-];
+  useEffect(() => {
+    const fetchCountryData = async () => {
+      const startDate = new Date("2024-07-18");
+      const endDate = new Date("2024-08-18");
+      const analyticsData = await getAnalytics(startDate, endDate, qrCodeId);
+      setCountryData(Object.entries(analyticsData.countryData).map(([country, scans]) => ({ country, scans })));
+    };
 
-const ScansByCountry = () => (
-  <Card>
-    <CardContent className="p-4">
-      <h3 className="text-lg font-semibold mb-4">Scans by country</h3>
-      {data.some(item => item.scans > 0) ? (
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={data}>
-            <CartesianGrid strokeDasharray="3 3" className="stroke-[color:var(--muted-foreground)]" />
-            <XAxis
-              dataKey="name"
-              stroke="var(--foreground)"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-            />
-            <YAxis
-              stroke="var(--foreground)"
-              fontSize={12}
-              tickLine={false}
-              axisLine={false}
-              tickFormatter={(value) => `${value}`}
-            />
-            <Tooltip />
-            <Bar dataKey="scans" fill="var(--chart-1)" radius={[4, 4, 0, 0]} />
-          </BarChart>
-        </ResponsiveContainer>
-      ) : (
-        <p className="text-sm text-muted-foreground">Not enough data to show statistics</p>
-      )}
-    </CardContent>
-  </Card>
-);
+    fetchCountryData();
+  }, [qrCodeId]);
+
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <h3 className="text-lg font-semibold mb-4">Scans by Country</h3>
+        {countryData.length > 0 ? (
+          <ResponsiveContainer width="100%" height={300}>
+            <BarChart data={countryData}>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="country" />
+              <YAxis />
+              <Tooltip />
+              <Bar dataKey="scans" fill="var(--chart-1)" />
+            </BarChart>
+          </ResponsiveContainer>
+        ) : (
+          <p className="text-sm text-muted-foreground">Not enough data to show statistics</p>
+        )}
+      </CardContent>
+    </Card>
+  );
+};
 
 export default ScansByCountry;

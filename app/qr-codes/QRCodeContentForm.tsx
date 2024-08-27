@@ -47,7 +47,7 @@ const QRCodeContentForm: FC<Props> = ({ type, initialContent, initialName, onSub
       name: initialName || "",
       url: initialContent || ""
     });
-  }, [initialContent, initialName]);
+  }, [initialContent, initialName, form]);
 
   return (
     <div className="w-full max-w-1xl mx-auto">

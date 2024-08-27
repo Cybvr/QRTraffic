@@ -1,63 +1,97 @@
 'use client'
-import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
-import { ArrowUpIcon } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from '@/context/AuthContext'
-import { getUserQRCodes } from '@/services/qrCodeService'
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import Image from 'next/image'
-import { Badge } from "@/components/ui/badge"
+import { useState, useEffect } from 'react';
+import { ArrowUpIcon } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useAuth } from '@/context/AuthContext';
+import { getUserQRCodes } from '@/services/qrCodeService';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import Image from 'next/image';
+import { Badge } from '@/components/ui/badge';
+import Link from 'next/link';
+
+const getGreetingMessage = () => {
+  const hour = new Date().getHours();
+  if (hour < 12) {
+    return 'Good morning';
+  } else if (hour < 18) {
+    return 'Good afternoon';
+  } else {
+    return 'Good evening';
+  }
+};
 
 export default function Dashboard() {
-  const [qrCodes, setQRCodes] = useState<any[]>([])
-  const { user } = useAuth()
+  const [qrCodes, setQRCodes] = useState<any[]>([]);
+  const { user } = useAuth();
+  const [greetingMessage, setGreetingMessage] = useState(getGreetingMessage());
 
   useEffect(() => {
     const fetchQRCodes = async () => {
       if (user) {
-        const codes = await getUserQRCodes(user.uid, 4) // Fetch recent 4 QR codes
-        setQRCodes(codes)
+        const codes = await getUserQRCodes(user.uid); // Fetch QR codes
+        setQRCodes(codes);
       }
-    }
-    fetchQRCodes()
-  }, [user])
+    };
+    fetchQRCodes();
+  }, [user]);
+
+  const getFirstName = (displayName: string | null) => {
+    if (!displayName) return '';
+    return displayName.split(' ')[0];
+  }
+
+  const userGreeting = user && user.displayName ? `${greetingMessage}, ${getFirstName(user.displayName)}! 👋` : `${greetingMessage} 👋`;
 
   return (
     <div className="space-y-6">
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Good morning, {user?.firstName}! 👋</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {userGreeting}
+        </h1>
         <p className="text-muted-foreground">Here is a summary of your QR code campaigns.</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">QR Codes</CardTitle>
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-              <div className="w-4 h-4 bg-primary rounded-full"></div>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">1</div>
-            <p className="text-xs text-muted-foreground">Total QR Codes</p>
-            <p className="text-xs text-muted-foreground mt-2">Linkpages: Create your own link-in-bio page</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Scans</CardTitle>
-            <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-              <ArrowUpIcon className="h-4 w-4 text-primary" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">5,476</div>
-            <p className="text-xs text-emerald-500 flex items-center">
-              <ArrowUpIcon className="h-4 w-4 mr-1" />
-              15% more than last month
-            </p>
-          </CardContent>
-        </Card>
+        <Link href="/qr-codes/my-codes">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">QR Codes</CardTitle>
+              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                <div className="w-4 h-4 bg-primary rounded-full"></div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{qrCodes.length}</div>
+              <p className="text-xs text-muted-foreground">Total QR Codes</p>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/qr-codes/scans">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Scans</CardTitle>
+              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                <ArrowUpIcon className="h-4 w-4 text-primary" />
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">5,476</div>
+            </CardContent>
+          </Card>
+        </Link>
+        <Link href="/qr-codes/my-codes">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">Recent QR Codes</CardTitle>
+              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                <div className="w-4 h-4 bg-primary rounded-full"></div>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{qrCodes.slice(0, 1).map(code => code.name).join(', ') || 'N/A'}</div>
+              <p className="text-xs text-muted-foreground">Most recent QR Code</p>
+            </CardContent>
+          </Card>
+        </Link>
       </div>
       <Card>
         <CardContent>
@@ -72,7 +106,7 @@ export default function Dashboard() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {qrCodes.map((qrCode) => (
+              {qrCodes.map(qrCode => (
                 <TableRow key={qrCode.id}>
                   <TableCell className="font-medium">
                     <div className="flex items-center space-x-3">
@@ -104,5 +138,5 @@ export default function Dashboard() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

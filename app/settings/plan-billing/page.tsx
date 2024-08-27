@@ -1,4 +1,5 @@
 'use client'
+
 import { useState } from 'react'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -11,36 +12,55 @@ import { Check, CreditCard, MapPin } from "lucide-react"
 
 const plans = [
   {
-    name: 'Starter',
-    price: '$0',
-    description: 'For individuals and small projects',
+    name: 'Free',
+    price: '£0',
+    period: '1 Week',
+    description: 'Test period',
     features: [
-      { name: 'QR Codes', value: 'Up to 1,000' },
-      { name: 'Analytics', value: 'Basic' },
-      { name: 'Customization', value: 'Limited' },
+      { name: 'QR Codes', value: '1' },
+      { name: 'Scans', value: 'Up to 100' },
+      { name: 'Regular updates', value: 'None' },
+      { name: 'Support', value: 'None' },
+      { name: 'Custom designs', value: 'None' },
+    ],
+  },
+  {
+    name: 'Basic',
+    price: '£7.99',
+    period: 'month',
+    description: 'For small businesses',
+    features: [
+      { name: 'QR Codes', value: 'Up to 3' },
+      { name: 'Scans', value: '10,000' },
+      { name: 'Regular updates', value: '12 months' },
       { name: 'Support', value: 'Email' },
+      { name: 'Custom designs', value: 'None' },
     ],
   },
   {
     name: 'Pro',
-    price: '$29',
+    price: '£14.99',
+    period: 'month',
     description: 'For growing businesses',
     features: [
-      { name: 'QR Codes', value: 'Up to 10,000' },
-      { name: 'Analytics', value: 'Advanced' },
-      { name: 'Customization', value: 'Full' },
-      { name: 'Support', value: 'Priority Email' },
+      { name: 'QR Codes', value: 'Up to 50' },
+      { name: 'Scans', value: 'Unlimited' },
+      { name: 'Regular updates', value: '24 months' },
+      { name: 'Support', value: 'Priority' },
+      { name: 'Custom designs', value: 'Basic' },
     ],
   },
   {
     name: 'Enterprise',
-    price: '$99',
+    price: '£39.99',
+    period: 'month',
     description: 'For large organizations',
     features: [
-      { name: 'QR Codes', value: 'Unlimited' },
-      { name: 'Analytics', value: 'Enterprise-grade' },
-      { name: 'Customization', value: 'Advanced' },
-      { name: 'Support', value: '24/7 Phone & Email' },
+      { name: 'QR Codes', value: 'Up to 250' },
+      { name: 'Scans', value: 'Unlimited' },
+      { name: 'Regular updates', value: '36 months' },
+      { name: 'Support', value: 'Dedicated manager' },
+      { name: 'Custom designs', value: 'Advanced' },
     ],
   },
 ]
@@ -52,7 +72,7 @@ const invoices = [
 ]
 
 export default function PlanBilling() {
-  const [selectedPlan, setSelectedPlan] = useState('Pro')
+  const [selectedPlan, setSelectedPlan] = useState('Free')
 
   return (
     <div className="space-y-6">
@@ -64,37 +84,48 @@ export default function PlanBilling() {
 
       <Card>
         <CardHeader>
-          <CardTitle>Current Plan</CardTitle>
-          <CardDescription>You are currently on the {selectedPlan} plan.</CardDescription>
+          <CardTitle>Choose Your Plan</CardTitle>
+          <CardDescription>Select the plan that best fits your needs.</CardDescription>
         </CardHeader>
         <CardContent>
-          <RadioGroup value={selectedPlan} onValueChange={setSelectedPlan} className="grid gap-4 md:grid-cols-3">
-            {plans.map((plan) => (
-              <Label
-                key={plan.name}
-                className={`flex flex-col items-center justify-between rounded-md border-2 border-muted p-4 hover:bg-accent hover:text-accent-foreground [&:has([data-state=checked])]:border-primary ${
-                  selectedPlan === plan.name ? 'border-primary' : ''
-                }`}
-              >
-                <RadioGroupItem value={plan.name} id={plan.name} className="sr-only" />
-                <span className="text-lg font-semibold">{plan.name}</span>
-                <span className="text-2xl font-bold">{plan.price}/mo</span>
-                <span className="text-sm text-muted-foreground text-center">{plan.description}</span>
-                <ul className="mt-4 space-y-2 text-sm">
-                  {plan.features.map((feature) => (
-                    <li key={feature.name} className="flex items-center">
-                      <Check className="mr-2 h-4 w-4 text-green-500" />
-                      <span>{feature.name}: {feature.value}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Label>
-            ))}
+          <RadioGroup
+            value={selectedPlan}
+            onValueChange={setSelectedPlan}
+            className="grid gap-8"
+          >
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {plans.map((plan) => (
+                <Card key={plan.name} className={`flex flex-col ${plan.name === 'Basic' ? 'border-2 border-blue-500' : ''}`}>
+                  <CardHeader>
+                    <CardTitle className="text-xl">
+                      {plan.name} {plan.name === 'Basic' && <span className="text-blue-500 text-sm ml-2">Recommended</span>}
+                    </CardTitle>
+                    <CardDescription className="text-sm">{plan.description}</CardDescription>
+                  </CardHeader>
+                  <CardContent className="flex-grow">
+                    <div className="text-3xl font-bold mb-4">
+                      {plan.price}<span className="text-lg font-normal">/{plan.period}</span>
+                    </div>
+                    <RadioGroupItem value={plan.name} id={plan.name} className="sr-only" />
+                    <ul className="space-y-2 text-sm">
+                      {plan.features.map((feature) => (
+                        <li key={feature.name} className="flex items-center">
+                          <Check className="mr-2 h-4 w-4 text-green-500 flex-shrink-0" />
+                          <span>{feature.name}: {feature.value}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </CardContent>
+                  <CardFooter>
+                    <Button className="w-full" variant={selectedPlan === plan.name ? "default" : "outline"}>
+                      {selectedPlan === plan.name ? "Current Plan" : "Select Plan"}
+                    </Button>
+                  </CardFooter>
+                </Card>
+              ))}
+            </div>
           </RadioGroup>
         </CardContent>
-        <CardFooter>
-          <Button className="w-full">Update Plan</Button>
-        </CardFooter>
       </Card>
 
       <div className="grid gap-4 md:grid-cols-2">
@@ -160,8 +191,7 @@ export default function PlanBilling() {
                   <TableCell>{invoice.date}</TableCell>
                   <TableCell>{invoice.amount}</TableCell>
                   <TableCell>
-                      <Badge variant={invoice.status === 'Paid' ? 'default' : 'secondary'}>
-
+                    <Badge variant={invoice.status === 'Paid' ? 'default' : 'secondary'}>
                       {invoice.status}
                     </Badge>
                   </TableCell>

@@ -1,5 +1,4 @@
 // File: app/qr-codes/QRCodeCustomizer.tsx
-
 import React, { FC, useState, useEffect, useCallback } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -9,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import QRCode from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import { Upload, X } from 'lucide-react';
+import Image from 'next/image';
 
 const defaultCustomization = {
   frame: 'no-frame',
@@ -56,11 +56,11 @@ const QRCodeCustomizer: FC<Props> = ({
     setLocalCustomization(customization);
   }, [customization]);
 
-  const handleChange = (key: string, value: any) => {
+  const handleChange = useCallback((key: string, value: any) => {
     const newCustomization = { ...localCustomization, [key]: value };
     setLocalCustomization(newCustomization);
     onCustomizationChange(newCustomization);
-  };
+  }, [localCustomization, onCustomizationChange]);
 
   const handleFrameSelection = (frameUrl: string) => {
     handleChange('frameUrl', frameUrl);
@@ -131,7 +131,7 @@ const QRCodeCustomizer: FC<Props> = ({
                   className={`border p-2 cursor-pointer ${localCustomization.frameUrl === frame.full ? 'border-blue-500' : 'border-gray-300'}`}
                   onClick={() => handleFrameSelection(frame.full)}
                 >
-                  <img src={frame.thumb} alt={`Frame ${index + 1}`} className="w-full h-18 object-cover" />
+                  <Image src={frame.thumb} alt={`Frame ${index + 1}`} width={48} height={72} className="w-full h-18 object-cover" />
                 </div>
               ))}
             </div>
@@ -203,7 +203,7 @@ const QRCodeCustomizer: FC<Props> = ({
                       className={`border p-2 cursor-pointer ${localCustomization.logo === `/images/Socials/${logo}` ? 'border-blue-500' : 'border-gray-300'}`}
                       onClick={() => handleChange('logo', `/images/Socials/${logo}`)}
                     >
-                      <img src={`/images/Socials/${logo}`} alt={logo} className="w-full h-12 object-cover" />
+                      <Image src={`/images/Socials/${logo}`} alt={logo} width={48} height={48} className="w-full h-12 object-cover" />
                     </div>
                   ))}
                 </div>
@@ -242,7 +242,7 @@ const QRCodeCustomizer: FC<Props> = ({
                   </Button>
                 </div>
                 <div className="mt-2 border rounded-lg p-2">
-                  <img src={localCustomization.logo} alt="Uploaded logo" className="max-w-full h-auto max-h-32 mx-auto" />
+                  <Image src={localCustomization.logo} alt="Uploaded logo" width={200} height={100} className="max-w-full h-auto max-h-32 mx-auto" />
                 </div>
               </div>
             )}
@@ -255,9 +255,11 @@ const QRCodeCustomizer: FC<Props> = ({
           <CardContent className="p-4">
             <div className="bg-white rounded-lg mb-4 relative qr-code-preview" style={{ width: '300px', height: '300px', overflow: 'hidden' }}>
               {localCustomization.frameUrl && (
-                <img 
+                <Image 
                   src={localCustomization.frameUrl} 
                   alt="QR Code Frame" 
+                  width={300} 
+                  height={300} 
                   className="absolute inset-0 w-full h-full object-contain pointer-events-none"
                 />
               )}
