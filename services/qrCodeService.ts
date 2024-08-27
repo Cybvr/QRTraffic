@@ -1,7 +1,7 @@
 import { db } from '@/lib/firebase';
 import { collection, addDoc, updateDoc, doc, getDoc, getDocs, deleteDoc, query, where, Timestamp, increment, setDoc } from 'firebase/firestore';
 
-interface QRCodeData {
+export interface QRCodeData {
   id?: string;
   type: string;
   content: string;
@@ -25,7 +25,7 @@ interface QRCodeData {
   status: 'Active' | 'Inactive';
 }
 
-interface QRScanData {
+export interface QRScanData {
   date: Timestamp;
   qrCodeId: string;
   userLocation?: string;
@@ -33,6 +33,13 @@ interface QRScanData {
   campaignType: string;
   city: string;
   country: string;
+  userId: string;
+}
+
+export interface ScanData {
+  date: string;
+  scans: number;
+  uniqueUsers: string[];
 }
 
 export const getQRCodeCount = async (userId: string): Promise<number> => {
@@ -49,7 +56,7 @@ export const getQRCodeCount = async (userId: string): Promise<number> => {
 export const createQRCode = async (
   userId: string,
   data: Omit<QRCodeData, 'id' | 'userId' | 'creationDate' | 'lastModified' | 'scanCount' | 'status'>
-) => {
+): Promise<string> => {
   try {
     const currentCount = await getQRCodeCount(userId);
     if (currentCount >= 5) {
@@ -71,7 +78,7 @@ export const createQRCode = async (
   }
 };
 
-export const updateQRCode = async (qrCodeId: string, data: Partial<QRCodeData>) => {
+export const updateQRCode = async (qrCodeId: string, data: Partial<QRCodeData>): Promise<void> => {
   try {
     const qrCodeRef = doc(db, 'qr_codes', qrCodeId);
     await updateDoc(qrCodeRef, {
@@ -110,7 +117,7 @@ export const getUserQRCodes = async (userId: string): Promise<QRCodeData[]> => {
   }
 };
 
-export const deleteQRCode = async (qrCodeId: string) => {
+export const deleteQRCode = async (qrCodeId: string): Promise<void> => {
   try {
     await deleteDoc(doc(db, 'qr_codes', qrCodeId));
   } catch (error) {
@@ -119,7 +126,7 @@ export const deleteQRCode = async (qrCodeId: string) => {
   }
 };
 
-export const saveQRScan = async (scanData: QRScanData) => {
+export const saveQRScan = async (scanData: QRScanData): Promise<void> => {
   try {
     // Save scan data
     await addDoc(collection(db, 'qr_scans'), scanData);
@@ -144,7 +151,7 @@ export const saveQRScan = async (scanData: QRScanData) => {
   }
 };
 
-export const getAnalytics = async (startDate: Date, endDate: Date, qrCodeId?: string) => {
+export const getAnalytics = async (startDate: Date, endDate: Date, qrCodeId?: string): Promise<{scansData: ScanData[], deviceData: Record<string, number>, cityData: Record<string, number>, countryData: Record<string, number>}> => {
   try {
     let scansQuery = query(
       collection(db, 'qr_scans'),
@@ -159,10 +166,10 @@ export const getAnalytics = async (startDate: Date, endDate: Date, qrCodeId?: st
     const scansSnapshot = await getDocs(scansQuery);
 
     const analytics = {
-      scansData: [],
-      deviceData: {},
-      cityData: {},
-      countryData: {}
+      scansData: [] as ScanData[],
+      deviceData: {} as Record<string, number>,
+      cityData: {} as Record<string, number>,
+      countryData: {} as Record<string, number>
     };
 
     scansSnapshot.forEach((doc) => {
@@ -170,7 +177,13 @@ export const getAnalytics = async (startDate: Date, endDate: Date, qrCodeId?: st
       const date = data.date.toDate().toISOString().split('T')[0];
 
       // Aggregate scans data
-      analytics.scansData.push({ date, scans: 1, uniqueUsers: 1 });
+      const existingData = analytics.scansData.find(item => item.date === date);
+      if (existingData) {
+        existingData.scans += 1;
+        existingData.uniqueUsers.push(data.userId);
+      } else {
+        analytics.scansData.push({ date, scans: 1, uniqueUsers: [data.userId] });
+      }
 
       // Aggregate device data
       analytics.deviceData[data.deviceType] = (analytics.deviceData[data.deviceType] || 0) + 1;
@@ -181,6 +194,12 @@ export const getAnalytics = async (startDate: Date, endDate: Date, qrCodeId?: st
       // Aggregate country data
       analytics.countryData[data.country] = (analytics.countryData[data.country] || 0) + 1;
     });
+
+    // Convert uniqueUsers array to unique count
+    analytics.scansData = analytics.scansData.map(scan => ({
+      ...scan,
+      uniqueUsers: [...new Set(scan.uniqueUsers)] // Ensure unique userIds
+    }));
 
     return analytics;
   } catch (error) {

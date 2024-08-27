@@ -1,3 +1,4 @@
+// components/analytics/ScansByOS.tsx
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
@@ -6,14 +7,18 @@ import { getAnalytics } from '@/services/qrCodeService';
 const COLORS = ['var(--chart-4)', 'var(--chart-5)', 'var(--chart-2)'];
 
 const ScansByOS = ({ qrCodeId }) => {
-  const [osData, setOsData] = useState([]);
+  const [osData, setOsData] = useState<{ name: string; value: number }[]>([]);
 
   useEffect(() => {
     const fetchOsData = async () => {
       const startDate = new Date("2024-07-18");
       const endDate = new Date("2024-08-18");
       const analyticsData = await getAnalytics(startDate, endDate, qrCodeId);
-      setOsData(Object.entries(analyticsData.deviceData).map(([deviceType, value]) => ({ name: deviceType, value })));
+      const transformedData = Object.entries(analyticsData.deviceData).map(([deviceType, value]: [string, number]) => ({
+        name: deviceType,
+        value
+      }));
+      setOsData(transformedData);
     };
 
     fetchOsData();

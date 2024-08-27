@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { getAnalytics } from '@/services/qrCodeService';
+import { getAnalytics, ScanData } from '@/services/qrCodeService';
 
 const ScanActivityChart = ({ qrCodeId }) => {
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<ScanData[]>([]); // Proper type definition
 
   useEffect(() => {
     const fetchData = async () => {
       const startDate = new Date("2024-07-18");
       const endDate = new Date("2024-08-18");
       const analytics = await getAnalytics(startDate, endDate, qrCodeId);
-      setData(analytics.scansData);
+      setData(analytics.scansData); // `ScanData[]` type inferred correctly
     };
 
     fetchData();

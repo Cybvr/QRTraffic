@@ -1,9 +1,10 @@
 'use client'
-import { useState, useEffect } from 'react';
+
+import React, { useEffect, useState } from 'react';
 import { ArrowUpIcon } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from '@/context/AuthContext';
-import { getUserQRCodes } from '@/services/qrCodeService';
+import { getUserQRCodes, QRCodeData } from '@/services/qrCodeService';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
@@ -20,8 +21,8 @@ const getGreetingMessage = () => {
   }
 };
 
-export default function Dashboard() {
-  const [qrCodes, setQRCodes] = useState<any[]>([]);
+const Dashboard = () => {
+  const [qrCodes, setQRCodes] = useState<QRCodeData[]>([]);
   const { user } = useAuth();
   const [greetingMessage, setGreetingMessage] = useState(getGreetingMessage());
 
@@ -35,12 +36,16 @@ export default function Dashboard() {
     fetchQRCodes();
   }, [user]);
 
+  const totalScans = qrCodes.reduce((sum, code) => sum + code.scanCount, 0);
+
   const getFirstName = (displayName: string | null) => {
     if (!displayName) return '';
     return displayName.split(' ')[0];
   }
 
   const userGreeting = user && user.displayName ? `${greetingMessage}, ${getFirstName(user.displayName)}! 👋` : `${greetingMessage} 👋`;
+
+  const cardClasses = "p-4 flex items-center space-x-2 h-full"; // Ensuring consistent card height
 
   return (
     <div className="space-y-6">
@@ -59,7 +64,7 @@ export default function Dashboard() {
                 <div className="w-4 h-4 bg-primary rounded-full"></div>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className={cardClasses}>
               <div className="text-2xl font-bold">{qrCodes.length}</div>
               <p className="text-xs text-muted-foreground">Total QR Codes</p>
             </CardContent>
@@ -73,8 +78,9 @@ export default function Dashboard() {
                 <ArrowUpIcon className="h-4 w-4 text-primary" />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">5,476</div>
+            <CardContent className={cardClasses}>
+              <div className="text-2xl font-bold">{totalScans}</div>
+              <p className="text-xs text-muted-foreground">Total Scans</p>
             </CardContent>
           </Card>
         </Link>
@@ -86,19 +92,21 @@ export default function Dashboard() {
                 <div className="w-4 h-4 bg-primary rounded-full"></div>
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{qrCodes.slice(0, 1).map(code => code.name).join(', ') || 'N/A'}</div>
+            <CardContent className={cardClasses}>
+              <div className="text-2xl font-bold">
+                {qrCodes.slice(0, 1).map(code => code.name).join(', ') || 'N/A'}
+              </div>
               <p className="text-xs text-muted-foreground">Most recent QR Code</p>
             </CardContent>
           </Card>
         </Link>
       </div>
-      <Card>
+      <Card className="h-full">
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead className="w-[250px]">Name</TableHead>
+                <TableHead className="w-[200px]">Name</TableHead>
                 <TableHead>Type</TableHead>
                 <TableHead>Scans</TableHead>
                 <TableHead>Status</TableHead>
@@ -139,4 +147,6 @@ export default function Dashboard() {
       </Card>
     </div>
   );
-}
+};
+
+export default Dashboard;

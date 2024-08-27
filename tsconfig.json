@@ -18,12 +18,14 @@
       }
     ],
     "strictNullChecks": true,
-    "baseUrl": ".",         
-    "paths": {              
+    "baseUrl": ".",
+    "paths": {
       "@/*": ["./*"],
       "@/components/*": ["components/*"],
       "@/components/layout/*": ["components/layout/*"]
-    }
+    },
+    "target": "es2015", // Explicitly set target to at least es2015
+    "downlevelIteration": true // Enable downlevel iteration for Set and Map
   },
   "include": [
     "next-env.d.ts",

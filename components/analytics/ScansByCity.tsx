@@ -3,17 +3,18 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { getAnalytics } from '@/services/qrCodeService';
 
+type CityDataType = { city: string; scans: number }[];
+
 const ScansByCity = ({ qrCodeId }) => {
-  const [cityData, setCityData] = useState([]);
+  const [cityData, setCityData] = useState<CityDataType>([]);
 
   useEffect(() => {
     const fetchCityData = async () => {
       const startDate = new Date("2024-07-18");
       const endDate = new Date("2024-08-18");
       const analyticsData = await getAnalytics(startDate, endDate, qrCodeId);
-      setCityData(Object.entries(analyticsData.cityData).map(([city, scans]) => ({ city, scans })));
+      setCityData(Object.entries(analyticsData.cityData).map(([city, scans]) => ({ city, scans: Number(scans) })));
     };
-
     fetchCityData();
   }, [qrCodeId]);
 

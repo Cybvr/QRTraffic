@@ -1,17 +1,19 @@
 'use client'
 
-import React, { useEffect, useState } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { CalendarIcon } from "lucide-react";
-import ScanActivityChart from '@/components/analytics/ScanActivityChart';
+import { CalendarIcon } from 'lucide-react';
+import { getAnalytics, getQRCodeCount, getUserQRCodes, QRCodeData } from '@/services/qrCodeService';
+import { useAuth } from '@/context/AuthContext';
 import ScansByOS from '@/components/analytics/ScansByOS';
 import ScansByCountry from '@/components/analytics/ScansByCountry';
 import ScansByCity from '@/components/analytics/ScansByCity';
-import { getQRCodeCount, getUserQRCodes, getAnalytics } from '@/services/qrCodeService';
-import { useAuth } from '@/context/AuthContext';
-import { QRCodeData } from '@/services/qrCodeService'; // Ensure to import QRCodeData interface
+import ScanActivityChart from '@/components/analytics/ScanActivityChart';
 
 const AnalyticsDashboard = () => {
   const [dateRange, setDateRange] = useState('Jul 18, 2024 - Aug 18, 2024');
@@ -19,8 +21,8 @@ const AnalyticsDashboard = () => {
   const [operatingSystem, setOperatingSystem] = useState('All');
   const [country, setCountry] = useState('All');
   const [city, setCity] = useState('All');
-  const [qrCodeId, setQrCodeId] = useState<string | null>(null); // Specify the correct type here
-  const [qrCodes, setQRCodes] = useState<QRCodeData[]>([]); // Specify the correct type here
+  const [qrCodeId, setQrCodeId] = useState<string | null>(null);
+  const [qrCodes, setQRCodes] = useState<QRCodeData[]>([]);
   const [analyticsData, setAnalyticsData] = useState({
     totalQRCodes: 0,
     totalScans: 0,
@@ -39,19 +41,18 @@ const AnalyticsDashboard = () => {
         const count = await getQRCodeCount(user.uid);
         const codes = await getUserQRCodes(user.uid);
         setQRCodes(codes);
-        setAnalyticsData(prevData => ({ ...prevData, totalQRCodes: count }));
-
         const startDate = new Date("2024-07-18");
         const endDate = new Date("2024-08-18");
         const analytics = await getAnalytics(startDate, endDate);
         setAnalyticsData(prevData => ({
           ...prevData,
+          totalQRCodes: count,
           totalScans: analytics.scansData.reduce((sum, day) => sum + day.scans, 0),
-          uniqueScans: new Set(analytics.scansData.flatMap(day => day.uniqueUsers)).size
+          uniqueScans: analytics.scansData.reduce((sum, day) => sum + new Set(day.uniqueUsers).size, 0)
         }));
 
         if (codes.length > 0) {
-          setQrCodeId(codes[0].id);
+          setQrCodeId(codes[0]?.id || null);
         }
       }
     };
@@ -81,22 +82,22 @@ const AnalyticsDashboard = () => {
         <Button variant="outline">Export data</Button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <Select value={qrCodeName} onValueChange={setQrCodeName}>
           <SelectTrigger>
-            <SelectValue placeholder="QR code name" />
+            <SelectValue placeholder="QR Code" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="All">All</SelectItem>
             {qrCodes.map((code) => (
-              <SelectItem key={code.id} value={code.id}>{code.name}</SelectItem>
+              <SelectItem key={code.id} value={code.id || ''}>{code.name}</SelectItem>
             ))}
           </SelectContent>
         </Select>
 
         <Select value={operatingSystem} onValueChange={setOperatingSystem}>
           <SelectTrigger>
-            <SelectValue placeholder="Operating systems" />
+            <SelectValue placeholder="Operating System" />
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="All">All</SelectItem>
@@ -150,7 +151,7 @@ const AnalyticsDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
               <div className="bg-blue-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
               </div>
               <div>
                 <p className="text-2xl font-bold">{analyticsData.totalScans}</p>
@@ -164,7 +165,7 @@ const AnalyticsDashboard = () => {
           <CardContent className="p-4">
             <div className="flex items-center space-x-2">
               <div className="bg-green-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><path d="M20.42 4.58a5.4 5.4 0 0 0-7.65 0l-.77.78-.77-.78a5.4 5.4 0 0 0-7.65 0C1.46 6.7 1.33 10.28 4 13l8 8 8-8c2.67-2.72 2.54-6.3.42-8.42z"></path></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-green-500"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
               </div>
               <div>
                 <p className="text-2xl font-bold">{analyticsData.uniqueScans}</p>
@@ -175,19 +176,33 @@ const AnalyticsDashboard = () => {
         </Card>
       </div>
 
-      <Card className="mb-6">
-        <CardContent className="p-4">
-          <h3 className="text-lg font-semibold mb-4">Scan activity 18 July - 18 August</h3>
-          <ScanActivityChart qrCodeId={qrCodeId} />
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-        <ScansByOS qrCodeId={qrCodeId} />
-        <ScansByCountry qrCodeId={qrCodeId} />
-      </div>
-
-      <ScansByCity qrCodeId={qrCodeId} />
+      <Tabs defaultValue="scanActivity" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="scanActivity">Scan Activity</TabsTrigger>
+          <TabsTrigger value="scansByOS">Scans by OS</TabsTrigger>
+          <TabsTrigger value="scansByCountry">Scans by Country</TabsTrigger>
+          <TabsTrigger value="scansByCity">Scans by City</TabsTrigger>
+        </TabsList>
+        <TabsContent value="scanActivity">
+          <Card>
+            <CardHeader>
+              <CardTitle>Scan Activity</CardTitle>
+            </CardHeader>
+            <CardContent className="pl-2">
+              <ScanActivityChart qrCodeId={qrCodeId} />
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="scansByOS">
+          <ScansByOS qrCodeId={qrCodeId} />
+        </TabsContent>
+        <TabsContent value="scansByCountry">
+          <ScansByCountry qrCodeId={qrCodeId} />
+        </TabsContent>
+        <TabsContent value="scansByCity">
+          <ScansByCity qrCodeId={qrCodeId} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 };

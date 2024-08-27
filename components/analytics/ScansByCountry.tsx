@@ -3,15 +3,17 @@ import { Card, CardContent } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { getAnalytics } from '@/services/qrCodeService';
 
+type CountryDataType = { country: string; scans: number }[];
+
 const ScansByCountry = ({ qrCodeId }) => {
-  const [countryData, setCountryData] = useState([]);
+  const [countryData, setCountryData] = useState<CountryDataType>([]);
 
   useEffect(() => {
     const fetchCountryData = async () => {
       const startDate = new Date("2024-07-18");
       const endDate = new Date("2024-08-18");
       const analyticsData = await getAnalytics(startDate, endDate, qrCodeId);
-      setCountryData(Object.entries(analyticsData.countryData).map(([country, scans]) => ({ country, scans })));
+      setCountryData(Object.entries(analyticsData.countryData).map(([country, scans]) => ({ country, scans: Number(scans) })));
     };
 
     fetchCountryData();
