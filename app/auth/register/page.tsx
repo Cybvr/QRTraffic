@@ -1,78 +1,81 @@
 'use client'
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import Link from "next/link"
-import Image from 'next/image'
-import { Button } from "@/components/ui/button"
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from "next/link";
+import Image from 'next/image';
+import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { createUserWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, updateProfile } from "firebase/auth";
-import { auth } from '@/lib/firebase'
-import UserOnboarding from '@/components/UserOnboarding'
+import { auth } from '@/lib/firebase';
+import UserOnboarding from '@/components/UserOnboarding';
 
 export default function Register() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [error, setError] = useState('')
-  const [message, setMessage] = useState('')
-  const [showOnboarding, setShowOnboarding] = useState(false)
-  const router = useRouter()
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const [showOnboarding, setShowOnboarding] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        setShowOnboarding(true)
+        setShowOnboarding(true);
+        setUserId(user.uid);
       }
-    })
+    });
 
-    return () => unsubscribe()
-  }, [router])
+    return () => unsubscribe();
+  }, [router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setError('')
-    setMessage('')
+    e.preventDefault();
+    setError('');
+    setMessage('');
 
     try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password)
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       await updateProfile(userCredential.user, {
         displayName: `${firstName} ${lastName}`
-      })
-      setMessage('Registration successful. Please complete your profile.')
-      setShowOnboarding(true)
+      });
+      setMessage('Registration successful. Please complete your profile.');
+      setShowOnboarding(true);
     } catch (error) {
-      setError(error.message)
+      setError(error.message);
     }
-  }
+  };
 
   const handleGoogleSignUp = async () => {
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider)
-      setShowOnboarding(true)
+      const result = await signInWithPopup(auth, provider);
+      setUserId(result.user.uid);
+      setShowOnboarding(true);
     } catch (error) {
-      setError(error.message)
+      setError(error.message);
     }
-  }
+  };
 
   const handleOnboardingComplete = () => {
-    setShowOnboarding(false)
-    router.push('/dashboard')
-  }
+    setShowOnboarding(false);
+    router.push('/dashboard');
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      {showOnboarding ? (
-        <UserOnboarding onComplete={handleOnboardingComplete} />
+      {showOnboarding && userId ? (
+        <UserOnboarding onComplete={handleOnboardingComplete} userId={userId} />
       ) : (
         <Card className="w-full max-w-sm">
           <CardHeader className="space-y-1">

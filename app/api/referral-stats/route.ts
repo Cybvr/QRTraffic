@@ -1,6 +1,6 @@
 // File: app/api/referral-stats/route.ts
 
-import { NextApiRequest, NextApiResponse } from 'next';
+import { NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
 import { collection, getDocs, where, query } from 'firebase/firestore';
 
@@ -17,12 +17,13 @@ const getReferralStats = async (userId: string) => {
   return { referrals, qrCodesEarned };
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export async function GET(request: Request) {
   try {
-    const userId = req.query.userId as string; // Extract userId from request query, adjust as necessary
+    const { searchParams } = new URL(request.url);
+    const userId = searchParams.get('userId') as string;
     const stats = await getReferralStats(userId);
-    res.status(200).json(stats);
+    return NextResponse.json(stats);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch referral stats' });
+    return NextResponse.json({ error: 'Failed to fetch referral stats' }, { status: 500 });
   }
 }
