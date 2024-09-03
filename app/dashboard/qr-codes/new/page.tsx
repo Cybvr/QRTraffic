@@ -7,8 +7,8 @@ import QRCodeTypeSelector from '../QRCodeTypeSelector'
 import QRCodeContentForm from '../QRCodeContentForm'
 import QRCodeCustomizer from '../QRCodeCustomizer'
 import ProgressSteps from '../ProgressSteps'
-import { Button } from "@/app/components/ui/button"
-import { Card, CardContent } from "@/app/components/ui/card"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
 
 const steps = ['Choose QR Code Type', 'Add Content', 'Customize Design']
 

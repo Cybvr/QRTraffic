@@ -1,6 +1,6 @@
 // components/analytics/ScansByOS.tsx
 import React, { useEffect, useState } from 'react';
-import { Card, CardContent } from "@/app/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
 import { getAnalytics } from '@/services/qrCodeService';
 

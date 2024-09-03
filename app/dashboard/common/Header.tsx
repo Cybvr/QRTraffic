@@ -6,18 +6,18 @@ import {
   MagnifyingGlassIcon, Bars3Icon, ChevronDownIcon, UserIcon, Cog6ToothIcon, 
   UserPlusIcon, QuestionMarkCircleIcon, ArrowRightOnRectangleIcon 
 } from '@heroicons/react/24/outline';
-import { Button } from '@/app/components/ui/button';
-import { Input } from '@/app/components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/app/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { useAuth } from '@/context/AuthContext';
 import { getQRCodeCount } from '@/services/qrCodeService';
 
 const dropdownItems = [
-  { label: 'Account', href: '/settings/account', icon: UserIcon },
-  { label: 'Settings', href: '/settings', icon: Cog6ToothIcon },
-  { label: 'Refer a Friend', href: '/settings/refer', icon: UserPlusIcon },
-  { label: 'Support', href: '/support', icon: QuestionMarkCircleIcon },
-  { label: 'Logout', href: '/auth/logout', icon: ArrowRightOnRectangleIcon },
+  { label: 'Account', href: 'dashboard/settings/account', icon: UserIcon },
+  { label: 'Settings', href: 'dashboard/settings', icon: Cog6ToothIcon },
+  { label: 'Refer a Friend', href: 'dashboard/settings/refer', icon: UserPlusIcon },
+  { label: 'Support', href: 'dashboard/help', icon: QuestionMarkCircleIcon },
+  { label: 'Logout', href: 'dashboard/auth/logout', icon: ArrowRightOnRectangleIcon },
 ];
 
 const Header = () => {

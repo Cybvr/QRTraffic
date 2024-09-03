@@ -3,14 +3,14 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { getUserQRCodes, deleteQRCode } from '@/services/qrCodeService'
-import { Button } from "@/app/components/ui/button"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/app/components/ui/table"
-import { Checkbox } from "@/app/components/ui/checkbox"
-import { Badge } from "@/app/components/ui/badge"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/app/components/ui/dropdown-menu"
+import { Button } from "@/components/ui/button"
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Badge } from "@/components/ui/badge"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { Share, Download, MoreHorizontal, Edit, Eye, Trash2 } from 'lucide-react'
 import Image from 'next/image'
-import EmptyState from '@/app/components/ui/emptyState'
+import EmptyState from '@/components/ui/emptyState'
 
 export default function MyQRCodes() {
   const [qrCodes, setQRCodes] = useState<any[]>([])

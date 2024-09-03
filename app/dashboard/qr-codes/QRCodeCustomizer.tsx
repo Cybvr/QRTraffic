@@ -1,10 +1,10 @@
 // File: app/qr-codes/QRCodeCustomizer.tsx
 import React, { FC, useState, useEffect, useCallback } from 'react';
-import { Card, CardContent } from '@/app/components/ui/card';
-import { Input } from '@/app/components/ui/input';
-import { Label } from '@/app/components/ui/label';
-import { Checkbox } from '@/app/components/ui/checkbox';
-import { Button } from '@/app/components/ui/button';
+import { Card, CardContent } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
 import QRCode from 'qrcode.react';
 import html2canvas from 'html2canvas';
 import { Upload, X } from 'lucide-react';

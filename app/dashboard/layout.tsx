@@ -7,7 +7,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { HomeIcon, QrCodeIcon, ChartBarIcon, QuestionMarkCircleIcon, Cog6ToothIcon, DocumentTextIcon, PlusIcon } from '@heroicons/react/24/outline'
 import { PanelLeftClose, PanelRightClose } from 'lucide-react'
-import { Button } from "@/app/components/ui/button"
+import { Button } from "@/components/ui/button"
 
 export default function DashboardLayout({
   children,

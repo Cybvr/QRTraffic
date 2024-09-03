@@ -5,9 +5,9 @@
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/app/components/ui/tabs"
-import { Button } from "@/app/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/app/components/ui/card"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { getQRCode } from '@/services/qrCodeService'
 
 // Dummy data for analytics
