@@ -18,14 +18,14 @@
       }
     ],
     "strictNullChecks": true,
-    "baseUrl": ".",
+    "baseUrl": ".",  // Ensure the baseUrl is set to the root directory
     "paths": {
-      "@/*": ["./*"],
-      "@/components/*": ["components/*"],
-      "@/components/layout/*": ["components/layout/*"]
+      "@/*": ["./*"], // Support the alias '@' to point to the root directory
+      "@/components/*": ["components/*"], // Ensure the directory is correctly mapped
+      "@/components/layout/*": ["components/layout/*"] 
     },
-    "target": "es2015", // Explicitly set target to at least es2015
-    "downlevelIteration": true // Enable downlevel iteration for Set and Map
+    "target": "es2015",
+    "downlevelIteration": true
   },
   "include": [
     "next-env.d.ts",

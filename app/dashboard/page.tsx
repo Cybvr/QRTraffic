@@ -2,29 +2,18 @@
 
 import React, { useEffect, useState } from 'react';
 import { ArrowUpIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
 import { useAuth } from '@/context/AuthContext';
 import { getUserQRCodes, QRCodeData } from '@/services/qrCodeService';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
 import Image from 'next/image';
-import { Badge } from '@/components/ui/badge';
+import { Badge } from '../components/ui/badge';
 import Link from 'next/link';
-
-const getGreetingMessage = () => {
-  const hour = new Date().getHours();
-  if (hour < 12) {
-    return 'Good morning';
-  } else if (hour < 18) {
-    return 'Good afternoon';
-  } else {
-    return 'Good evening';
-  }
-};
 
 const Dashboard = () => {
   const [qrCodes, setQRCodes] = useState<QRCodeData[]>([]);
   const { user } = useAuth();
-  const [greetingMessage, setGreetingMessage] = useState(getGreetingMessage());
+  const [greetingMessage, setGreetingMessage] = useState('Loading...');
 
   useEffect(() => {
     const fetchQRCodes = async () => {
@@ -36,6 +25,17 @@ const Dashboard = () => {
     fetchQRCodes();
   }, [user]);
 
+  useEffect(() => {
+    const hours = new Date().getHours();
+    if (hours < 12) {
+      setGreetingMessage('Good morning 👋');
+    } else if (hours < 18) {
+      setGreetingMessage('Good afternoon 👋');
+    } else {
+      setGreetingMessage('Good evening 👋');
+    }
+  }, []);
+
   const totalScans = qrCodes.reduce((sum, code) => sum + code.scanCount, 0);
 
   const getFirstName = (displayName: string | null) => {
@@ -43,7 +43,7 @@ const Dashboard = () => {
     return displayName.split(' ')[0];
   }
 
-  const userGreeting = user && user.displayName ? `${greetingMessage}, ${getFirstName(user.displayName)}! 👋` : `${greetingMessage} 👋`;
+  const userGreeting = user && user.displayName ? `${greetingMessage}, ${getFirstName(user.displayName)}! 👋` : greetingMessage;
 
   const cardClasses = "p-4 flex items-center space-x-2 h-full"; // Ensuring consistent card height
 

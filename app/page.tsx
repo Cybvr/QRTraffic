@@ -1,22 +1,32 @@
-'use client'
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { auth } from '@/lib/firebase'
+// app/page.tsx
+"use client";
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { auth } from '@/lib/firebase';
+import RootLayout from '@/app/layout';  // Adjust the import path to where your layout component is located
 
-export default function Home() {
-  const router = useRouter()
+function Home() {
+  const router = useRouter();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       if (user) {
-        router.push('/dashboard')
+        router.push('/dashboard');
       } else {
-        router.push('/auth/login')
+        router.push('/auth/login');
       }
-    })
+    });
 
-    return () => unsubscribe()
-  }, [router])
+    return () => unsubscribe();
+  }, [router]);
 
-  return null
+  return null;
+}
+
+export default function WrappedHome() {
+  return (
+    <RootLayout>
+      <Home />
+    </RootLayout>
+  );
 }

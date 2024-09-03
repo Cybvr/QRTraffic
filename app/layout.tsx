@@ -2,9 +2,8 @@
 
 import '@/styles/globals.css'
 import { Inter } from 'next/font/google'
-import ClientComponent from '@/components/layout/ClientComponent'
 import { AuthProvider } from '@/context/AuthContext'
-import { ToastProvider } from '@/components/ui/toast'
+import { ToastProvider } from './components/ui/toast'
 import { usePathname } from 'next/navigation'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -16,6 +15,7 @@ export default function RootLayout({
 }) {
   const pathname = usePathname()
   const isDocs = pathname?.startsWith('/docs')
+  const isAuthPage = ['/auth/login', '/auth/register', '/auth/reset-password', '/auth/forgot-password'].includes(pathname);
 
   return (
     <html lang="en">
@@ -25,9 +25,15 @@ export default function RootLayout({
         ) : (
           <AuthProvider>
             <ToastProvider>
-              <ClientComponent>
-                {children}
-              </ClientComponent>
+              {isAuthPage ? (
+                children
+              ) : (
+                <div className="flex h-screen overflow-hidden">
+                  <div className="flex flex-col flex-1 overflow-hidden">
+                    {children}
+                  </div>
+                </div>
+              )}
             </ToastProvider>
           </AuthProvider>
         )}
