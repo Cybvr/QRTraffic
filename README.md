@@ -1,6 +1,6 @@
 # QRTraffic
 
-QRTraffic is an all-in-one platform for QR code generation, management, and analytics. Our mission is to help businesses bridge the gap between physical and digital marketing through innovative QR code solutions.
+http://QRTraffic.com is an all-in-one platform for QR code generation, management, and analytics. Our mission is to help businesses bridge the gap between physical and digital marketing through innovative QR code solutions.
 
 ## Features
 
