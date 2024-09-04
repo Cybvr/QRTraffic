@@ -1,5 +1,3 @@
-// File: app/qr-codes/edit/[id]/page.tsx
-
 'use client'
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -8,7 +6,8 @@ import { getQRCode, updateQRCode } from '@/services/qrCodeService'
 import QRCodeContentForm from '../../QRCodeContentForm'
 import QRCodeCustomizer from '../../QRCodeCustomizer'
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import Link from 'next/link'
+import { ChevronLeft } from 'lucide-react'
 
 export default function EditQRCode({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -36,10 +35,9 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
   }
 
   const handleCustomizationChange = (customization: any) => {
-    // Ensure frameUrl is retained during customization change
     customization = {
       ...customization,
-      frameUrl: customization.frameUrl || '' // Default to empty string if frameUrl is not present
+      frameUrl: customization.frameUrl || ''
     }
     setQRCodeData(prev => ({ ...prev, customization }))
   }
@@ -48,7 +46,7 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
     if (!user || !qrCodeData) return
     try {
       await updateQRCode(qrCodeData.id, qrCodeData)
-      router.push('/qr-codes/my-codes')
+      router.push('/dashboard/qr-codes/my-codes')
     } catch (error) {
       console.error('Error saving QR code:', error)
     }
@@ -59,36 +57,30 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-2xl font-bold mb-6">Edit QR Code</h1>
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Content</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <QRCodeContentForm
-            type={qrCodeData.type}
-            initialContent={qrCodeData.content}
-            initialName={qrCodeData.name}
-            onSubmit={handleContentSubmit}
-          />
-        </CardContent>
-      </Card>
-      <Card className="mb-6">
-        <CardHeader>
-          <CardTitle>Customize</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <QRCodeCustomizer
-            customization={qrCodeData.customization}
-            initialData={qrCodeData}
-            onCustomizationChange={handleCustomizationChange}
-            onComplete={handleSave}
-            initialContent={qrCodeData.content}
-            initialName={qrCodeData.name}
-          />
-        </CardContent>
-      </Card>
-      <Button onClick={handleSave} className="w-full">Save Changes</Button>
+      <div className="mb-6">
+        <Link href="/dashboard/qr-codes/my-codes" className="flex items-center text-blue-600 hover:underline">
+          <ChevronLeft className="w-4 h-4 mr-1" />
+          Back to My QR Codes
+        </Link>
+      </div>
+      <div className="flex justify-between items-center mb-6">
+        <h1 className="text-2xl font-bold">Edit QR Code</h1>
+        <Button onClick={handleSave}>Save Changes</Button>
+      </div>
+      <QRCodeContentForm
+        type={qrCodeData.type}
+        initialContent={qrCodeData.content}
+        initialName={qrCodeData.name}
+        onSubmit={handleContentSubmit}
+      />
+      <QRCodeCustomizer
+        customization={qrCodeData.customization}
+        initialData={qrCodeData}
+        onCustomizationChange={handleCustomizationChange}
+        onComplete={handleSave}
+        initialContent={qrCodeData.content}
+        initialName={qrCodeData.name}
+      />
     </div>
   )
 }

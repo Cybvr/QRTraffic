@@ -21,8 +21,7 @@
     "baseUrl": ".",  // Ensure the baseUrl is set to the root directory
     "paths": {
       "@/*": ["./*"], // Support the alias '@' to point to the root directory
-      "@/components/*": ["components/*"], // Ensure the directory is correctly mapped
-      "@/components/layout/*": ["components/layout/*"] 
+      "@components/*": ["components/*"]  // Ensure the directory is correctly mapped
     },
     "target": "es2015",
     "downlevelIteration": true

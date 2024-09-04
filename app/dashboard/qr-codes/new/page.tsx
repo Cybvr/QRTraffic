@@ -21,7 +21,7 @@ export default function NewQRCode() {
     customization: {
       frame: 'no-frame',
       frameUrl: '',
-      frameText: 'Scan me!',
+      frameText: 'Scan Me!', // Default frame text
       frameColor: '#000000',
       backgroundColor: '#FFFFFF',
       textColor: '#000000',
@@ -90,7 +90,7 @@ export default function NewQRCode() {
       console.log('Creating QR code with data:', qrCodeData)
       await createQRCode(user.uid, qrCodeData)
       console.log('QR code created successfully')
-      router.push(`/qr-codes/my-codes`)
+      router.push(`/dashboard/qr-codes/my-codes`)
     } catch (error) {
       console.error('Error creating QR code:', error)
       setError(error instanceof Error ? error.message : 'Failed to create QR code. Please try again.')
@@ -123,12 +123,9 @@ export default function NewQRCode() {
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <Card className="mb-8">
-        <CardContent className="pt-6">
-          <ProgressSteps steps={steps} currentStep={currentStep}/>
-        </CardContent>
-      </Card>
-      <Card>
+      <ProgressSteps steps={steps} currentStep={currentStep} />
+
+      <Card className="mb-8 mt-4">
         <CardContent className="p-8">
           <h1 className="text-2xl font-bold mb-6">{steps[currentStep]}</h1>
           {renderContent()}

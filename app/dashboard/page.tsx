@@ -2,12 +2,12 @@
 
 import React, { useEffect, useState } from 'react';
 import { ArrowUpIcon } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "../components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from '@/context/AuthContext';
 import { getUserQRCodes, QRCodeData } from '@/services/qrCodeService';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "../components/ui/table";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import Image from 'next/image';
-import { Badge } from '../components/ui/badge';
+import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
 
 const Dashboard = () => {
@@ -56,7 +56,7 @@ const Dashboard = () => {
         <p className="text-muted-foreground">Here is a summary of your QR code campaigns.</p>
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        <Link href="/qr-codes/my-codes">
+        <Link href="/dashboard/qr-codes/my-codes">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">QR Codes</CardTitle>
@@ -84,7 +84,7 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </Link>
-        <Link href="/qr-codes/my-codes">
+        <Link href="/dashboard/qr-codes/my-codes">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Recent QR Codes</CardTitle>

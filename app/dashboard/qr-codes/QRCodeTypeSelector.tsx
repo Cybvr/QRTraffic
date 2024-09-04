@@ -1,8 +1,6 @@
-// File: app/qr-codes/QRCodeTypeSelector.tsx
-
 import { FC } from 'react'
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Globe, User, FileText, Image, Share2, Video, Type, Briefcase, Facebook, Wifi } from 'lucide-react'
+import { Globe, User, Briefcase, Facebook, Wifi } from 'lucide-react'
 
 interface QRCodeType {
   name: string
@@ -13,14 +11,10 @@ interface QRCodeType {
 const qrCodeTypes: QRCodeType[] = [
   { name: 'Website URL', icon: Globe, description: 'Link to a website of your choice' },
   { name: 'vCard', icon: User, description: 'Share your electronic business card' },
-  { name: 'PDF', icon: FileText, description: 'Showcase info in a PDF file' },
-  { name: 'Images', icon: Image, description: 'Display an image gallery' },
-  { name: 'Social Media', icon: Share2, description: 'Link to all your social media channels' },
-  { name: 'Video', icon: Video, description: 'Share one or multiple videos' },
-  { name: 'Simple Text', icon: Type, description: 'Display a body of text' },
   { name: 'Business Page', icon: Briefcase, description: 'Profile your business information' },
   { name: 'Facebook', icon: Facebook, description: 'Redirect users to your Facebook page' },
   { name: 'Wi-Fi', icon: Wifi, description: 'Connect to a wireless network' },
+  { name: 'Restaurant Menu', icon: User, description: 'Display your restaurant menu' },  // Added this back
 ]
 
 interface Props {

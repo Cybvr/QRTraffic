@@ -80,11 +80,13 @@ export const createQRCode = async (
 
 export const updateQRCode = async (qrCodeId: string, data: Partial<QRCodeData>): Promise<void> => {
   try {
+    console.log('Updating QR code:', qrCodeId, data); // Debugging log
     const qrCodeRef = doc(db, 'qr_codes', qrCodeId);
     await updateDoc(qrCodeRef, {
       ...data,
       lastModified: Timestamp.now()
     });
+    console.log('QR code updated successfully'); // Confirmation log
   } catch (error) {
     console.error('Error updating QR code:', error);
     throw new Error('Failed to update QR code');
@@ -128,20 +130,19 @@ export const deleteQRCode = async (qrCodeId: string): Promise<void> => {
 
 export const saveQRScan = async (scanData: QRScanData): Promise<void> => {
   try {
-    // Save scan data
+    console.log('Attempting to save scan data:', scanData);
     await addDoc(collection(db, 'qr_scans'), scanData);
 
-    // Update QR code total scans
+    console.log('Incrementing QR code scan count for:', scanData.qrCodeId);
     const qrCodeRef = doc(db, 'qr_codes', scanData.qrCodeId);
     await updateDoc(qrCodeRef, {
       scanCount: increment(1)
     });
 
-    // Update or create daily stats
     const dailyStatsRef = doc(db, 'daily_stats', scanData.date.toDate().toISOString().split('T')[0]);
     await setDoc(dailyStatsRef, {
       totalScans: increment(1),
-      uniqueUsers: increment(1) // This is simplified; you'd need more logic for truly unique users
+      uniqueUsers: increment(1)
     }, { merge: true });
 
     console.log('Scan data saved successfully');
@@ -176,7 +177,6 @@ export const getAnalytics = async (startDate: Date, endDate: Date, qrCodeId?: st
       const data = doc.data();
       const date = data.date.toDate().toISOString().split('T')[0];
 
-      // Aggregate scans data
       const existingData = analytics.scansData.find(item => item.date === date);
       if (existingData) {
         existingData.scans += 1;
@@ -185,20 +185,14 @@ export const getAnalytics = async (startDate: Date, endDate: Date, qrCodeId?: st
         analytics.scansData.push({ date, scans: 1, uniqueUsers: [data.userId] });
       }
 
-      // Aggregate device data
       analytics.deviceData[data.deviceType] = (analytics.deviceData[data.deviceType] || 0) + 1;
-
-      // Aggregate city data
       analytics.cityData[data.city] = (analytics.cityData[data.city] || 0) + 1;
-
-      // Aggregate country data
       analytics.countryData[data.country] = (analytics.countryData[data.country] || 0) + 1;
     });
 
-    // Convert uniqueUsers array to unique count
     analytics.scansData = analytics.scansData.map(scan => ({
       ...scan,
-      uniqueUsers: [...new Set(scan.uniqueUsers)] // Ensure unique userIds
+      uniqueUsers: [...new Set(scan.uniqueUsers)]
     }));
 
     return analytics;

@@ -13,11 +13,11 @@ import { useAuth } from '@/context/AuthContext';
 import { getQRCodeCount } from '@/services/qrCodeService';
 
 const dropdownItems = [
-  { label: 'Account', href: 'dashboard/settings/account', icon: UserIcon },
-  { label: 'Settings', href: 'dashboard/settings', icon: Cog6ToothIcon },
-  { label: 'Refer a Friend', href: 'dashboard/settings/refer', icon: UserPlusIcon },
-  { label: 'Support', href: 'dashboard/help', icon: QuestionMarkCircleIcon },
-  { label: 'Logout', href: 'dashboard/auth/logout', icon: ArrowRightOnRectangleIcon },
+  { label: 'Account', href: '/dashboard/settings/account', icon: UserIcon },
+  { label: 'Settings', href: '/dashboard/settings', icon: Cog6ToothIcon },
+  { label: 'Refer a Friend', href: '/dashboard/settings/refer', icon: UserPlusIcon },
+  { label: 'Support', href: '/dashboard/help', icon: QuestionMarkCircleIcon },
+  { label: 'Logout', href: '/dashboard/auth/logout', icon: ArrowRightOnRectangleIcon },
 ];
 
 const Header = () => {

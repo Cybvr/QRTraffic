@@ -14,6 +14,7 @@ import ScansByOS from './ScansByOS';
 import ScansByCountry from './ScansByCountry';
 import ScansByCity from './ScansByCity';
 import ScanActivityChart from './ScanActivityChart';
+import { Skeleton } from "@/components/ui/skeleton";  // Import Skeleton
 
 const AnalyticsDashboard = () => {
   const [dateRange, setDateRange] = useState('Jul 18, 2024 - Aug 18, 2024');
@@ -60,7 +61,7 @@ const AnalyticsDashboard = () => {
     fetchData();
   }, [user]);
 
-  if (!qrCodeId) return <div>Loading...</div>;
+  if (!qrCodeId) return <Skeleton className="w-full h-64" />;  // Use Skeleton when loading
 
   return (
     <div className="p-6">
