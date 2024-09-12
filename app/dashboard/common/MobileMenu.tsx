@@ -82,12 +82,12 @@ const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, setIsOpen }) => {
                 <Image src="/images/logo.png" alt="QRTraffic Logo" width={32} height={32} />
               </div>
               <nav className="mt-5 px-2 space-y-1">
-                <MobileMenuLink href="/" icon={HomeIcon} text="Home" onClick={closeMenu} />
-                <MobileMenuLink href="/qr-codes" icon={QrCodeIcon} text="My QR Codes" onClick={closeMenu} />
-                <MobileMenuLink href="/qr-codes/new" icon={PlusIcon} text="New QR Code" onClick={closeMenu} />
-                <MobileMenuLink href="/analytics" icon={ChartBarIcon} text="Analytics" onClick={closeMenu} />
+                <MobileMenuLink href="/dashboard" icon={HomeIcon} text="Home" onClick={closeMenu} />
+                <MobileMenuLink href="/dashboard/qr-codes" icon={QrCodeIcon} text="My QR Codes" onClick={closeMenu} />
+                <MobileMenuLink href="/dashboard/qr-codes/new" icon={PlusIcon} text="New QR Code" onClick={closeMenu} />
+                <MobileMenuLink href="/dashboard/analytics" icon={ChartBarIcon} text="Analytics" onClick={closeMenu} />
                 <MobileMenuLink href="/support" icon={QuestionMarkCircleIcon} text="Support" onClick={closeMenu} />
-                <MobileMenuLink href="/settings/account" icon={Cog6ToothIcon} text="Settings" onClick={closeMenu} />
+                <MobileMenuLink href="/dashboard/settings/account" icon={Cog6ToothIcon} text="Settings" onClick={closeMenu} />
               </nav>
             </div>
           </div>

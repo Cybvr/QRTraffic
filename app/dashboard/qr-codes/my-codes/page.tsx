@@ -39,8 +39,10 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogTitle
+  DialogTitle,
+  DialogFooter
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 
 const MyQRCodes = () => {
   const [qrCodes, setQRCodes] = useState<any[]>([]);
@@ -117,15 +119,28 @@ const MyQRCodes = () => {
     }
   };
 
+  const handleDeleteCode = async (id: string) => {
+    try {
+      await deleteQRCode(id);
+      setQRCodes(prev => prev.filter(code => code.id !== id));
+    } catch (error) {
+      console.error('Error deleting QR code:', error);
+    }
+  };
+
   return (
     <TooltipProvider>
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-6">
           <div>
             <h1 className="text-2xl font-bold mb-2">My QR Codes</h1>
-            <p className="text-gray-600">Manage your QR codes here.</p>
+            <p className="text-muted-foreground">Manage your QR codes here.</p>
           </div>
-          <Button variant="primary" href="/dashboard/qr-codes/new" className="bg-primary text-white">
+          <Button
+            variant="default"
+            onClick={() => router.push('/dashboard/qr-codes/new')}
+            className="bg-primary text-primary-foreground hover:bg-primary/90"
+          >
             <Plus className="mr-2 h-4 w-4" />
             New QR Code
           </Button>
@@ -153,24 +168,22 @@ const MyQRCodes = () => {
               </div>
             )}
           </div>
-          <div className="relative">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" className="flex items-center">
-                  Sort by
-                  <ChevronDown className="ml-2 h-4 w-4" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => setSorting('mostRecent')}>
-                  Most Recent
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSorting('oldest')}>
-                  Oldest
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="flex items-center">
+                Sort by
+                <ChevronDown className="ml-2 h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => setSorting('mostRecent')}>
+                Most Recent
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setSorting('oldest')}>
+                Oldest
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         <div className="border rounded-lg overflow-hidden">
           <Table>
@@ -304,13 +317,15 @@ const MyQRCodes = () => {
           <DialogContent>
             <DialogTitle>Share QR Code</DialogTitle>
             {currentShareCode && (
-              <div>
+              <div className="space-y-4">
                 <p>Share this link:</p>
-                <input type="text" readOnly value={`${window.location.origin}/qr/${currentShareCode.id}`} className="input input-bordered w-full mb-2" />
-                <Button onClick={handleCopyLink}>Copy Link</Button>
+                <Input type="text" readOnly value={`${window.location.origin}/qr/${currentShareCode.id}`} />
+                <Button onClick={handleCopyLink} variant="secondary">Copy Link</Button>
               </div>
             )}
-            <Button onClick={closeShareDialog} className="mt-4">Close</Button>
+            <DialogFooter>
+              <Button onClick={closeShareDialog} variant="outline">Close</Button>
+            </DialogFooter>
           </DialogContent>
         </Dialog>
       </div>

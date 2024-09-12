@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -12,6 +12,12 @@ import QRCode from 'qrcode.react'
 import html2canvas from 'html2canvas'
 import { Upload, X } from 'lucide-react'
 import Image from 'next/image'
+import { getQRCode } from '@/services/qrCodeService'
+
+interface InitialData {
+  id?: string;
+  url?: string;
+}
 
 const defaultCustomization = {
   frame: 'no-frame',
@@ -36,16 +42,34 @@ const frames = [
 
 const socialLogos = ['Facebook.png', 'Instagram.png', 'Linkedin.png', 'Snapchat.png', 'Tiktok.png', 'X.png', 'Youtube.png']
 
-export default function QRCodeCustomizer({ 
-  initialData = {}, 
-  customization = defaultCustomization, 
-  onCustomizationChange, 
-  onComplete, 
-  initialContent, 
-  initialName 
+const DEFAULT_QR_URL = 'https://qrtraffic.com/welcome'
+
+export default function QRCodeCustomizer({
+  initialData = {} as InitialData,
+  customization = defaultCustomization,
+  onCustomizationChange,
+  onComplete,
+  initialContent,
+  initialName
 }) {
   const [localCustomization, setLocalCustomization] = useState(customization)
-  const [error, setError] = useState(null)
+  const [error, setError] = useState<string | null>(null)
+  const [scanCount, setScanCount] = useState(0)
+
+  useEffect(() => {
+    const fetchScanCount = async () => {
+      if (initialData.id) {
+        try {
+          const qrCodeData = await getQRCode(initialData.id)
+          setScanCount(qrCodeData.scanCount)
+        } catch (error) {
+          console.error('Error fetching QR code data:', error)
+        }
+      }
+    }
+
+    fetchScanCount()
+  }, [initialData.id])
 
   const handleChange = useCallback((key, value) => {
     const newCustomization = { ...localCustomization, [key]: value }
@@ -56,24 +80,28 @@ export default function QRCodeCustomizer({
   const handleLogoUpload = useCallback((file) => {
     if (file) {
       const reader = new FileReader()
-      reader.onload = (e) => handleChange('logo', e.target.result)
+      reader.onload = (e) => {
+        if (e.target && e.target.result) {
+          handleChange('logo', e.target.result)
+        }
+      }
       reader.readAsDataURL(file)
     }
   }, [handleChange])
 
   const handleSaveAsJpeg = async () => {
-    const qrCodeElement = document.querySelector('.qr-code-preview')
-    if (!qrCodeElement) return
+    const qrCodeElement = document.querySelector('.qr-code-preview') as HTMLElement;
+    if (!qrCodeElement) return;
     try {
-      const canvas = await html2canvas(qrCodeElement)
-      const link = document.createElement('a')
-      link.href = canvas.toDataURL('image/jpeg')
-      link.download = 'qr-code.jpeg'
-      link.click()
+      const canvas = await html2canvas(qrCodeElement);
+      const link = document.createElement('a');
+      link.href = canvas.toDataURL('image/jpeg');
+      link.download = 'qr-code.jpeg';
+      link.click();
     } catch (error) {
-      console.error('Error generating JPEG:', error)
+      console.error('Error generating JPEG:', error);
     }
-  }
+  };
 
   const validateQRCodeData = (data) => {
     const requiredFields = ['frame', 'frameText', 'frameColor', 'backgroundColor', 'textColor', 'qrCodeColor', 'logo', 'transparentBackground', 'frameUrl']
@@ -87,6 +115,10 @@ export default function QRCodeCustomizer({
     }
     setError(null)
     onComplete()
+  }
+
+  const getQRCodeValue = () => {
+    return initialContent || initialData.url || DEFAULT_QR_URL
   }
 
   return (
@@ -215,17 +247,17 @@ export default function QRCodeCustomizer({
             <CardContent className="p-6 flex flex-col items-center space-y-4">
               <div className="bg-white rounded-lg relative qr-code-preview" style={{ width: '300px', height: '300px', overflow: 'hidden' }}>
                 {localCustomization.frameUrl && (
-                  <Image 
-                    src={localCustomization.frameUrl} 
-                    alt="QR Code Frame" 
-                    width={300} 
-                    height={300} 
+                  <Image
+                    src={localCustomization.frameUrl}
+                    alt="QR Code Frame"
+                    width={300}
+                    height={300}
                     className="absolute inset-0 w-full h-full object-contain pointer-events-none"
                   />
                 )}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <QRCode
-                    value={initialContent || initialData.url || "https://example.com"}
+                    value={getQRCodeValue()}
                     size={180}
                     fgColor={localCustomization.qrCodeColor}
                     bgColor={localCustomization.transparentBackground ? 'transparent' : localCustomization.backgroundColor}
@@ -235,9 +267,10 @@ export default function QRCodeCustomizer({
                 </div>
                 <p className="absolute bottom-2 left-0 right-0 text-center text-lg font-bold" style={{ color: localCustomization.textColor }}>{localCustomization.frameText}</p>
               </div>
+              <p className="text-sm text-muted-foreground">Scans: {scanCount}</p>
               <div className="w-full space-y-2">
-                <Button onClick={handleSaveAsJpeg} className="w-full">Save as JPEG</Button>
-                <Button onClick={handleComplete} className="w-full" variant="outline">Complete Customization</Button>
+                <Button variant="default" onClick={handleSaveAsJpeg} className="w-full">Save as JPEG</Button>
+                <Button variant="default" onClick={handleComplete} className="w-full">Complete Customization</Button>
               </div>
               {error && <p className="text-destructive text-sm">{error}</p>}
             </CardContent>

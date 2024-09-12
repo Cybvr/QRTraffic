@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { createQRCode } from '@/services/api'
+import { createQRCode } from '@/services/api/api'
 
-// Define the shape of the QR code data
+// Update the QRCodeData type to match the actual return from createQRCode
 type QRCodeData = {
-  id: number;
+  id: string;  // Changed from number to string
   url: string;
   created_at: string;
 }
@@ -18,7 +18,13 @@ export const useQRCode = () => {
     setError(null)
     try {
       const result = await createQRCode(url)
-      setQRCodeData(result)
+
+      // Ensure the result has the expected structure
+      if (result && typeof result.id === 'string' && typeof result.url === 'string' && typeof result.created_at === 'string') {
+        setQRCodeData(result as QRCodeData)
+      } else {
+        throw new Error('Invalid QR code data structure')
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred')
     } finally {

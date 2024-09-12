@@ -4,10 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Mail, PlayCircle, FileText, HelpCircle } from 'lucide-react';
 
 const videos = [
-  { title: "Getting Started with QRTraffic", link: "#", thumbnail: "/placeholder.svg?height=192&width=384", duration: "5 min" },
-  { title: "Creating Your First QR Code", link: "#", thumbnail: "/placeholder.svg?height=192&width=384", duration: "8 min" },
-  { title: "Understanding QR Code Analytics", link: "#", thumbnail: "/placeholder.svg?height=192&width=384", duration: "10 min" },
-  { title: "Advanced QR Code Customization", link: "#", thumbnail: "/placeholder.svg?height=192&width=384", duration: "12 min" },
+  { title: "Getting Started with QRTraffic", link: "#", thumbnail: "/placeholder.svg?height=192&amp;width=384", duration: "5 min" },
+  { title: "Creating Your First QR Code", link: "#", thumbnail: "/placeholder.svg?height=192&amp;width=384", duration: "8 min" },
+  { title: "Understanding QR Code Analytics", link: "#", thumbnail: "/placeholder.svg?height=192&amp;width=384", duration: "10 min" },
+  { title: "Advanced QR Code Customization", link: "#", thumbnail: "/placeholder.svg?height=192&amp;width=384", duration: "12 min" },
 ];
 
 export default function SupportPage() {
@@ -32,7 +32,7 @@ export default function SupportPage() {
               <CardTitle className="ml-2 text-lg font-medium">Contact Support</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="mb-3 text-sm text-muted-foreground">Can't find what you're looking for? Our support team is here to help!</p>
+              <p className="mb-3 text-sm text-muted-foreground">Can&apos;t find what you&apos;re looking for? Our support team is here to help!</p>
               <Button size="sm" className="w-full">
                 <Mail className="mr-2 h-4 w-4" /> Contact Support
               </Button>

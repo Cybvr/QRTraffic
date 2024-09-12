@@ -3,9 +3,9 @@ import { usePathname, useRouter } from 'next/navigation'
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 const settingsLinks = [
-  { href: '/settings/account', label: 'Account' },
-  { href: '/settings/plan-billing', label: 'Plan & Billing' },
-  { href: '/settings/refer', label: 'Refer a friend' },
+  { href: '/dashboard/settings/account', label: 'Account' },
+  { href: '/dashboard/settings/plan-billing', label: 'Plan & Billing' },
+  { href: '/dashboard/settings/refer', label: 'Refer a friend' },
 ]
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {

@@ -1,24 +1,27 @@
 'use client'
 
 import React, { useEffect, useState } from 'react';
-import { ArrowUpIcon } from 'lucide-react';
+import { ArrowUpIcon, Plus } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from '@/context/AuthContext';
 import { getUserQRCodes, QRCodeData } from '@/services/qrCodeService';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import Image from 'next/image';
 import { Badge } from '@/components/ui/badge';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { Button } from '@/components/ui/button';
+import QRCode from 'qrcode.react';
 
 const Dashboard = () => {
   const [qrCodes, setQRCodes] = useState<QRCodeData[]>([]);
   const { user } = useAuth();
   const [greetingMessage, setGreetingMessage] = useState('Loading...');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchQRCodes = async () => {
       if (user) {
-        const codes = await getUserQRCodes(user.uid); // Fetch QR codes
+        const codes = await getUserQRCodes(user.uid);
         setQRCodes(codes);
       }
     };
@@ -43,19 +46,27 @@ const Dashboard = () => {
     return displayName.split(' ')[0];
   }
 
-  const userGreeting = user && user.displayName ? `${greetingMessage}, ${getFirstName(user.displayName)}! 👋` : greetingMessage;
+  const userGreeting = user && user.displayName ? `${greetingMessage}, ${getFirstName(user.displayName)}!` : greetingMessage;
 
-  const cardClasses = "p-4 flex items-center space-x-2 h-full"; // Ensuring consistent card height
+  const cardClasses = "p-4 flex items-center space-x-2 h-full";
 
   return (
     <div className="space-y-6">
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">
-          {userGreeting}
-        </h1>
-        <p className="text-muted-foreground">Here is a summary of your QR code campaigns.</p>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">{userGreeting}</h1>
+          <p className="text-muted-foreground">Here is a summary of your QR code campaigns.</p>
+        </div>
+        <Button
+          variant="default"
+          onClick={() => router.push('/dashboard/qr-codes/new')}
+          className="bg-primary text-primary-foreground hover:bg-primary/90"
+        >
+          <Plus className="mr-2 h-4 w-4" />
+          New QR Code
+        </Button>
       </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-2">
         <Link href="/dashboard/qr-codes/my-codes">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -84,22 +95,6 @@ const Dashboard = () => {
             </CardContent>
           </Card>
         </Link>
-        <Link href="/dashboard/qr-codes/my-codes">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Recent QR Codes</CardTitle>
-              <div className="w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                <div className="w-4 h-4 bg-primary rounded-full"></div>
-              </div>
-            </CardHeader>
-            <CardContent className={cardClasses}>
-              <div className="text-2xl font-bold">
-                {qrCodes.slice(0, 1).map(code => code.name).join(', ') || 'N/A'}
-              </div>
-              <p className="text-xs text-muted-foreground">Most recent QR Code</p>
-            </CardContent>
-          </Card>
-        </Link>
       </div>
       <Card className="h-full">
         <CardContent>
@@ -115,16 +110,18 @@ const Dashboard = () => {
             </TableHeader>
             <TableBody>
               {qrCodes.map(qrCode => (
-                <TableRow key={qrCode.id}>
+                <TableRow key={qrCode.id} className="cursor-pointer" onClick={() => router.push(`/dashboard/qr-codes/view/${qrCode.id}?id=${qrCode.id}`)}>
                   <TableCell className="font-medium">
                     <div className="flex items-center space-x-3">
-                      <Image
-                        src={qrCode.customization.logo || '/placeholder-qr.png'}
-                        alt={qrCode.name}
-                        width={48}
-                        height={48}
-                        className="rounded-lg shadow-sm"
-                      />
+                      <div className="w-12 h-12">
+                        <QRCode
+                          value={qrCode.content}
+                          size={48}
+                          level="L"
+                          renderAs="svg"
+                          className="w-full h-full"
+                        />
+                      </div>
                       <span>{qrCode.name}</span>
                     </div>
                   </TableCell>
