@@ -1,6 +1,6 @@
 // app/api/create-checkout-session/route.ts
 import { NextRequest, NextResponse } from 'next/server';
-import { stripe } from '@/lib/stripe';
+import { stripe, isStripeEnabled } from '@/lib/stripe';
 import { db } from '@/lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
 
@@ -12,6 +12,10 @@ const PLANS = {
 
 export async function POST(request: NextRequest) {
   try {
+    if (!isStripeEnabled) {
+      return NextResponse.json({ error: 'Stripe is not enabled' }, { status: 400 });
+    }
+
     const { planName, userId } = await request.json();
 
     if (!PLANS[planName as keyof typeof PLANS]) {
@@ -25,7 +29,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'User not found or no Stripe customer ID' }, { status: 400 });
     }
 
-    const session = await stripe!.checkout.sessions.create({
+    if (!stripe) {
+      return NextResponse.json({ error: 'Stripe is not initialized' }, { status: 500 });
+    }
+
+    const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
         {

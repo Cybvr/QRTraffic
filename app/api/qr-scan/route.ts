@@ -1,13 +1,14 @@
 // app/api/qr-scan/route.ts
 import { NextResponse } from 'next/server';
 import { saveQRScan } from '@/services/qrCodeService';
+import { Timestamp } from 'firebase/firestore';
 
 export async function POST(request: Request) {
   try {
     const { qrCodeId, userLocation, deviceType, campaignType, city, country } = await request.json();
 
     await saveQRScan({
-      date: new Date(),
+      date: Timestamp.fromDate(new Date()),
       qrCodeId,
       userLocation,
       deviceType,

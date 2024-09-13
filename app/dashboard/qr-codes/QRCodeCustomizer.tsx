@@ -128,10 +128,9 @@ export default function QRCodeCustomizer({
           <Card>
             <CardContent className="p-6">
               <Tabs defaultValue="frame" className="space-y-4">
-                <TabsList className="grid w-full grid-cols-3">
+                <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="frame">Frame</TabsTrigger>
                   <TabsTrigger value="colors">Colors</TabsTrigger>
-                  <TabsTrigger value="logo">Logo</TabsTrigger>
                 </TabsList>
                 <TabsContent value="frame" className="space-y-4">
                   <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
@@ -193,50 +192,6 @@ export default function QRCodeCustomizer({
                     />
                     <Label htmlFor="transparentBackground">Transparent background</Label>
                   </div>
-                </TabsContent>
-                <TabsContent value="logo" className="space-y-4">
-                  <div className="grid grid-cols-4 sm:grid-cols-7 gap-2">
-                    {socialLogos.map((logo) => (
-                      <div
-                        key={logo}
-                        className={`border rounded-md p-1 cursor-pointer transition-all ${localCustomization.logo === `/images/Socials/${logo}` ? 'ring-2 ring-primary' : 'hover:bg-accent'}`}
-                        onClick={() => handleChange('logo', `/images/Socials/${logo}`)}
-                      >
-                        <Image src={`/images/Socials/${logo}`} alt={logo} width={48} height={48} className="w-full h-12 object-cover rounded" />
-                      </div>
-                    ))}
-                  </div>
-                  <Separator className="my-4" />
-                  <div className="space-y-2">
-                    <Label htmlFor="logo-upload">Upload Your Own Logo</Label>
-                    <div className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors hover:border-primary">
-                      <Input
-                        id="logo-upload"
-                        type="file"
-                        className="hidden"
-                        onChange={(e) => e.target.files && handleLogoUpload(e.target.files[0])}
-                        accept="image/*"
-                      />
-                      <Label htmlFor="logo-upload" className="cursor-pointer">
-                        <Upload className="mx-auto h-12 w-12 text-muted-foreground" />
-                        <p className="mt-2 text-sm text-muted-foreground">Click to upload or drag and drop</p>
-                        <p className="text-xs text-muted-foreground">SVG, PNG, JPG or GIF (max. 800x400px)</p>
-                      </Label>
-                    </div>
-                  </div>
-                  {localCustomization.logo && (
-                    <div className="flex items-center justify-between p-2 border rounded-lg">
-                      <Image src={localCustomization.logo} alt="Uploaded logo" width={100} height={50} className="max-h-12 w-auto" />
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        onClick={() => handleChange('logo', '')}
-                        className="text-destructive hover:text-destructive/90"
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
-                    </div>
-                  )}
                 </TabsContent>
               </Tabs>
             </CardContent>

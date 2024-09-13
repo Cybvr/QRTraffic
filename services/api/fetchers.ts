@@ -1,11 +1,15 @@
 // services/api/fetchers.ts
-import { stripe } from '../../lib/stripe';
+import { stripe, isStripeEnabled } from '../../lib/stripe';
 import { db, auth } from '@/lib/firebase';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import Stripe from 'stripe';
 
 export async function fetchInvoices(userId: string) {
   try {
+    if (!isStripeEnabled) {
+      throw new Error('Stripe is not enabled');
+    }
+
     const userDoc = await getDoc(doc(db, 'users', userId));
     const stripeCustomerId = userDoc.data()?.stripeCustomerId;
 
@@ -33,6 +37,10 @@ export async function fetchInvoices(userId: string) {
 
 export async function fetchSubscriptionStatus(userId: string) {
   try {
+    if (!isStripeEnabled) {
+      return { planName: 'Free', price: '£0', period: 'month' };
+    }
+
     const subscriptionQuery = query(collection(db, 'subscriptions'), where('userId', '==', userId));
     const subscriptionSnapshot = await getDocs(subscriptionQuery);
 
@@ -61,6 +69,10 @@ export async function fetchSubscriptionStatus(userId: string) {
 
 export async function fetchCards(userId: string) {
   try {
+    if (!isStripeEnabled) {
+      throw new Error('Stripe is not enabled');
+    }
+
     const userDoc = await getDoc(doc(db, 'users', userId));
     const stripeCustomerId = userDoc.data()?.stripeCustomerId;
 
