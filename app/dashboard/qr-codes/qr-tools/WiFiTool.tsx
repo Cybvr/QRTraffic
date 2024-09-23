@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 interface WiFiToolProps {
-  setQRCodeData: (data: string) => void
+  setQRCodeData: (data: any) => void
 }
 
 export default function WiFiTool({ setQRCodeData }: WiFiToolProps) {
@@ -14,7 +14,12 @@ export default function WiFiTool({ setQRCodeData }: WiFiToolProps) {
   const [encryption, setEncryption] = useState('WPA')
 
   const handleGenerate = () => {
-    const wifiData = `WIFI:S:${ssid};T:${encryption};P:${password};;`
+    const wifiData = {
+      ssid,
+      password,
+      encryption,
+      name: `WiFi: ${ssid}`
+    }
     setQRCodeData(wifiData)
   }
 
@@ -47,10 +52,12 @@ export default function WiFiTool({ setQRCodeData }: WiFiToolProps) {
             <SelectItem value="nopass">No Encryption</SelectItem>
           </SelectContent>
         </Select>
-        <Button onClick={handleGenerate} className="w-full">
+      </CardContent>
+      <CardFooter className="flex justify-end">
+        <Button onClick={handleGenerate}>
           Generate QR Code
         </Button>
-      </CardContent>
+      </CardFooter>
     </Card>
   )
 }

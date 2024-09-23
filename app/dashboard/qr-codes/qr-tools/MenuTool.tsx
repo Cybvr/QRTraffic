@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 
 interface MenuToolProps {
-  setQRCodeData: (data: string) => void
+  setQRCodeData: (data: any) => void
 }
 
 export default function MenuTool({ setQRCodeData }: MenuToolProps) {
@@ -12,7 +12,11 @@ export default function MenuTool({ setQRCodeData }: MenuToolProps) {
   const [menuUrl, setMenuUrl] = useState('')
 
   const handleGenerate = () => {
-    const menuData = `${restaurantName}\n${menuUrl}`
+    const menuData = {
+      restaurantName,
+      menuUrl,
+      name: `${restaurantName} Menu`
+    }
     setQRCodeData(menuData)
   }
 
@@ -36,10 +40,12 @@ export default function MenuTool({ setQRCodeData }: MenuToolProps) {
             onChange={(e) => setMenuUrl(e.target.value)}
             placeholder="Menu URL"
           />
-          <Button onClick={handleGenerate} className="w-full">
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          <Button onClick={handleGenerate}>
             Generate QR Code
           </Button>
-        </CardContent>
+        </CardFooter>
       </Card>
     </div>
   )

@@ -1,10 +1,11 @@
+// services/qrCodeService.ts
 import { db } from '@/lib/firebase';
 import { collection, addDoc, updateDoc, doc, getDoc, getDocs, deleteDoc, query, where, Timestamp, increment, setDoc } from 'firebase/firestore';
 
 export interface QRCodeData {
   id?: string;
   type: string;
-  content: string;
+  content: any;
   name: string;
   customization: {
     frame: string;

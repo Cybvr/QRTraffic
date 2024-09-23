@@ -3,12 +3,17 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { createQRCode } from '@/services/qrCodeService'
-import QRCodeTypeSelector from '../QRCodeTypeSelector'
-import QRCodeContentForm from '../QRCodeContentForm'
-import QRCodeCustomizer from '../QRCodeCustomizer'
-import ProgressSteps from '../ProgressSteps'
+import QRCodeTypeSelector from '@/app/dashboard/common/QRCodeTypeSelector'
+import QRCodeCustomizer from '@/app/dashboard/common/QRCodeCustomizer'
+import ProgressSteps from '@/app/dashboard/common/ProgressSteps'
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import LinkTool from '../qr-tools/LinkTool'
+import VCardTool from '../qr-tools/VCardTool'
+import MenuTool from '../qr-tools/MenuTool'
+import FacebookTool from '../qr-tools/FacebookTool'
+import BusinessTool from '../qr-tools/BusinessTool'
+import WiFiTool from '../qr-tools/WiFiTool'
 
 const steps = ['Choose QR Code Type', 'Add Content', 'Customize Design']
 
@@ -16,12 +21,12 @@ export default function NewQRCode() {
   const [currentStep, setCurrentStep] = useState(0)
   const [qrCodeData, setQRCodeData] = useState({
     type: '',
-    content: '',
+    content: {},
     name: '',
     customization: {
       frame: 'no-frame',
       frameUrl: '',
-      frameText: 'Scan Me!', // Default frame text
+      frameText: 'Scan Me!',
       frameColor: '#000000',
       backgroundColor: '#FFFFFF',
       textColor: '#000000',
@@ -37,41 +42,25 @@ export default function NewQRCode() {
   const [isLoading, setIsLoading] = useState(false)
 
   const handleTypeSelect = (type: string) => {
-    console.log('Selected QR Code type:', type)
     setQRCodeData(prev => ({ ...prev, type }))
     setCurrentStep(1)
   }
 
-  const handleContentSubmit = (data: any) => {
-    console.log('Content form data:', data)
+  const handleContentUpdate = (data: any) => {
     setQRCodeData(prev => ({
       ...prev,
-      content: data.url,
-      name: data.name
+      content: data,
+      name: data.name || prev.name
     }))
-    setCurrentStep(2)
+    setCurrentStep(prevStep => prevStep + 1) // This line automatically moves to the next step
   }
 
   const handleCustomizationChange = (customization: any) => {
-    console.log('Customization data:', customization)
     setQRCodeData(prev => ({ ...prev, customization }))
   }
 
   const validateQRCodeData = (data: typeof qrCodeData): boolean => {
-    const { type, content, name, customization } = data;
-    const isValid = !!(
-      type && content && name &&
-      customization.frame &&
-      customization.frameColor &&
-      customization.frameText &&
-      customization.backgroundColor &&
-      customization.textColor &&
-      customization.qrCodeColor &&
-      typeof customization.transparentBackground === 'boolean' &&
-      customization.frameUrl !== undefined
-    );
-    console.log('QR Code data validation result:', isValid)
-    return isValid;
+    return !!(data.type && Object.keys(data.content).length > 0 && data.name);
   }
 
   const handleCustomizationComplete = async () => {
@@ -79,7 +68,6 @@ export default function NewQRCode() {
       setError('User not authenticated. Please log in and try again.')
       return
     }
-    console.log('QR Code data before validation:', qrCodeData)
     if (!validateQRCodeData(qrCodeData)) {
       setError('Invalid QR code data. Please fill all required fields.')
       return
@@ -87,15 +75,31 @@ export default function NewQRCode() {
     setError(null)
     setIsLoading(true)
     try {
-      console.log('Creating QR code with data:', qrCodeData)
       await createQRCode(user.uid, qrCodeData)
-      console.log('QR code created successfully')
       router.push(`/dashboard/qr-codes/my-codes`)
     } catch (error) {
-      console.error('Error creating QR code:', error)
       setError(error instanceof Error ? error.message : 'Failed to create QR code. Please try again.')
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const renderContentTool = () => {
+    switch (qrCodeData.type) {
+      case 'Link':
+        return <LinkTool setQRCodeData={handleContentUpdate} />
+      case 'VCard':
+        return <VCardTool setQRCodeData={handleContentUpdate} />
+      case 'Restaurants Menu':
+        return <MenuTool setQRCodeData={handleContentUpdate} />
+      case 'Facebook':
+        return <FacebookTool setQRCodeData={handleContentUpdate} />
+      case 'Business Page':
+        return <BusinessTool setQRCodeData={handleContentUpdate} />
+      case 'WiFi':
+        return <WiFiTool setQRCodeData={handleContentUpdate} />
+      default:
+        return null
     }
   }
 
@@ -104,15 +108,15 @@ export default function NewQRCode() {
       case 0:
         return <QRCodeTypeSelector onSelect={handleTypeSelect} />
       case 1:
-        return <QRCodeContentForm type={qrCodeData.type} onSubmit={handleContentSubmit} />
+        return renderContentTool()
       case 2:
         return (
           <QRCodeCustomizer
             customization={qrCodeData.customization}
-            initialData={{ url: qrCodeData.content }}
+            initialData={qrCodeData.content}
             onCustomizationChange={handleCustomizationChange}
             onComplete={handleCustomizationComplete}
-            initialContent={qrCodeData.content}
+            initialContent={JSON.stringify(qrCodeData.content)}
             initialName={qrCodeData.name}
           />
         )
@@ -121,36 +125,35 @@ export default function NewQRCode() {
     }
   }
 
+  const handleStepClick = (stepIndex: number) => {
+    if (stepIndex <= currentStep) {
+      setCurrentStep(stepIndex)
+    }
+  }
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-6xl">
-      <ProgressSteps steps={steps} currentStep={currentStep} />
+      <ProgressSteps steps={steps} currentStep={currentStep} onStepClick={handleStepClick} />
 
-      <Card className="mb-8 mt-4">
+      <Card className="mt-4">
         <CardContent className="p-8">
           <h1 className="text-2xl font-bold mb-6">{steps[currentStep]}</h1>
           {renderContent()}
           {error && <p className="text-red-500 mt-4">{error}</p>}
           {currentStep === 2 && (
-            <Button
-              onClick={handleCustomizationComplete}
-              variant="default"
-              className="w-full mt-4"
-              disabled={isLoading}
-            >
-              {isLoading ? 'Creating...' : 'Save and Continue'}
-            </Button>
+            <div className="flex justify-end mt-4">
+              <Button
+                onClick={handleCustomizationComplete}
+                variant="default"
+                disabled={isLoading}
+              >
+                {isLoading ? 'Creating...' : 'Save and Continue'}
+              </Button>
+            </div>
           )}
         </CardContent>
       </Card>
-      {currentStep > 0 && (
-        <Button
-          onClick={() => setCurrentStep(prev => prev - 1)}
-          variant="outline"
-          className="w-full mt-2"
-        >
-          Back
-        </Button>
-      )}
+
     </div>
   )
 }

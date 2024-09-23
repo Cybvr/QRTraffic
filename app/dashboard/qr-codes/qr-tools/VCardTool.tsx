@@ -1,10 +1,10 @@
 import React, { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 
 interface VCardToolProps {
-  setQRCodeData: (data: string) => void
+  setQRCodeData: (data: any) => void
 }
 
 export default function VCardTool({ setQRCodeData }: VCardToolProps) {
@@ -16,7 +16,15 @@ export default function VCardTool({ setQRCodeData }: VCardToolProps) {
   const [title, setTitle] = useState('')
 
   const handleGenerate = () => {
-    const vCardData = `BEGIN:VCARD\nVERSION:3.0\nN:${lastName};${firstName}\nFN:${firstName} ${lastName}\nTEL:${phone}\nEMAIL:${email}\nORG:${company}\nTITLE:${title}\nEND:VCARD`
+    const vCardData = {
+      firstName,
+      lastName,
+      phone,
+      email,
+      company,
+      title,
+      name: `${firstName} ${lastName} VCard`
+    }
     setQRCodeData(vCardData)
   }
 
@@ -66,10 +74,12 @@ export default function VCardTool({ setQRCodeData }: VCardToolProps) {
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Job Title"
           />
-          <Button onClick={handleGenerate} className="w-full">
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          <Button onClick={handleGenerate}>
             Generate QR Code
           </Button>
-        </CardContent>
+        </CardFooter>
       </Card>
     </div>
   )

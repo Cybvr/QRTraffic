@@ -1,54 +1,59 @@
 import React, { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 
 interface LinkToolProps {
-  setQRCodeData: (data: string) => void
+  setQRCodeData: (data: any) => void
 }
 
-export default function LinkTool({ setQRCodeData }: LinkToolProps) {
-  const [title, setTitle] = useState('')
+const LinkTool: React.FC<LinkToolProps> = ({ setQRCodeData }) => {
+  const [name, setName] = useState('')
   const [url, setUrl] = useState('')
 
   const handleGenerate = () => {
-    setQRCodeData(url)
+    setQRCodeData({
+      name,
+      content: { url }
+    })
   }
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>1. Setup</CardTitle>
-          <CardDescription>When scanned, redirects user to specified website URL or content link</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="title">Title</Label>
-            <Input
-              id="title"
-              type="text"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="My QR Code"
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="url">Enter URL</Label>
-            <Input
-              id="url"
-              type="url"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="http://qrtraffic.com"
-            />
-          </div>
-          <Button onClick={handleGenerate} className="w-full">
-            Generate QR Code
-          </Button>
-        </CardContent>
-      </Card>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Link QR Code</CardTitle>
+        <CardDescription>When scanned, redirects user to specified website URL or content link</CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="space-y-2">
+          <Label htmlFor="name">QR Code Name</Label>
+          <Input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="My Link QR Code"
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="url">Enter URL</Label>
+          <Input
+            id="url"
+            type="url"
+            value={url}
+            onChange={(e) => setUrl(e.target.value)}
+            placeholder="https://example.com"
+          />
+        </div>
+      </CardContent>
+      <CardFooter className="flex justify-end">
+        <Button onClick={handleGenerate}>
+          Generate QR Code
+        </Button>
+      </CardFooter>
+    </Card>
   )
 }
+
+export default LinkTool

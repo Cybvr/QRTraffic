@@ -4,14 +4,19 @@ import { Check } from 'lucide-react'
 interface Props {
   steps: string[]
   currentStep: number
+  onStepClick: (stepIndex: number) => void
 }
 
-const ProgressSteps: FC<Props> = ({ steps, currentStep }) => {
+const ProgressSteps: FC<Props> = ({ steps, currentStep, onStepClick }) => {
   return (
     <div className="w-full px-0 py-2">
-      <div className="flex items-center justify-between border border-gray-200 rounded-lg p-6">
+      <div className="flex items-center justify-between">
         {steps.map((step, index) => (
-          <div key={step} className="flex items-center flex-1">
+          <div 
+            key={step} 
+            className="flex items-center flex-1 cursor-pointer"
+            onClick={() => onStepClick(index)}
+          >
             {/* Step indicator */}
             <div className={`
               w-8 h-8 rounded-full flex items-center justify-center

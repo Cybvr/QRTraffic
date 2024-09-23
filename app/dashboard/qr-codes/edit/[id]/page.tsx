@@ -3,11 +3,16 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/context/AuthContext'
 import { getQRCode, updateQRCode } from '@/services/qrCodeService'
-import QRCodeContentForm from '../../QRCodeContentForm'
-import QRCodeCustomizer from '../../QRCodeCustomizer'
+import QRCodeCustomizer from '@/app/dashboard/common/QRCodeCustomizer'
 import { Button } from "@/components/ui/button"
 import Link from 'next/link'
 import { ChevronLeft } from 'lucide-react'
+import LinkTool from '@/app/dashboard/qr-codes/qr-tools/LinkTool'
+import VCardTool from '@/app/dashboard/qr-codes/qr-tools/VCardTool'
+import MenuTool from '@/app/dashboard/qr-codes/qr-tools/MenuTool'
+import FacebookTool from '@/app/dashboard/qr-codes/qr-tools/FacebookTool'
+import BusinessTool from '@/app/dashboard/qr-codes/qr-tools/BusinessTool'
+import WiFiTool from '@/app/dashboard/qr-codes/qr-tools/WiFiTool'
 
 export default function EditQRCode({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -30,8 +35,8 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
     loadQRCodeData()
   }, [params.id, user])
 
-  const handleContentSubmit = (data: any) => {
-    setQRCodeData(prev => ({ ...prev, ...data }))
+  const handleContentUpdate = (data: any) => {
+    setQRCodeData(prev => ({ ...prev, content: data }))
   }
 
   const handleCustomizationChange = (customization: any) => {
@@ -52,6 +57,25 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
     }
   }
 
+  const renderContentTool = () => {
+    switch (qrCodeData.type) {
+      case 'Link':
+        return <LinkTool setQRCodeData={handleContentUpdate} />
+      case 'VCard':
+        return <VCardTool setQRCodeData={handleContentUpdate} />
+      case 'Restaurants Menu':
+        return <MenuTool setQRCodeData={handleContentUpdate} />
+      case 'Facebook':
+        return <FacebookTool setQRCodeData={handleContentUpdate} />
+      case 'Business Page':
+        return <BusinessTool setQRCodeData={handleContentUpdate} />
+      case 'WiFi':
+        return <WiFiTool setQRCodeData={handleContentUpdate} />
+      default:
+        return null
+    }
+  }
+
   if (loading) return <div>Loading...</div>
   if (!qrCodeData) return <div>QR code not found</div>
 
@@ -67,18 +91,13 @@ export default function EditQRCode({ params }: { params: { id: string } }) {
         <h1 className="text-2xl font-bold">Edit QR Code</h1>
         <Button onClick={handleSave}>Save Changes</Button>
       </div>
-      <QRCodeContentForm
-        type={qrCodeData.type}
-        initialContent={qrCodeData.content}
-        initialName={qrCodeData.name}
-        onSubmit={handleContentSubmit}
-      />
+      {renderContentTool()}
       <QRCodeCustomizer
         customization={qrCodeData.customization}
         initialData={qrCodeData}
         onCustomizationChange={handleCustomizationChange}
         onComplete={handleSave}
-        initialContent={qrCodeData.content}
+        initialContent={JSON.stringify(qrCodeData.content)}
         initialName={qrCodeData.name}
       />
     </div>

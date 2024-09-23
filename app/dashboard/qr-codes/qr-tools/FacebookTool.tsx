@@ -1,19 +1,21 @@
 import React, { useState } from 'react'
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card"
 
 interface FacebookToolProps {
-  setQRCodeData: (data: string) => void
+  setQRCodeData: (data: any) => void
 }
 
 export default function FacebookTool({ setQRCodeData }: FacebookToolProps) {
   const [facebookUrl, setFacebookUrl] = useState('')
-  const [qrCodeData, setLocalQRCodeData] = useState('')
 
   const handleGenerate = () => {
-    setLocalQRCodeData(facebookUrl)
-    setQRCodeData(facebookUrl)
+    const facebookData = {
+      facebookUrl,
+      name: 'Facebook Page QR'
+    }
+    setQRCodeData(facebookData)
   }
 
   return (
@@ -30,10 +32,12 @@ export default function FacebookTool({ setQRCodeData }: FacebookToolProps) {
             onChange={(e) => setFacebookUrl(e.target.value)}
             placeholder="Facebook Page URL"
           />
-          <Button onClick={handleGenerate} className="w-full">
+        </CardContent>
+        <CardFooter className="flex justify-end">
+          <Button onClick={handleGenerate}>
             Generate QR Code
           </Button>
-        </CardContent>
+        </CardFooter>
       </Card>
     </div>
   )

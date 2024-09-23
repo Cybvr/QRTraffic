@@ -1,27 +1,27 @@
-import { FC } from 'react'
+import React from 'react'
 import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Globe, User, Briefcase, Facebook, Wifi } from 'lucide-react'
+import { Globe, User, UtensilsCrossed, Facebook, Briefcase, Wifi } from 'lucide-react'
 
 interface QRCodeType {
   name: string
-  icon: FC<React.SVGProps<SVGSVGElement>>
+  icon: React.ElementType
   description: string
 }
 
 const qrCodeTypes: QRCodeType[] = [
-  { name: 'Website URL', icon: Globe, description: 'Link to a website of your choice' },
-  { name: 'vCard', icon: User, description: 'Share your electronic business card' },
-  { name: 'Business Page', icon: Briefcase, description: 'Profile your business information' },
-  { name: 'Facebook', icon: Facebook, description: 'Redirect users to your Facebook page' },
-  { name: 'Wi-Fi', icon: Wifi, description: 'Connect to a wireless network' },
-  { name: 'Restaurant Menu', icon: User, description: 'Display your restaurant menu' },  // Added this back
+  { name: 'Link', icon: Globe, description: 'Instantly Connect Your Audience to Any Web Page' },
+  { name: 'VCard', icon: User, description: 'Share Contact Information with a Single Scan' },
+  { name: 'Restaurants Menu', icon: UtensilsCrossed, description: 'Offer Contactless Dining Experiences' },
+  { name: 'Facebook', icon: Facebook, description: 'Boost Your Facebook Presence' },
+  { name: 'Business Page', icon: Briefcase, description: 'Streamline Customer Engagement' },
+  { name: 'WiFi', icon: Wifi, description: 'Share WiFi Access Securely and Easily' },
 ]
 
 interface Props {
   onSelect: (type: string) => void
 }
 
-const QRCodeTypeSelector: FC<Props> = ({ onSelect }) => (
+const QRCodeTypeSelector: React.FC<Props> = ({ onSelect }) => (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     {qrCodeTypes.map((type) => (
       <Card 

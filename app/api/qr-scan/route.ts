@@ -6,7 +6,6 @@ import { Timestamp } from 'firebase/firestore';
 export async function POST(request: Request) {
   try {
     const { qrCodeId, userLocation, deviceType, campaignType, city, country } = await request.json();
-
     await saveQRScan({
       date: Timestamp.fromDate(new Date()),
       qrCodeId,
@@ -17,7 +16,6 @@ export async function POST(request: Request) {
       country,
       userId: 'anonymous' // Replace with actual user ID if available
     });
-
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error saving QR scan:', error);
